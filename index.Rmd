@@ -1,0 +1,70 @@
+--- 
+title: "Data Analysis and Visualization using R"
+author: "Michiel Noback"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+github-repo: rstudio/bookdown-demo
+description: "This gitbook accompanies some courses in Data Analysis & Visualization using R (DAVuR) of the Institute of Life Science and Technolog at the Hanze University of Applied Science (Groningen, The Netherlands."
+---
+
+# Getting started
+
+Welcome, you have landed at the ebook accompanying my R courses for Life Science students.
+
+Before reading on, you should check whether you are ready to work with R on your own computer.
+You should have installed R, RStudio and optionally Tinytech or some other Latex alternative for your OS if you would like to create pdf documents from RMarkdown.
+
+Copyright &copy; Michiel Noback, Hanze University of Applied Science, Groningen, The Netherlands
+
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
+
+
+## RStudio Shortcuts {#shortcuts}
+
+You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(shortcuts). If you do not manually label them, there will be automatic labels anyway.
+
+
+
+Here are the best keyboard shortcuts for RStudio:  
+
+- `ctr + 1` go to code editor
+- `ctr + 2` go to console
+- `ctr + alt + i` insert code chunk (RMarkdown)
+- `ctr + enter` run current line
+- `ctr + shift + k` knit current document
+- `ctr + alt + c` run current code chunk
+- `ctr + shift + o` source the current document
+
+> //TODO
+
+
+
+
+## Some coding style rules rules for writing code {#coding_style}
+
+
+- Names of variables start with a lower-case letter
+- Words are separated using underscores
+- Be descriptive with names
+- Function names are verbs
+- Write all code and comments in English
+- Preferentially use one statement per line
+- Use spaces on both sides of ALL operators
+- Use a space after a comma
+- Indent code blocks -with {}- with 4 or 2 spaces, but be consistent
+
+Follow Hadleys' style guide [http://adv-r.had.co.nz/Style.html](http://adv-r.had.co.nz/Style.html)
+
+
+

@@ -1,0 +1,75 @@
+p.caption {
+  color: #777;
+  margin-top: 10px;
+}
+
+p code {
+  white-space: inherit;
+}
+
+pre {
+  word-break: normal;
+  word-wrap: normal;
+}
+
+pre code {
+  white-space: inherit;
+}
+
+
+/*Attention blocks*/
+
+div.protocol{
+    max-width: 800px;
+    font-size: 1em;
+    padding: 0.5em;
+    margin: 1em 0;
+    border-radius: 3px;
+    border: 1px solid rgb(180,180,180);
+    background-color: rgb(230,230,230);
+    display: block;
+}
+
+div.attention, div.warning, div.info, div.definitions {
+    width: 600px;
+    font-size: 1em;
+    padding: 0.5em;
+    margin: 1em 0;
+    border-radius: 3px;
+    border: 1px solid rgb(180,180,180);
+    background-color: rgb(212,212,212);
+    display: block;
+
+    padding-left: 100px;
+    background-size: 64px;
+    background-repeat: no-repeat;
+    background-position: 15px center;
+    min-height: 100px;
+}
+
+div.attention {
+    background-image: url("pics/128px-Simple_Attention.png");
+    border: 1px solid rgb(251,238,213);
+    background-color: rgb(252,248,227);
+}
+
+div.warning {
+    background-image: url("pics/128px-Simple_Alert.png");
+    border: 1px solid rgb(238,211,215);
+    color: rgb(185,74,72);
+    background-color: rgb(242,222,222);
+}
+
+div.info {
+    background-image: url("pics/128px-Simple_Information.png");
+    border: 1px solid rgb(188,232,241);
+    color: rgb(58,135,173);
+    background-color: rgb(217,237,247);
+}
+
+div.definitions {
+    background-image: url("pics/128px-Simple_Information.png");
+    border: 1px solid rgb(214,233,198);
+    background-color: rgb(223,240,216);
+    color: rgb(70,136,71);
+}

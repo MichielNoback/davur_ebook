@@ -1,0 +1,9 @@
+function;description
+geom_abline();Add reference lines to a plot, either horizontal, vertical, or diagonal
+geom_bar();A bar plot makes the height of the bar proportional to the number of cases in each group
+geom_density();Computes and draws kernel density estimate, which is a smoothed version of the histogram
+geom_line();Connects the observations in order of the variable on the x axis
+geom_path();Connects the observations in the order in which they appear in the data
+geom_qq();geom_qq and stat_qq produce quantile-quantile plots
+geom_smooth();Aids the eye in seeing patterns in the presence of overplotting
+geom_violin();A violin plot is a compact display of a continuous distribution. It is a blend of geom_boxplot() and geom_density()

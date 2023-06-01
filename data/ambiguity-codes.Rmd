@@ -1,0 +1,61 @@
+---
+title: "Molecular biology codes"
+author: "Michiel Noback"
+date: "December 2019"
+output: html_document
+---
+
+# Molecular biology codes
+
+## DNA Ambiguity codes
+
+```
+N = A or C or G or T (any)
+B = C or G or T (not A)
+D = A or G or T (not C)
+H = A or C or T (not G)
+V = A or C or G (not T)
+W = A or T (weak)
+S = C or G (strong)
+R = A or G (purine)
+Y = C or T (pyrimidine)
+M = A or C (amino)
+K = G or T (keto)
+```
+
+## The Single-Letter Amino Acid Code
+
+```
+G - Glycine (Gly)
+P - Proline (Pro)
+A - Alanine (Ala)
+V - Valine (Val)
+L - Leucine (Leu)
+I - Isoleucine (Ile)
+M - Methionine (Met)
+C - Cysteine (Cys)
+F - Phenylalanine (Phe)
+Y - Tyrosine (Tyr)
+W - Tryptophan (Trp)
+H - Histidine (His)
+K - Lysine (Lys)
+R - Arginine (Arg)
+Q - Glutamine (Gln)
+N - Asparagine (Asn)
+E - Glutamic Acid (Glu)
+D - Aspartic Acid (Asp)
+S - Serine (Ser)
+T - Threonine (Thr)
+```
+
+## Prosite patterns
+
+- The standard IUPAC one-letter codes for the amino acids are used.
+- The symbol 'x' is used for a position where any amino acid is accepted.
+- Ambiguities are indicated by listing the acceptable amino acids for a given position, between square parentheses '[ ]'. For example: [ALT] stands for Ala or Leu or Thr.
+- Ambiguities are also indicated by listing between a pair of curly brackets '{ }' the amino acids that are not accepted at a given position. For example: {AM} stands for any amino acid except Ala and Met.
+- Each element in a pattern is separated from its neighbor by a '-'.
+- Repetition of an element of the pattern can be indicated by following that element with a numerical value or a numerical range between parenthesis. Examples: x(3) corresponds to x-x-x, x(2,4) corresponds to x-x or x-x-x or x-x-x-x.
+- When a pattern is restricted to either the N- or C-terminal of a sequence, that pattern either starts with a '<' symbol or respectively ends with a '>' symbol. In some rare cases (e.g. PS00267 or PS00539), '>' can also occur inside square brackets for the C-terminal element. 'F-[GSTV]-P-R-L-[G>]' means that either 'F-[GSTV]-P-R-L-G' or 'F-[GSTV]-P-R-L>' are considered.
+- A period ends the pattern.
+

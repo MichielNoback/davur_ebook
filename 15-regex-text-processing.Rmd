@@ -1,0 +1,188 @@
+# Text processing with regular expressions
+
+## Introduction 
+
+:::definitions
+Pattern matching is the process of finding, locating, extracting and replacing patterns in character data that usually cannot be literally described.
+:::
+
+For instance, it is easy enough to look for the word "Chimpanzee" in a vector containing animal species names:
+
+```{r}
+animals = c("Chimpanzee", "Cow", "Camel")
+animals == "Chimpanzee"
+```
+
+but what are you going to do if there are multiple variants of the word you are looking for? This?
+
+```{r}
+animals = c("Chimpanzee", "Chimp", "chimpanzee", "Camel")
+animals == "Chimpanzee" | animals == "Chimp" | animals == "chimpanzee"
+```
+
+The solution here is not using literals, but to describe **_patterns_**.
+
+Look at the above example. How would you describe a pattern that would correctly identify all Chimpanzee occurrences?
+
+Is you pattern something like this?
+
+_A letter C in upper-or lower case followed by 'himp' followed by nothing or 'anzee'_
+
+In programming we use **_regular expressions_** or **_RegEx_** to describe such a pattern in a formal concise way:
+
+`[Cc]himp(anzee)?`
+
+And to apply such a pattern in R, we use one of several functions dedicated for this task. Here is one, `grepl()`, which returns `TRUE` if the regex matched the vector element.
+
+```{r}
+grepl("[Cc]himp(anzee)?", animals)
+```
+
+### Functions using regex {-}
+
+There are  several functions dedicated to finding patters in character data. They differ in intent and output. Here is a listing.
+
+- **finding** Does an element contain a pattern (TRUE/FALSE)? `grepl(pattern, string)`
+- **locating** Which elements contain a pattern (INDEX)? `grep(pattern, string)`
+- **extracting** Get the content of matching elements `grep(pattern, string, value = TRUE)`
+- **replace** Replace the first occurrence of the pattern `sub(pattern, replacement, string)`
+- **replace all** Replace all occurrences of the pattern `gsub(pattern, replacement, string)`
+
+Note that the `stringr` package from the tidyverse has many user-friendly functions in this field as well. Two of them will be dealt with in the exercises.
+
+### Regex syntax
+
+A regular expression can be build out of any combination of
+
+- **character sequences** - Literal character sequences such as 'chimp'
+- **character classes** - A listing of possibilities for a single position.
+    - Between brackets: `[adgk]` means 'a' or 'd' or 'g' or 'k'.
+    - Use a hyphen to create a series: `[3-9]` means digits 3 through 9 and `[a-zA-Z]` means all alphabet characters.
+    - Negate using `^`. `[^adgk]` means anything _but_ a, d, g or k.
+    - A special case is the dot `.`: any character matches.
+    - Many special character classes exist (digits, whitespaces etc). They are discussed in a later paragraph.
+- **alternatives** - Are defined by the pipe symbol `|`: "OR"
+- **quantifiers** - How many times the preceding block should occur. See next paragraph.
+- **anchors** - `^` means matching at the start of a string. `$` means at the end.
+
+An excellent cheat sheet from the RStudio website is also included
+<a href="figures/RegExCheatsheet.pdf" target="_blank">here</a>
+
+### Quantifiers
+
+Use quantifiers to specify how many times a character or series of characters should occur.
+
+- **`{n}`**: exactly `n` times
+- **`{n, }`**: at least `n` times
+- **`{ ,n}`**: at most `n` times
+- **`{n, m}`**: at least `n` and at most `m` times.
+- **`*`**: 0 or more times; same as `{0, }`
+- **`+`**: 1 or more times; same as `{1, }`
+- **`?`**: 0 or 1 time; same as `{0, 1}`
+
+## Some examples
+
+### Restriction enzymes {-}
+
+This is the recognition sequence for the _HincII_ restriction endonuclease:
+
+```
+5'-GTYRAC-3'
+3'-CARYTG-5'
+```
+
+Before reading on: how would you define a regular expression that is precisely describes this recognition sequence?
+
+Molecular biology sequence ambiguity codes can be found
+<a href="data/ambiguity-codes.html" target="_blank">here</a>
+
+```{r}
+HincII_rs <- "GT[CT][AG]AC"
+sequences <- c("GTCAAC",
+               "GTCGAC",
+               "GTTGAC",
+               "aGTTAACa",
+               "GTGCAC")
+grep(pattern = HincII_rs, x = sequences, value = TRUE)
+```
+
+### Dutch dates {-}
+
+Here are some Dutch dates, in different accepted formats. The last two are not a correct notation.
+Create a RegEx that will determine whether an element contains a Dutch date string.
+
+```{r}
+dates <- c("15/2/2019", "15-2-2019", "15-02-2019", "015/2/20191", "15/2/20191")
+dateRegex <- "[0-9]{2}[/-][0-9]{1,2}[/-][0-9]{4}"
+grep(pattern = dateRegex, x = dates, value = TRUE)
+```
+
+Why were the last two matched?
+Because the pattern _is there_, albeit embedded in a longer string.
+We have to **_anchor_** the pattern to be more specific.
+
+## Anchoring
+
+Using anchoring, you can make sure the string is not longer than you explicitly state:
+
+```{r}
+dates <- c("15/2/2019", "15-2-2019", "15-02-2019", "015/2/20191", "15/2/20191")
+dateRegex <- "^[0-9]{2}[/-][0-9]{1,2}[/-][0-9]{4}$"
+grep(pattern = dateRegex, x = dates, value = TRUE)
+```
+
+Now the date matching is correct.
+
+## Metacharacters: Special character classes
+
+Since patterns such as `[0-9]` occur so frequently, they have dedicated character classes such as `[[:digit:]]`. The most important other ones are
+
+- **digits** `[[:digit:]]` or `\\d`: equivalent to `[0-9]`
+- **alphabet characters** `[[:alpha:]]`: equivalent to `[a-zA-Z]`
+- **lowercase characters** `[[:lower:]]`: equivalent to `[a-z]`
+- **uppercase characters** `[[:upper:]]`: equivalent to `[A-Z]`
+- **whitespace characters** `[[:space:]]` or `\\s`: Space, tab, vertical tab, newline, form feed, carriage return
+- **punctuation characters** `[[:punct:]]`: One of !"#$%&’()*+,-./:;<=>?@[]^_`{|}~
+
+(have a look at the cheat sheet for all)
+
+Here is the same example, this time using these predefined character classes
+
+```{r}
+dates <- c("15/2/2019", "15-2-2019", "15-02-2019", "15022019", "15/2/20191")
+dateRegex <- "[[:digit:]]{2}[/-]\\d{1,2}[/-]\\d{4}"
+grep(pattern = dateRegex, x = dates, value = TRUE)
+```
+
+### Postal codes {-}
+
+Here are some Dutch zip (postal) codes, in different accepted formats. The last two are not a correct notation.
+Can you create a RegEx that will determine whether an element contains a Dutch zip code?
+
+```{r}
+zips <- c("1234 AA", "2345-BB", "3456CC", "4567 dd", "56789aa", "6789a_")
+zips
+```
+
+
+### Prosite patterns {-}
+
+<a href="https://prosite.expasy.org/" target="_blank">Prosite</a> is a database of amino acid sequence motifs. One of them is the Histidine Triad profile (PDOC00694).
+
+```
+[NQAR]-x(4)-[GSAVY]-x-[QFLPA]-x-[LIVMY]-x-[HWYRQ]-
+[LIVMFYST]-H-[LIVMFT]-H-[LIVMF]-[LIVMFPT]-[PSGAWN]
+```
+
+- Write this down as a RegEx
+- Was that efficient? Using the `gsub()` function, can you convert it in a RegEx using code? It may take several iterations. Was that efficient?
+- Next, use an appropriate function to find if, and where, this pattern is located within the sequences in file `data/hit_proteins.txt` (<a href="data/hit_proteins.txt" target="_blank">here</a>)
+
+Amino Acid codes and Prosite pattern encoding can be found
+<a href="data/ambiguity-codes.html" target="_blank">here</a>
+
+
+## Locating and Extracting
+
+This is outside the scope of this first acquaintance. The `stringr` package from the tidyverse is much better at this than the base R functions. One of the exercises introduces this topic for the eager ones among you.
+

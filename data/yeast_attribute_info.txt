@@ -1,0 +1,11 @@
+attribute:description:label
+accno:Accession number for the SWISS-PROT database:Accession
+mcg:McGeochs method for signal sequence recognition:McGeoch signal
+gvh:von Heijnes method for signal sequence recognition:VonHeijne signal
+alm:Score of the ALOM membrane spanning region prediction program:Membrane spanning
+mit:Score of discriminant analysis of the amino acid content of the N-terminal region (20 residues long) of mitochondrial and non-mitochondrial proteins:Mitochondrial
+erl:Presence of HDEL substring (thought to act as a signal for retention in the endoplasmic reticulum lumen). Binary attribute: ER-retention
+pox:Peroxisomal targeting signal in the C-terminus:Peroxisomal
+vac:Score of discriminant analysis of the amino acid content of vacuolar and extracellular proteins:Vacuolar
+nuc:Score of discriminant analysis of nuclear localization signals of nuclear and non-nuclear proteins:Nuclear
+loc:Localization site:Localization

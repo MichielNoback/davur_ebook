@@ -1,0 +1,389 @@
+# Flow control and scripting
+
+## Introduction
+
+So far you have only used the functions that are build in R, or in some installed packages such as ggplot2. Moreover, the only R code you have seen was written in the console or in the code chunks of an RMarkdown document.  
+
+This code consisted of (series of) R statements with one or more function calls.  
+There has been no conditional code, no repeated operations and no extraction of blocks of code into something reusable, a custom function let alone a standalone executable script. 
+
+This chapter deals with that. It introduces conditional execution, custom functions and scripts.
+
+
+## Flow control 
+
+:::definitions
+Flow control constitutes a series of code elements used to control whether some code blocks are executed or not, and how many times
+:::
+
+These programming concepts and structures are used for flow control:
+
+- Conditional execution: `if(){} else if(){} else{}` 
+- Repeated execution: `for() {}`
+- Repeated conditional execution: `while(){}`
+
+For those of you with experience in other programming languages: there is no switch expression. There is a `switch()` function however, but it is not dealt with in this eBook.
+
+### Conditional execution with `if/else`
+
+There are several applications for conditionals, with differing language constructs:  
+
+- the `if(COND) {<TRUE>} else {<FALSE>}` code block for controlling program flow
+- the `if (COND) <TRUE> else <FALSE>` expression as a shorthand for the code block
+- the `ifelse(COND, <TRUE>, <FALSE>)` function for use on dataframes
+
+As you can see there is always a **_condition_** to be tested. This expression should return a logical value: TRUE or FALSE.
+
+All three are discussed in the following slides.
+
+
+#### The `if() {} else {}` code block {-}
+
+The `if(COND) {<TRUE>} else {<FALSE>}` code block knows several required and several optional elements.  
+At the minimum there is an `if(COND) {}` element where `COND` is an expression evaluating to a Logical.
+
+```{r ifelse_demo1}
+age <- 43
+if (age >= 18) {
+    print("Adult")
+}
+```
+
+#### `if()` shorthand {-}
+
+If there is only one statement within a block you can omit the curly braces:
+
+```{r ifelse_demo2}
+age <- 43
+if (age >= 18) print("Adult")
+```
+
+Remember that the semicolon at the end of a statement is optional in R and is usually omitted.
+
+#### `if()` can have an `else {}` {-}
+
+When there is an alternative course of action when the test evaluates to `FALSE` you use the `else{}` element of this structure.
+
+```{r ifelse_demo3}
+age <- 43
+if (age >= 18) {
+    print("Adult")
+} else {
+    print("Junior")
+}
+```
+
+Here the curly braces are required:
+
+```{r ifelse_demo4, error = TRUE}
+age <- 43
+if (age >= 18) print("Adult")
+else print("Junior")
+```
+
+#### `if()` can have `else if()` blocks {-}
+
+If there are more than two courses of action, you must reside to `else if()` blocks. 
+Each of them should have its own CONDition to test on.
+
+```{r ifelse_demo5}
+age <- 43
+if (age < 18) {
+    print("Minor")
+} else if (age >= 65){
+    print("Senior")
+} else if(age >= 18 && age <= 30){
+    print("Young Adult")
+} else {
+    print("Adult")
+}
+```
+
+
+#### if/else real life example {-}
+
+This code chunk checks if a file exists and only downloads it if it is not present
+
+```{r eval=FALSE}
+my_data_file <- "/some/file/on/disk"
+## fetch file
+if (!file.exists(my_data_file)) {
+    print(paste("downloading", my_data_file))
+    download.file(url = remote_url, destfile = my_data_file)
+} else {
+    print(paste("reading cached copy of", my_data_file))
+}
+```
+
+
+#### if/else shorthand {-}
+
+There is also a shorthand for `if(){} else{}`. It is also called a **_ternary_**.  
+It has the form  
+`if (COND) <EXPRESSION_FOR_TRUE> else <EXPRESSION_FOR_FALSE>`
+
+```{r ternary_op}
+a <- 3
+x <- if (a %% 2 == 0) "EVEN" else "UNEVEN"
+x
+```
+
+
+#### if/else on dataframes: `ifelse()` {-}
+
+When you want to assign values to a vector based on some condition, you need to use the third form, the `ifelse()` function.
+
+When you use the regular if/else structures on dataframes you don't get what you want:
+```{r}
+# In newer versions of R this yields an error; in older versions
+# only first value (row) is evaluated and this value is cycled.
+# The whole column gets value 1
+
+#airquality$foo <- if (airquality$Ozone < 30) 0 else 1 
+
+# This works
+airquality$bar <- ifelse(airquality$Ozone < 30, 0, 1)
+head(airquality)
+```
+
+### Executing alternatives with lists
+
+Besides decision making with if/else, you can also make use of the list type in combination with the fact that function can be passed around like any other object.
+
+
+```{r}
+
+message_maker <- list(
+    silent = function(message){
+        print("...")
+    },
+    normal = function(message){
+        print(paste0("Your message '", message, "' was recorded on ", Sys.Date()))
+    },
+    verbose = function(message) {
+        print(paste0("Your message '", message, "' was recorded on ", Sys.Date(), 
+                     " with system details [", paste(Sys.info()[1:4], collapse =";"), "]"))
+    }
+)
+
+message_maker[['verbose']]("I need coffee")
+```
+
+Of course, it would have been even better when this was wrapped inside a function, but that has not been discussed yet.
+
+
+### Iteration with `for(){}`
+
+- Iteration with `for` is used for looping a series of values from a vector.
+_ You should not use it to iterate columns or rows of a dataframe: the preferred way to do that is with `apply()` and its relatives (next presentation)
+
+```{r for-loop1}
+for (greeting in c("Hello", "'Allo", "Moi")) {
+    print(greeting)
+}
+```
+
+Sometimes you need a counter or index when iterating:
+
+```{r for-loop2}
+greetings <- c("Hello", "'Allo", "Moi")
+for (i in 1 : length(greetings)) {
+    print(paste(i, greetings[i]))
+}
+```
+
+But this causes strange results with empty vectors, as in the chunk below.
+
+```{r for-loop3}
+greetings <- character(0)
+for (i in 1 : length(greetings)) {
+    print(paste(i, greetings[i]))
+}
+```
+
+Therefore, it is advised to use `seq_along()` when looping iterables with indexes:
+
+```{r for-with-seq0-along}
+greetings <- c("Hello", "'Allo", "Moi")
+for (i in seq_along(greetings)) {
+    print(paste(i, greetings[i]))
+}
+
+## Does not do anything, as it should!
+greetings <- character(0)
+for (i in seq_along(greetings)) {
+    print(paste(i, greetings[i]))
+}
+```
+
+
+### Conditional iteration with `while(){}`
+
+This is the last flow control structure. It is used to execute a block **_as long as a certain condition is met_**. They are not used very much in R.
+
+```{r while-loop1}
+counter <- 1
+while (counter %% 5 != 0) {
+    print(counter)
+    counter = counter + 1
+}
+```
+
+
+## Creating functions
+
+Here is the definition again.
+
+:::definitions
+A function is a piece of functionality that you can execute by typing its name, followed by a pair of parentheses. Within these parentheses, you can pass data for the function to work on. Functions often, but not always, return a value.
+:::
+
+Thus, functions are named blocks of code with a **_single well-defined purpose_** which make them reusable. 
+You have already used many **_predefined_** or build in functions of R: `str`, `max`, `read.table` etc. If you type the name of a function without parenthesis you get its definition.
+
+```{r}
+sum
+```
+
+### Anatomy of a function {-}
+
+A function  
+
+- usually, but not always, has a name. in the next chapter you will see examples of _anonymous_ functions that are defined in the location where they are needed.  
+- has a **_parameter list_** (sometimes of size zero) between parentheses. These parameters constitute the required input variables on which the function will operate.  
+- has a **_method body_**. This is a block of one or more lines of code in which the actual work is performed.  
+- may have a **_return value_**. Ther result of a function is usually, but not always returned. The print function, for instance, does not return a value but only outputs to the console. Functions can only retun one single value  (vector). If more return values are needed, you need to wrap them in a complex datatype such as a list.  
+- is defined using the _**function keyword_** 
+
+Here is a function prototype. It shows all characteristics of the above list of properties.
+
+```
+method_name <- function(arg, arg, ...) {
+    <function body>
+    return(return_value)
+}
+```
+
+### A first function {-}
+
+Here is a simple function determining whether some number is even
+
+```{r first_function1}
+is_even <- function(x) {
+    evens <- x %% 2 == 0
+    return(evens) 
+}
+is_even(1:5)
+```
+
+Note that `return()` is a **_method call_** which is very unlike other programming languages.
+
+The **_return statement is optional_**. 
+In R, the last statement of a method body is its **_implicit return value_**. Therefore, the previous example is equivalent to this:
+
+```{r first_function2}
+is_even <- function(x) {
+    x %% 2 == 0
+}
+is_even(1:5)
+```
+
+Being explicit is always allowed when implicit return is possible, but using a `return()` for forcing return values at other points is required:
+
+```{r return_values}
+my_message <- function(age) {
+    if (age < 18) return("have a lemonade!") # explicit return
+    "have a beer!" # implicit return statement
+}
+my_message(20)
+```
+
+
+### Default argument values {-}
+
+It is possible to specify **_default values_** for function arguments. This is a value that is attached to a function parameter when the calling code does not provide one. A default value is specified in the parameter list, using this construct: `some_arg = <default-value>`. Almost all functions in R have (many) parameters with default values.
+
+You should use default values yourself for function parameters whenever possible. They make using the function so much easier. The following function calculates the exponent (power) of a number. When no `power =` value is provided, it defaults to two.
+
+```{r default_args}
+my_power <- function(x, power = 2) {
+    x ^ power
+}
+my_power(10, 3) ## custom power
+my_power(10) ## defaults to 2
+```
+
+
+### Argument order when calling a function {-}
+
+As we have seen many times before, you do not _need_ to pass arguments by name. In the above example, the names were not used. When you do not use the names of arguments, the order in which you pass them is important; they must match the order in which they are declared in the function. If you use their names, their order is not important:
+
+```{r}
+my_power(power = 4, x = 2)
+```
+
+
+To summarize: When calling a function,   
+
+- the parameters without default value are mandatory
+- the unnamed arguments should come first and should be passed in the order in which they are declared
+- passing named arguments may be done in any order
+
+
+### Errors and warnings
+
+When someting is not right, but not enought to quit execution, use a warning to let the user (or yourself) know that there is something wrong:  
+
+`warning("I am not happy")`
+
+When something is terribly wrong, and you cannot continue, you should stop execution with an error message:
+
+`stop("I can't go on")`
+
+Here is a small errors demo:
+
+```{r errors, error = TRUE}
+demo_inverse <- function(x) {
+    if (!is.numeric(x)) {
+        stop("non-numeric vector")
+    }
+    return(x / 3)
+}
+result1 <- demo_inverse(c("a", "b")) #result1 not created!
+result2 <- demo_inverse(1:4)
+```
+
+## Scripting
+
+An R script is a text file with the extension `.R` that contains R code. When it is loaded, it is immediately evaluated. **_Functions are loaded/evaluated, but not executed_**. Declared variables are stored in main memory - the Global Environment to be precise.
+
+Here is the contents of a very simple R script called `source_demo.R`
+
+```{r eval = FALSE}
+x <- 42
+x # echo to console
+print(paste0("x = ", x)) #explicit print
+
+# function defined but not called
+demo_function <- function(message) {
+    print(paste("you said", message))
+}
+```
+
+You can load this script int your R session by _sourcing_ it; just call `source(path/to/source_demo.R)`. Alternatively, when you have it open in the RStudio editor, you can click the "source" button at the top right of the editor panel. After that, you can use the functions and variables defined within the script:
+
+```{r}
+source("data/source_demo.R")
+x
+demo_function("hi!")
+```
+
+
+#### Why scripts? {-}
+
+- To store pieces of functionality you want to reuse (e.g. in different RMarkdown documents)
+- To store entire workflows outside RMarkdown
+- To run R code from the commandline (terminal)
+- To call from other scripts and build **_applications_** or **_packages_**
+
+

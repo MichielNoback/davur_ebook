@@ -1,0 +1,9 @@
+ggplot2;description
+data=;the data that you want to plot
+aes();mappings of data to position (axes), colors, sizes
+geom_.....();shapes (geometries) that will represent the data
+facet_.....();facets: the arrangement of the data into a grid of plots
+scale_.....();mapping of the data to aesthetic dimensions, such as data range to plot width or factor values to colors
+stat_.....();statistical transformations/summaries of the data that can be plotted, such as quantiles, fitted curves (loess, linear models, etc.), sums and so on
+coord_;Coordinate systems: the transformation used for mapping data coordinates into the plane of the data rectangle
+theme;The overall visual theme of a plot: background, grids, axe, default typeface, sizes, colors, etc.
