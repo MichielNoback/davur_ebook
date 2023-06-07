@@ -1,0 +1,934 @@
+# Data mangling with dplyr {#dplyr}
+
+```{r dplyr-setup, include=FALSE}
+options(digits = 3)
+knitr::opts_knit$set(cache = TRUE,
+                     tidy = TRUE,
+                     tidy.opts = list(blank = FALSE, width.cutoff = 60))
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(stringr)
+load("data/dose_response_long.Rdata")
+dose_response_long <- as_tibble(dose_response_long)
+```
+
+
+## The `dplyr` package
+
+
+This package, which is also in the tidyverse, is quite versatile. You can use it for a wide range of activities.
+Some examples are  
+
+- selecting, filtering and sampling cases
+- summarizing data; e.g. counting, ranking, 
+- manipulating data; creating new or changing existing variables
+- combining tables
+
+In this chapter only a small selection of this package will be discussed.
+
+There is an excellent cheat sheet for this package. You can find it [here](https://rstudio.com/resources/cheatsheets/). For convenience, primarily because this gitbook is also used in offline mode during examinations, I included it here as well: [dplyr-data-transformation.pdf](graphics/dplyr-data-transformation.pdf)
+
+Before embarking on an overview of the most important functions, let's first look at the `tibble` and the `%>%` chaining operator.
+
+
+The sections below are copied (and adapted) in part from the `dplyr` and `tibble` vignettes which can be found [here](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) and [here](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html)
+
+In this chapter I will often use the term **_case_** instead of row and **_variable_** instead of column since they more precisely describe the essence. Also, these terms are used more in the tidyverse packages.
+
+### Tibbles
+
+Tibbles are a modern take on data frames. They keep the features that have stood the test of time, and drop the features that used to be convenient but are now frustrating (i.e. converting character vectors to factors). There is an entire package dedicated to tibbles, not surprisingly called `tibble` you usually do not have to load the package because dplyr and tidyr do that already (they depend on it themselves).
+
+Use the `tibble()` constructor to create them as literals. There are several advantages over the old `data.frame` constructor:  
+
+- It never changes an input’s type (i.e., no more `stringsAsFactors = FALSE`!).
+- It never adjusts the names of variables: `name with space` does not become `name.with.space`.
+- It evaluates its arguments lazily and sequentially:
+
+```{r tibble-demo-1}
+tibble(x = 1:5, y = x ^ 2)
+```
+
+- It never uses `row.names()`. The whole point of tidy data is to store variables in a consistent way. So it never stores a variable as special attribute.
+- It only recycles vectors of length 1. This is because recycling vectors of greater lengths is a frequent source of bugs.
+
+**Coercion**
+To complement `tibble()`, tibble provides `as_tibble()` to coerce objects into tibbles.
+
+
+#### Tibbles vs data frames {-}
+
+There are three key differences between tibbles and data frames: printing, subsetting, and recycling rules.  
+
+**Printing**  
+- When you print a tibble, it only shows the first ten rows and all the columns that fit on one screen. It also prints an abbreviated description of the column type, and uses font styles and color for highlighting.
+- You can control the default appearance with options:
+    - `options(tibble.print_max = n, tibble.print_min = m)`: if there are more than `n` rows, print only the first `m` rows. Use `options(tibble.print_max = Inf)` to always show all rows.
+    - `options(tibble.width = Inf)` will always print all columns, regardless of the width of the screen.
+
+**Subsetting**  
+Tibbles are quite strict about subsetting. `[` always returns another tibble. Contrast this with a data frame: sometimes `[` returns a data frame and sometimes it just returns a vector.
+
+**Recycling**  
+When constructing a tibble, only values of length 1 are recycled. The first column with length different to one determines the number of rows in the tibble, conflicts lead to an error. This also extends to tibbles with zero rows, which is sometimes important for programming:
+
+#### The `str()` equivalent: `glimpse()`
+
+The `glimpse()` function is the dplyr equivalent of `str()`:
+```{r glimpse-demo}
+glimpse(dose_response_long)
+```
+
+
+### The chaining operator `%>%` 
+
+In any workflow, it happens all the time that you apply some function to a dataframe, store the result in a new variable (or overwrite the first) and apply a second function to this dataframe. And so on.
+There are two undesirable results with this. The first is cluttered code: many variables; how are you going to name them? Just have a look at the previous chapter and you'll understand. The second -and much worse if you are working with big dataframes- is cluttering of the environment and memory footprint.
+
+This is where the chaining operator comes in. It helps you create clean workflows where intermediate results are only stored when opportune.
+
+It comes down to this simple notion: `x %>% f(y))` is equivalent to f(x, y) where `f` is any function.
+
+Here is the good old dose-response example again, converted to a tibble.
+
+```{r show-dataset-dplyr}
+dose_response_long
+```
+
+Suppose I want to remove cases with missing values (there aren't any - this is for the sake of argument), select the female subjects and then calculate the mean response for the two doses.
+In base R, you could do something like this.
+
+```{r demonstrate-old-sucks}
+dose_response_long_no_na <- na.omit(dose_response_long)
+dose_response_long_no_na_only_female <- subset(x = dose_response_long_no_na, subset = sex == "f")
+aggregate(Response ~ Dose, data = dose_response_long_no_na_only_female, FUN = mean)
+```
+
+I know, I exaggerated a bit with the variable names.
+
+Here is the same workflow, using `dplyr`, but with the intermediate variables. It even has an explicit operation extra (`group_by()`).
+
+```{r demonstrate-dplyr-bad-use}
+dose_response_long_no_na <- drop_na(dose_response_long)
+dose_response_long_no_na_only_female <- filter(dose_response_long_no_na, sex == "f")
+dose_response_long_no_na_only_female_grouped <- group_by(dose_response_long_no_na_only_female,
+                                                         Dose)
+summarize(dose_response_long_no_na_only_female_grouped, mean_response = mean(Response))
+```
+
+And, finally, how dplyr is supposed to be used.
+
+```{r dplyr-demo-1}
+dose_response_long %>%
+    drop_na() %>%
+    filter(sex == "f") %>%
+    group_by(Dose) %>%
+    summarize(mean_response = mean(Response))
+```
+
+Isn't that a treat for your eyes? A highly readable, minimal piece of code, and what's more - no environment clogged with data you forget to clean up. 
+Note that `drop_na` is actually from the tidyr package. However, it works seamlessly in the chaining context of dplyr functions.
+
+This is the power of dplyr and the chaining operator!
+If you do actually want the result stored, you only need to assign to a single variable at the beginning of the chain.  
+
+Does it work with `ggplot2` as well? 
+
+```{r chain-to-ggplot, fig.asp=.75, out.width='60%', fig.align='center'}
+dose_response_long %>%
+    drop_na() %>%
+    ggplot(mapping = aes(x = sex, y = Response)) +
+        geom_boxplot() +
+        facet_wrap(Dose ~ .)
+```
+
+I don't know about you, but this kind of thing makes me happy!
+The only thing that bothers me slightly is the `+` instead of `%>%` in ggplot2 context. 
+On the other hand it is layering, not chaining what ggplot2 does, so there is clear distinction.
+
+You have seen the essence of the tidyverse: **_clean chained workflows_**.
+
+The sections below are copied (and adapted) for a large part from the `dplyr` vignette which can be found [here](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html)
+
+
+
+Dplyr aims to provide a function for each basic verb of data manipulation:
+
+`filter()` and `unique()` to select cases based on (the uniqueness of) their values.
+`arrange()` to reorder the cases.
+`select()` and `rename()` to select variables based on their names.
+`mutate()` and `transmute()` to add new variables that are functions of existing variables.
+`summarise()` to condense multiple values to a single value.
+`sample_n()` and `sample_frac()` to take random samples.
+
+
+## Selecting
+
+#### Selecting rows by index: `slice()` {-}
+
+If you simply want to select rows by index, use `slice()`
+
+```{r slice-demo}
+slice(dose_response_long, 2:4)
+```
+
+The functions `head()` and `tail()` work as expected; they work with tibbles as well (by overloading) and in the context of chained actions.
+
+#### Get unique cases with `distinct()` {-}
+
+The `distinct()` function retains only unique/distinct cases from an input `tbl` or `data.frame`. You provide variables to use when determining uniqueness. If there are multiple cases for a given combination of inputs, only the first case will be preserved. If omitted, will use all variables. The `.keep_all` argument specifies whether all variables in the tbl should be kept.
+
+```{r distinct-demo-1}
+dose_response_long %>% distinct(sex, Dose, .keep_all = T)
+```
+
+```{r distinct-demo-2}
+dose_response_long %>% distinct(Dose)
+```
+
+#### `filter()` cases {-}
+
+This function is similar to the `subset` argument of the `subset()` function.
+
+The filter function `filter()` allows you to select a subset of cases in a data frame. The first argument is the tibble or data frame. The second and subsequent arguments refer to variables within that data frame, selecting cases where the expression is TRUE.
+
+```{r filter-demo-1}
+dose_response_long %>% filter(Dose == "dose10mg" & Response > 60)
+```
+
+When you want to filter rows based on a regular expression pattern matching a character value you can do something like the chunk below, because the only thing select needs is a logical vector.
+
+```{r filter-demo-2}
+(t <- tibble(x = c("abb", "bbc", "dbbd", "aacc"), y = 1:4))
+t %>% filter(grepl("bb", x))
+```
+
+
+Using `str_detect()` from the `stringr` tidyverse package this is also possible:
+
+```{r filter-demo-3}
+t %>% filter(str_detect(x, "bb"))
+```
+
+
+#### Selecting variables: `select()`  {-}
+
+This function is similar to the `select` argument of the `subset()` function.
+
+Choose variables from a table. Closely related to `rename()` discussed below; `select()` keeps only the listed variables and `rename()` keeps all variables. 
+
+When you use the `key = value` format this will result in a rename of the variable.
+
+```{r select-demo-1}
+select(dose_response_long, patient, gender = sex)
+```
+
+Use the minus sign when you want to select everything _but_ a variable:
+
+```{r select-demo-2}
+select(dose_response_long, -patient, -sex)
+## same as 
+#select(dose_response_long, -c(patient, sex))
+```
+
+You can use the colon operator to indicate a range of variables:
+
+```{r select-demo-3}
+select(dose_response_long, patient:Dose)
+```
+
+
+#### Tidyselect helpers {-}
+
+With `select()` and `rename()`, but also with `mutate(across())` and the pivot functions from tidyr, you can use the special helper functions of the tidyselect package:
+
+- `starts_with()`: Starts with a prefix.
+- `ends_with()`: Ends with a suffix.
+- `contains()`: Contains a literal string.
+- `matches()`: Matches a regular expression.
+- `num_range()`: Matches a numerical range like x01, x02, x03.
+- `one_of()`: Matches variable names in a character vector.
+- `everything()`: Matches all variables.
+- `last_col()`: Select last variable, possibly with an offset.
+
+
+```{r select-demo-4}
+select(dose_response_long, contains("o"))
+```
+
+#### Renaming variables: `rename()` {-}
+
+Rename variables from a table.
+
+```{r rename-demo-1}
+dose_response_long %>% rename(Patient = patient, Gender = sex)
+```
+
+#### Selecting from ranked data {-}
+
+The `top_n()` function makes it easy to select a few cases that based on the ranking of a value:
+
+```{r top-n-demo-1}
+dose_response_long %>% top_n(3, Response)
+```
+
+We see 4 cases returned because the third rank is the same for two cases.
+
+This is especially interesting with grouped data:
+
+```{r top-n-demo-2}
+dose_response_long %>% group_by(Dose) %>% top_n(3, Response)
+```
+
+
+#### Extract a column as vector {-}
+
+Using `pull()` you can obtain atomic vectors.
+
+```{r pull-demo-1}
+pull(dose_response_long, Response)
+```
+
+This is of course the same as `dose_response_long[[4]]` or `dose_response_long$Response` but the difference is that `pull()` can be applied in a `%>%` pipeline.  
+With `dose_response_long[, 4]` it matters whether you are working with a tibble or a dataframe; a tibble returns a tibble and a dataframe returns a vector.
+
+#### Sorting with `arrange()` {-}
+
+If you want to sort the rows of a dataframe/tibble by the values of one or more columns, use `arrange()`
+
+```{r arrange-demo-1}
+dose_response_long %>% arrange(Response) %>% slice(1:3)
+```
+
+Use the function `desc()` to reverse the ordering
+
+```{r arrange-demo-2}
+dose_response_long %>% arrange(desc(Response)) %>% head(1)
+```
+
+Note that the previous chunk is equivalent to this
+
+```{r arrange-demo-3}
+dose_response_long %>% top_n(1, Response)
+```
+
+So natural ordering is from low to high, but the `top_n()` function always orders from high to low. You can reverse this as well using the `desc()` function.
+
+#### Random sampling  {-}
+
+There are two functions available for random sampling: `sample_n()` and `sample_frac()`. 
+
+```{r sample-demo-1}
+sample_frac(dose_response_long, 0.05, replace = TRUE)
+```
+
+The workings of `sample_n()` are obvious I guess.
+
+## Adding and changing variables
+
+### Window functions
+
+A new variable is usually the result of some operation on one or more previous variables. The data in an original variables is processed such that for each old value a new value is generated. Functions that carry out this kind of operation are called **_window_** functions. Thus, window functions are functions that take a vector and return another vector of the same length.
+
+For instance, the `cumsum()` function returns the cumulative sum of a numeric vector:
+
+```{r window-functions-cumsu-1}
+cumsum(1:5)
+```
+
+Here are the main window functions. Note that some of them come from base R. Later you will see the use of several of them in concert with the `mutate()` function.
+
+- **_`dplyr::lead`_**  
+Copy with values shifted by 1. 
+    ```{r window-functions-lead}
+    lead(c(1, 4, 2, 8))
+    ```
+
+- **_`dplyr::lag`_**  
+Copy with values lagged by 1. 
+    ```{r window-functions-lag}
+    lag(c(1, 4, 2, 8))
+    ```
+
+- **_`dplyr::min_rank`_**   
+Ranks on values, from low to high. Use `desc()` to reverse.  
+    ```{r window-functions-min-rank}
+    min_rank(c(5, 4, 2, 8))
+    ```
+
+- **_`dplyr::ntile`_**   
+Bin vector into n buckets. 
+    ```{r window-functions-ntile}
+    ntile(c(5, 4, 2, 8, 1), 3)
+    ```
+
+- **_`dplyr::between`_**   
+Are values between a and b? 
+    ```{r window-functions-between}
+    between(c(5, 4, 2, 8, 1), 3, 5)
+    ```
+
+- **_`dplyr::cummean`_**   
+Cumulative mean 
+    ```{r window-functions-cummean}
+    cummean(c(5, 4, 2, 8, 1))
+    ```
+
+- **_`cumsum`_**    
+Cumulative sum
+    ```{r window-functions-cumsum-2}
+    cumsum(c(5, 4, 2, 8, 1))
+    ```
+
+- **_`cummax`_**   
+Cumulative maximum 
+    ```{r window-functions-cummax}
+    cummax(c(5, 4, 2, 8, 1))
+    ```
+
+- **_`cummin`_**   
+Cumulative minimum 
+    ```{r window-functions-cummin}
+    cummin(c(5, 4, 2, 8, 1))
+    ```
+
+- **_`cumprod`_**   
+Cumulative product
+
+    ```{r window-functions-cumprod}
+    cumprod(c(5, 4, 2, 8, 1))
+    ```
+
+- **_`pmax`_**  
+Element-wise maximum 
+    ```{r window-functions-pmax}
+    pmax(c(5, 4, 2, 8, 1), c(2, 2, 3, 4, 3))
+    ```
+
+- **_`pmin`_**   
+Element-wise minimum
+
+    ```{r window-functions-pmin}
+    pmin(c(5, 4, 2, 8, 1), c(2, 2, 3, 4, 3))
+    ```
+
+### Mutate {mutate}
+
+#### Add one or more variables: `mutate()` {-}
+
+The function `mutate()` can be used to calculate and append one or more columns.The window functions from the previous section are often-used helpers.
+
+For instance, given the `ChickWeight` dataset which shows weight gain for 50 chicks:
+
+```{r mutate-demo-1}
+chicks <- as_tibble(ChickWeight) 
+chicks %>% head(5)
+```
+
+Suppose we want to know the daily weight gain of these chicks (as a challenge, you could try to do this in base R).
+
+Using `lag()` and `mutate()` this is a breeze (or so it seems):
+
+```{r mutate-demo-2}
+(chicks <- chicks %>% mutate(weight_gain = weight - lag(weight)))
+```
+
+...but the devil is in the details:
+
+```{r mutate-demo-3}
+chicks %>% slice(10:15)
+```
+
+The transition from chick 1 to chick 2 is not taken into account!
+So to get the weight gain for each chick, we need to split the data first. This is dealt with in a later section but here is a preview:
+
+```{r mutate-demo-4}
+chicks <- chicks %>% 
+    group_by(Chick) %>% #split on chicks
+    mutate(weight_gain = weight - lag(weight)) %>% 
+    ungroup() #put together again
+slice(chicks, 10:15)
+```
+
+Can you use a custom function in a `mutate` context? Of course you can!
+
+```{r mutate-demo-5}
+my_z <- function(x) {
+    abs((abs(x - mean(x)) / sd(x)))
+}
+women %>% 
+    mutate(z_score = my_z(weight)) %>% 
+    head()
+```
+
+And what's more, you can make multiple columns in one operation where the calculations for the subsequent columns are interdependent.
+
+```{r mutate-demo-6}
+women %>% 
+    mutate(z_score = my_z(weight),
+           z_bin = ntile(z_score, 3)) %>% 
+    head()
+```
+
+
+#### Multi-column mutate or summary {-}
+
+When you want to apply a mutate operation on a selection of multiple columns you need to use the `across()` function.
+
+It has this general signature:
+
+```{r across-signature, eval=FALSE}
+across(.cols = everything(), .fns = NULL, ..., .names = NULL)
+```
+
+As you can see, the `across()` function takes two main arguments: a selection of columns - often the result of one of the tidyselect helpers - and a function or list of functions to apply to these columns. The `.names=` argument can be used to specify how column names will be generated and the `...` arguments is for passing arguments to the applied functions, just like wehave seen with `apply()`.
+
+#### Many ways to select columns {-}
+
+In this first example the tidyselect helper function `everything()` is used.
+This is similar to usage of the base R `apply()` function.
+
+Suppose you want to calculate the log2 of all numeric values in the `iris` dataset.
+In base R you would probably do it like this:
+
+```{r accross-example-0}
+head(apply(iris[, -5], MARGIN = 2, FUN = log2))
+```
+
+When you do it with `mutate(across(...))` this is the most similar solution: 
+
+```{r accross-example-1}
+iris %>% 
+    select(-Species) %>%
+    mutate(across(everything(), log2)) %>%
+    head(3)
+```
+
+The tidyselect helper `everything()` does what you would expect given its name. Notice how the original columns have been dropped and new columns have the same name as the original ones. 
+
+The `select(-Species) %>%` however, is a bit redundant if you use the `across()` function to its full potential in combination with tidyselect helpers. Here are some examples (only the first evaluated because output is the similar for all).
+
+Using indices: 
+
+```{r accross-example-3}
+iris %>% summarize(across(1:4, mean))
+```
+Using column names (no quotes required):
+
+```{r accross-example-4, eval = F}
+iris %>% summarize(across(c(Sepal.Length, Sepal.Width), mean))
+```
+Using text matching on column names:
+
+```{r accross-example-5, eval = F}
+iris %>% summarize(across(starts_with("P"), mean))
+iris %>% summarize(across(contains("."), mean))
+```
+
+Finally: Using `where(is.numeric)` to apply a logical filter to the column type:
+
+```{r accross-example-6, eval = F}
+iris %>% summarize(across(where(is.numeric), mean))
+```
+
+Execute `help(package = "tidyselect")` to see a listing of more possibilities.
+As you have seen, the alternatives to selecting columns are almost endless.
+
+
+#### Many ways to apply functions {-}
+
+Besides a single function name to apply, you can provide lists of functions, anonymous functions and lambdas. Here are some examples.
+
+You can provide a named list to apply more than one function. in that case the list name is used as column name. Surprisingly enough, the original columns are maintained in this use case (also when your list contains only one entry)! 
+
+```{r accross-example-7}
+iris %>% 
+    select(-Species) %>%
+    mutate(across(everything(), list(log = log2, sqrt = sqrt))) %>%
+    head(3)
+```
+When you don't give the entries names (e.g. `list(log2, sqrt)` instead of `list(log = log2, sqrt = sqrt)`) the resulting column names will receive simple serial numbers.
+
+However, when you use `tibble::list()` instead, the function names do get used even though you don't provide names (results omitted):
+
+```{r accross-example-8, eval = F}
+iris %>% 
+    select(-Species) %>%
+    mutate(across(everything(), list(log = log2, sqrt = sqrt)))
+```
+
+
+You can also pass **_lambdas_** to `across()` instead of a function name. Lambda's are anonymous function-like expressions. Although this form is harder to grasp, it does make it easier to pass arguments to the function you want executed (in this case `tcenter = FALSE` to `scale`).
+
+```{r accross-example-9}
+iris %>% 
+    mutate(across(1:4, ~ scale(.x, center = FALSE))) %>%
+    head(5)
+```
+
+Again, you can also pass a (named) list:
+
+```{r accross-example-10}
+iris %>% 
+    mutate(across(1:4, list(scaled = ~ scale(., center = FALSE), 
+                            mean = ~ mean(., trim = 0.2)))) %>%
+    head(5)
+```
+
+
+The expression `~ mean(.x, trim = 0.2)` is therefore equivalent to something like 
+`function (.x) mean(.x, trim = 0.2)` so the tilde is shorthand for `function (.x)`. Instead of `.x` a single dot `.` is also allowed, and this syntax is used in more locations of the tidyverse - see `group_map()` and related functions. 
+
+
+#### Change values of a variable: `recode()` and `recode_factor()` {-}
+
+These two functions help you to quickly change the values of a variable. Here, the Dose variable is overwritten with new -numeric- values. Note that the original `dose_response_long` tibble has **_not_** been modified!
+
+```{r recode-demo-1}
+head(dose_response_long, 2)
+
+dose_response_long %>% 
+    mutate(Dose = recode(Dose, dose10mg = 10, dose100mg = 100)) %>%
+    head(2)
+```
+
+Similarly, the `sex` variable can be recoded with the `recode_factor()` function. In the example below,  
+- the Response variable is created based on the `sex` variable, 
+- the `sex` variable is deleted and 
+- the variables are reordered to the original format
+
+```{r recode-factor-demo}
+dose_response_long %>%
+    mutate(Gender = recode_factor(sex, f = "female", m = "male"), 
+           sex = NULL) %>%
+    select(patient, Gender, Dose, Response) %>%
+    head(3)
+```
+
+
+
+### Operations on groups
+
+Often you want to know something about groups in your data. For instance, in the previous examples with the chickens, it is interesting to know the average weight gain of the chickens for each diet. This is where the `group_by()` function comes in, and its counterpart `ungroup()`.
+
+One important thing to realize is the `group_by()` does not **_split_** your data. instead, it adds metadata to a tibble (or data.frame) that marks how rows should be grouped. As long as that metadata is there -i.e. you have not called `ungroup()`- you won't be able to change the factors of the columns involved in the grouping.
+
+If you really want to split, like the base R `split()` function, you should use the `group_split()` function.
+
+#### `group_by()` and `ungroup()` {-}
+
+This is the most used set of grouping functions. It is usually followed by some summary function -discussed below- but sometimes, as in the case of the weight gain outlined in section \@ref(mutate), you want to progress with all data combined. In that case you need to ungroup again.
+
+Here is the summary use case. No need for ungrouping.
+
+```{r group-by-demo-1}
+dose_response_long %>% 
+    group_by(sex) %>% 
+    summarise(mean = mean(Response))
+```
+
+Of course you can group by multiple variables.
+
+```{r group-by-demo-2}
+dose_response_long %>% 
+    group_by(Dose, sex) %>% 
+    summarize(mean = mean(Response))
+```
+
+After grouping on a variable, you will sometimes be interested in the top or bottom _n_ rows. The `head()` function will not work then, surprisingly enough. Suppose you want the bottom 2 responses from both the males and females in the dose100mg group. Surprisingly enough this does not work:
+
+```{r need-for-row-number-1}
+dose_response_long %>%
+    filter(Dose == "dose100mg") %>%
+    group_by(sex) %>%
+    arrange(Response) %>%
+    head(2) %>%
+    ungroup() 
+```
+
+Instead, to select the top _n_ values after grouping you need to use either `slice()` or `filter(row_number() <some-logical-test>)`. Here is the correct solution.
+
+```{r need-for-row-number-2}
+dose_response_long %>%
+    filter(Dose == "dose100mg") %>%
+    group_by(sex) %>%
+    arrange(Response) %>%
+    slice(1:2) %>%
+    #filter(row_number() %in% 1:2) %>% #also works
+    ungroup() #ungrouping not required but I added it for clarity of code
+```
+
+Here is rather lengthy use case for ungrouping: the z-score is calculated per `sex` group, and then there is some Dose-specific calculation before summarizing. This required an ungroup in between.
+
+```{r group-by-demo-3}
+dose_response_long %>%
+    group_by(sex) %>%
+    mutate(Response_Z = my_z(Response)) %>%
+    ungroup() %>% ##ungroup for other grouping
+    group_by(Dose) %>%
+    mutate(Response_scaled = scale(Response)) %>%
+    summarize(Z = mean(Response_Z), Scaled_Mean_sd = sd(Response_scaled))
+```
+
+#### `group_split()` and `group_keys()` {-}
+
+The `group_split()` function is equivalent to the base R `split()` function. But it uses the grouping structure from group_by() and therefore is subject to the data mask. Also, it does not name the elements of the list based on the grouping. So in the example below (unevaluated), `split()` will return a list with two named elements (`$m` and `$f`), but the list returned by `group_split()` will only be accessible with `[[1]]` and `[[2]]`.
+
+```{r group-split, eval = FALSE}
+dose_response_long %>%
+    group_split(sex)
+##same as
+split(as.data.frame(dose_response_long), dose_response_long$sex)
+```
+
+The last grouping-related function, `group_keys()`, only returns a tibble explaining the grouping structure:
+
+```{r group-keys}
+dose_response_long %>%
+    group_keys(sex, Dose)
+```
+
+#### Apply a function to each group {-}
+
+`group_map()`, `group_modify()` and `group_walk()` are functions that can be used to iterate grouped tibbles.
+
+- `group_modify()` returns a grouped tibble. Therefore the supplied function must return a data frame/tibble to be able to combine the results of the individual subsets.
+- `group_map()` returns a list of results, each element being the result of calling the supplied function on each group
+- `group_walk()` calls the supplied function for side effects and returns the input `.tbl`, invisibly. This makes it possible to, for instance, print the intermediate results or write them to file without breaking the workflow.
+
+Here is an example of `group_map()`. As you can see it takes a lambda expression as seen before:
+
+```{r group-map-demo-1}
+dose_response_long %>%
+    group_by(Dose) %>%
+    group_map(~ quantile(.x$Response, probs = seq(0, 1, 0.2)))
+```
+
+Below is another example, where the resulting list of three dataframes is combined into a single dataframe (result not printed):
+
+```{r group-map-demo-2, eval=FALSE}
+iris %>%
+    group_by(Species) %>%
+    group_map(.f = ~ data.frame(Sep.rat = .x$Sepal.Length / .x$Sepal.Width,
+                                Pet.rat = .x$Petal.Length / .x$Petal.Width)) %>%
+    bind_rows() 
+```
+
+Here is an example of group_modify. 
+
+```{r group-modify-1}
+iris %>%
+    group_by(Species) %>%
+    group_modify(~ tibble(quant = quantile(.x$Petal.Length, probs = seq(0, 1, 0.25))))
+```
+
+Of course, it would have been nicer to put the quantiles in separate columns.
+
+```{r group-modify-2}
+iris %>%
+    group_by(Species) %>%
+    group_modify(~ tibble(quant = quantile(.x$Petal.Length, probs = seq(0, 1, 0.2)))) %>%
+    ungroup() %>%
+    mutate(prob = rep(seq(0, 1, 0.2), times = 3)) %>%
+    pivot_wider(names_from = prob, values_from = quant)
+```
+
+But this is much nicer of course:
+
+```{r group-modify-3}
+iris %>%
+    group_by(Species) %>%
+    group_map(~ c(.y, quantile(.x$Petal.Length, probs = seq(0, 1, 0.2)))) %>%
+    bind_rows()
+```
+
+
+Use `group_walk()` when you only want to have a peek at each group before processing further.
+
+```{r group-walk}
+dose_response_long %>%
+    group_by(Dose) %>%
+    group_walk(~ print(head(.x, 2))) %>% 
+    summarise(avg = mean(Response))
+```
+
+### Operations on rows {-}
+
+Rows are just a special case of groups.  
+
+Suppose you have a workflow where you want to add a column containing the rowwise means of a selection of columns in the data frame. For instance, here `apply` is used to calculate the mean of the ratios of Length/Width of Sepals and Petals in the iris dataset.
+
+```{r rowwise0}
+mean_ratios <- function(x) {
+    (x[1]/x[2] + x[3]/x[4])/2
+} 
+
+mr <- apply(X = iris[, 1:4],
+      MARGIN = 1,
+      FUN = mean_ratios)
+iris$mean_ratios <- mr
+head(iris)
+```
+This works. But how about when you want to embed this step into a tidyverse workflow?
+
+Using the `mutate()` function, you will probably first try something like this:
+
+```{r rowwise1}
+iris %>% 
+    mutate(mean_ratio = (Sepal.Length/Sepal.Width + Petal.Length/Petal.Width)/2) %>% 
+    head(n = 10)
+```
+OK, this works, but this would be a drag if many more columns would have been involved.  
+Let's try something slightly different:
+
+```{r rowwise2}
+iris %>% 
+    mutate(rowmeans = mean(c(Sepal.Length, Sepal.Width, Petal.Length, Petal.Width))) %>% 
+    select(-mean_ratios, -Species) %>%
+    head()
+```
+
+We get the mean of the entire numeric part of the iris dataset!
+
+The solution here is the combination of `rowwise()` and `c_across()`.
+
+```{r rowwise3}
+iris %>%
+    rowwise() %>%
+    mutate(rowmeans = mean(c_across(1:4))) %>% 
+    head()
+```
+
+Alternative selections could have been
+
+```{r c_across-selections, eval=FALSE}
+rowmeans = mean(c_across(contains(".")))
+rowmeans = mean(c_across(where(is.numeric)))
+rowmeans = mean(c_across(-Species))
+## simpler but less generic
+rowmeans = mean(Sepal.Length, Sepal.Width, Petal.Lenght, Petal.Width)
+```
+
+:::attention
+There is a restriction here: unlike the apply functions, the data types of the selected columns must be the same for this to work.
+:::
+
+
+## Summarizing and counting
+
+You have seen the `summarize()` function at work a few times. In essence, it creates one or more summary statistics, for each group, if existing.
+
+For instance, to calculate the mean and SD of relative weight gain for different diets, this is the workflow for it:
+
+```{r summarize-demo-1}
+chicks %>% 
+    group_by(Chick) %>% #split on chicks
+    mutate(rel_weight_gain = (weight - lag(weight))/weight) %>% 
+    ungroup() %>%
+    group_by(Diet) %>%
+    summarize(mean_rel_gain = mean(rel_weight_gain, na.rm = T), 
+              sd = sd(rel_weight_gain, na.rm = T))
+```
+
+There is an equivalent that creates a summary for a group of variables: `summarize_all()`, `summarize_at()` and `summareize_if()` which are analogous to the `mutate_xxx()` methods. Here is one example. 
+
+```{r summarize-demo-2}
+iris %>% 
+    summarize_if(is.numeric, list(mean = mean, sd = sd))
+```
+
+You should be able to figure out the rest of them by now.
+
+#### Simple counting of occurrences {-}
+
+An often used operation is simple counting of occurrences of course:
+
+```{r summarize-demo-3}
+dose_response_long %>%
+    group_by(sex, Dose) %>%
+    summarize(count = n())
+```
+
+There is a shorthand for this type of count: `tally()`:
+
+```{r summarize-demo-4}
+dose_response_long %>%
+    group_by(sex, Dose) %>%
+    tally()
+```
+
+And even shorter is this:
+
+```{r summarize-demo-5}
+dose_response_long %>%
+    count(sex, Dose)
+```
+
+When you want the counts sorted, use the `sort = TRUE` argument to count, e.g.  
+`mtcars %>% count(cyl, sort = TRUE)`  
+
+If you want such a count as a column in your dataset, use `add_tally()` or `add_count()`
+
+```{r summarize-demo-6}
+dose_response_long %>%
+    group_by(sex) %>%
+    add_tally()
+##same as below, but slightly more readable:
+#add_count(sex)
+```
+`add_count()` is useful for groupwise filtering, for instance when you want to show details of the group that occurs the least.
+
+```{r summarize-demo-7}
+mtcars %>% 
+    add_count(cyl) %>%
+    filter(n == min(n)) %>%
+    select(1:5, n)
+```
+
+
+
+## Combining data
+
+#### Merging  {-}
+
+There are a few functions, `left_join()`, `right_join()`, `inner_join()`, `full_join()`; only `full_join()` is discussed here; the others are variations behaving differently with missing data in one or the other data frames to combine. In base R you have `merge()` that is responsible for this kind of operations.
+
+Suppose you have two tibbles:
+
+```{r tribble-demo}
+(trA <- tribble(
+  ~ID, ~var1,
+  "a",   4,
+  "b",   6,
+  "c",   1,
+))
+
+(trB <- tribble(
+  ~ID, ~var2,
+  "a",   7,
+  "b",   3,
+  "d",   5
+))
+```
+
+Since there is a common variable "ID" we can simply combine these two into a single tibble:
+
+```{r full-join-demo-1}
+full_join(trA, trB, by = "ID")
+```
+
+When the column names differ you can specify it as `full_join(x, y, by = c("a" = "b"))` which will match variable `a` on tibble `x` to variable `b` on tibble `y`.  
+You can of course also do this in a workflow setting:
+
+```{r full-join-demo-2}
+trA %>% full_join(trB, by = "ID")
+```
+
+#### Adding rows and columns {-}
+
+To add rows, use `bind_rows()` and to add columns, use `bind_cols()` have a look at the docs for the details. They are pretty much self-explanatory, and analogous to the base R `cbind()` and `rbind()` functions. The difference is that both `bind_rows()` and `bind_cols()` accept multiple dataframes.
+
+
+
+

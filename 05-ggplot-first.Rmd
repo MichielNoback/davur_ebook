@@ -12,13 +12,12 @@ knitr::opts_knit$set(cache = TRUE,
                      tidy.opts = list(blank = FALSE, width.cutoff = 60))
 ```
 
-## Introduction
-
 In this chapter, we'll explore the basics of the `ggplot2` package. This package is one of the most popular packages of R, and the de facto standard for creating publishable visualizations. A later chapter will present more details of it possibilities.
 
 Whole books have been written about ggplot2 (e.g. [ggplot2 - Elegant Statistics for Data Aanalysis](https://ggplot2-book.org/)); these will not be repeated here. Instead, I have selected the minimal amount of information and examples to get you going in your own visualization endeavours in biomedical research. For that reason, this chapter only deals with the base `ggplot()` function and its most important usage scenarios.  
 In my opinion, you are best prepared when first learning the ggplot "language" structure, not the complete listing of possibilities. You can check these out later on your own. If you are interested in what the package has to offer, type `help(package="ggplot2")` on the console.
 
+## Getting started
 
 ### Keep the goal in mind {-}
 
@@ -31,7 +30,7 @@ Besides this, you should of course choose a relevant visualization for your data
 
 To help your imagination and see what is possible you should really browse through [The R Graph Gallery](https://www.r-graph-gallery.com/). It has code for all the charts in the gallery.
 
-## Getting started
+### A first plot {-}
 
 Install the packages `ggplot2` first, if not already installed. 
 
@@ -45,8 +44,6 @@ After installing, you'll need to load the packages.
 library(ggplot2)
 ```
 
-
-### A first plot {-}
 
 Let's dive right in and create a first plot, and walk through the different parts of this code.
 
@@ -119,44 +116,11 @@ ggplot(data = airqual,
   ylab("Ozone (ppb)") 
 ```
 
-## Inheritance of aesthetics
+## Overview of ggplot
 
+### ggplot2 and the theory of graphics
 
-In the code that creates the figure above you see two calls to the `aes()` function: one in `ggplot()` and one in `geom_point()`. Look at the same code, but with the aesthetics combined into the main ggplot call.  
-
-```{r first-plot-w-color3, fig.asp=.75, out.width='80%', fig.align='center', warning=FALSE, fig.cap='Ozone level dependency on Temperature. Grey area: Loess smoother with 95% confidence interval. Source: R dataset \"Daily air quality measurements in New York, May to September 1973.\"'}
-
-ggplot(data = airqual, 
-       mapping = aes(x = Temp, y = Ozone, color = Month)) +
-  geom_point() + 
-  geom_smooth(method = "loess", formula = y ~ x) + #the default formula, but prevents a printed message
-  xlab(expression("Temperature " (degree~F))) +
-  ylab("Ozone (ppb)") 
-```
-
-The difference is cause by inheritance of aesthetics!  
-
-Like the main `ggplot()` function, every `geom_` function accepts its own `mapping = aes(...)`. The mapping is _inherited_ from the ggplot() function so any `aes(...)` mapping defined in the main `ggplot()` call applies to all subsequent layers. However, you can specify your own "local" aesthetic mapping within a `geom_xxxx()`. Aesthetics defined within a `geom_` function are scoped to that function call only. 
-
-In the plot below you see another example of how this works (it is not a nice plot any more).
-
-```{r inheritance, fig.asp=.75, out.width='80%', fig.align='center', warning=F}
-ggplot(data = airqual, mapping = aes(x = Solar.R, y = Ozone)) +
-    geom_smooth(aes(linetype = Month), method = "lm", formula = y ~ x) +
-    geom_point(aes(color = Month), alpha = 0.7) 
-```
-
-:::attention
-Any aesthetics defined outside the `aes()` function calls are _static_ properties and will be dealt with in a literal manner.
-:::
-
-
-Note that you can "override" global (`ggplot()`) aesthetics in `geom_xxx()` but this can give unexpected behavior, as seen in the paragraph on Color.
-
-
-## ggplot2 and the theory of graphics
-
-### Philosophy of ggplot2 {-}
+#### Philosophy of ggplot2 {-}
 
 The author of ggplot2, Hadley Wickham, had a very clear goal in mind when he embarked on the development of this package:
 
@@ -164,7 +128,7 @@ _"The emphasis in ggplot2 is reducing the amount of thinking time by making it e
 
 The way this is achieved is through "**_The grammar of graphics_**"
 
-### The grammar of graphics {-}
+#### The grammar of graphics {-}
 
 The grammar of graphics tells us that a statistical graphic is a mapping from data to geometric objects (points, lines, bars) with aesthetic attributes (color, shape, size).
 
@@ -172,10 +136,9 @@ The plot may also contain statistical transformations of the data and is drawn o
 (Wickham, 2010)
 
 
+### Building plots with ggplot2
 
-## Building plots with ggplot2
-
-### The layered plot architecture {-}
+#### The layered plot architecture {-}
 
 A graph in ggplot2 is built using a few "layers", or building blocks. 
 
@@ -210,7 +173,7 @@ Besides these fundamental aspects there are other elements you may wish to add o
 
 Except for Statistics and Coordinates, each of these layers will be discussed in detail in subsequent paragraphs.
 
-### "Tidy" the data {-}
+#### "Tidy" the data {-}
 
 This is a very important aspect of plotting using ggplot2: getting the data in a way that ggplot2 can deal with it. Sometimes it may be a bit challenging to get the data in such a format: some form of data mangling is often required. How to get your data like this is the topic of a next chapter, but here you'll already see a little preview.
 
@@ -281,6 +244,39 @@ dr_plot +
 ```
 
 Would you proceed with this hypothetical drug?
+
+### Inheritance of aesthetics
+
+In the code that creates the figure above you see two calls to the `aes()` function: one in `ggplot()` and one in `geom_point()`. Look at the same code, but with the aesthetics combined into the main ggplot call.  
+
+```{r first-plot-w-color3, fig.asp=.75, out.width='80%', fig.align='center', warning=FALSE, fig.cap='Ozone level dependency on Temperature. Grey area: Loess smoother with 95% confidence interval. Source: R dataset \"Daily air quality measurements in New York, May to September 1973.\"'}
+
+ggplot(data = airqual, 
+       mapping = aes(x = Temp, y = Ozone, color = Month)) +
+  geom_point() + 
+  geom_smooth(method = "loess", formula = y ~ x) + #the default formula, but prevents a printed message
+  xlab(expression("Temperature " (degree~F))) +
+  ylab("Ozone (ppb)") 
+```
+
+The difference is cause by inheritance of aesthetics!  
+
+Like the main `ggplot()` function, every `geom_` function accepts its own `mapping = aes(...)`. The mapping is _inherited_ from the ggplot() function so any `aes(...)` mapping defined in the main `ggplot()` call applies to all subsequent layers. However, you can specify your own "local" aesthetic mapping within a `geom_xxxx()`. Aesthetics defined within a `geom_` function are scoped to that function call only. 
+
+In the plot below you see another example of how this works (it is not a nice plot any more).
+
+```{r inheritance, fig.asp=.75, out.width='80%', fig.align='center', warning=F}
+ggplot(data = airqual, mapping = aes(x = Solar.R, y = Ozone)) +
+    geom_smooth(aes(linetype = Month), method = "lm", formula = y ~ x) +
+    geom_point(aes(color = Month), alpha = 0.7) 
+```
+
+:::attention
+Any aesthetics defined outside the `aes()` function calls are _static_ properties and will be dealt with in a literal manner.
+:::
+
+
+Note that you can "override" global (`ggplot()`) aesthetics in `geom_xxx()` but this can give unexpected behavior, as seen in the paragraph on Color.
 
 ## Aesthetics 
 
@@ -393,7 +389,7 @@ sp + scale_color_manual(values = cbp1)
 
 These are the shapes available in ggplot2 (and base R as well).
 
-```{r shapes-overview,, fig.asp=.75, out.width='80%', fig.align='center'}
+```{r shapes-overview, fig.asp=.75, out.width='80%', fig.align='center'}
 shapes <- data.frame(
   shape = c(0:19, 22, 21, 24, 23, 20),
   x = 0:24 %/% 5,
@@ -505,7 +501,7 @@ The `gridExtra` package is discussed in a more complex setting below, in section
 Here is another pair of examples of overlays of different geoms. In the first, the original datapoints are included. 
 
 
-```{r}
+```{r plot-overlays-2}
 ggplot(mpg, aes(displ, hwy)) +
     geom_point(alpha = 0.4) +
     geom_smooth(se = FALSE, color = "darkgreen", method = "loess", formula = "y ~ x") +
@@ -517,7 +513,7 @@ ggplot(mpg, aes(displ, hwy)) +
 Note that the `method = "loess", formula = "y ~ x"` arguments to `geom_smooth()` are the defaults. However, if omitted they trigger a message (`\`geom_smooth()\` using method = 'loess' and formula 'y ~ x'`) that I do not like in my output.
 In this second example, the data points are omitted altogether, making the plot focus solely on global trend.
 
-```{r}
+```{r plot-overlays-3}
 ggplot(mpg, aes(displ, hwy)) +
     geom_smooth(se = FALSE, color = "darkgreen") +
     geom_ribbon(aes(ymin = 10,

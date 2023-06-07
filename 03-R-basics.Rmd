@@ -86,7 +86,7 @@ y <- c(TRUE, FALSE, TRUE) # same
 
 
 
-## Functions
+### Functions
 
 Simple mathematics is not the core business of R.  
 
@@ -118,7 +118,7 @@ paste(1, 2, 3, sep = "---")
 Note the use of quotes surrounding the dashes: `"---"`; they indicate it is text, or character, data.  
 Also note the use of a name for only the last argument. Not all arguments can be specified by name, but when possible this has preference, as in `sep = "---"`. 
 
-### Getting help on a function
+#### Getting help on a function
 
 Type `?function_name` or `help(function_name)` in the console to get help on a function. The function documentation will appear in the panel containing the `Help` tab, Its location is dependent on your set of preferences.  
 For instance, typing `?sqrt` will give the help page of the square root function together with the `abs()` function.  
@@ -136,7 +136,7 @@ R help pages always have the exact same structure:
 Scroll down in the help to see example usages of the function. Alternatively, type `example(sqrt)` in the console to have all examples executed in order, until you press Escape.
 
 
-## Variables
+### Variables
 
 In math and programming you often use variables to label or name pieces of data, or a function in order to have them reusable, retrievable, changeable. 
 
@@ -145,7 +145,7 @@ In math and programming you often use variables to label or name pieces of data,
 For instance, `x = 42` is used to define a variable called `x`, with a value attached to it of `42`. Variables are really _variable_ - their value can change!
 In R you usually assign a value to a variable using "`<-`", so "`x <- 42`" is equivalent to "`x = 42`". Both will work in R, but the "arrow" notation is preferred.
 
-## Vectors
+### Vectors
 
 ### R is completely vector-based
 
@@ -158,11 +158,11 @@ In R, _**all data lives inside vectors**_. When you type '2 + 4', R will execute
 Step 3 is a crucial one. It is essential to grasp this aspect in order to understand R. Therefore we'll revisit it later in more detail.
 
 
-### The atomic datatypes
+#### The atomic datatypes
 
 R knows five basic types of data; other datatypes are build by combining these into more complex structures (discussed in a later chapter):
 
-```{r echo = FALSE}
+```{r datatypes-listing, echo = FALSE}
 types <- data.frame(type = c("numeric", "integer", "logical", "character", "factor"),
                     descripton = c("numbers with a decimal part", "numbers without a decimal part",
                                    "Boolean values: yes/no)", 
@@ -180,7 +180,7 @@ All these types are created in similar ways and can often be converted into othe
 **Note 3:** There are also date/time types but they are not discussed here
 
 
-### Creating vectors
+#### Creating vectors
 
 You will see shortly that there are many ways to create vectors: a custom collection, a series, a repetition of a smaller set, a random sample from a distribution, etc. etc.
 
@@ -205,7 +205,7 @@ c(2, 4, "a")
 
 Here are some more coercion examples.
 
-```{r, prompt = TRUE}
+```{r coersion-examples, prompt = TRUE}
 c(1, 2, TRUE) # To numeric
 c(TRUE, FALSE, "TRUE") # To character
 c(1.3, TRUE, "1") # To character
@@ -243,24 +243,24 @@ x - z
 
 As you can see this generates a warning that "longer object length is not a multiple of shorter object length". However, R will proceed anyway, cycling the shorter one. 
 
-## Other operators
+### Other operators
 
 Here is a complete listing of operators in R. Some operators such as `^` are _unary_, which means they have a single _operand_; a single value or they operate on. On the other hand, _binary_ operators such as `+` have two _operands_.
 
 The following unary and binary operators are listed in precedence groups, from highest to lowest. Many of them are still unknown to you of course. We will encounter most of these along the way as the course progresses, starting with a few in this section.
 
-```{r, echo = FALSE}
+```{r operators-listing, echo = FALSE}
 operators <- read.table("data/operators.txt", sep = ";", header = TRUE)
 knitr::kable(operators)
 ```
 
 The `<<-` assignment operator is the same as `<-` but assigns to a variable in the Global environment.
 
-### Logical operators
+#### Logical operators
 
 Logical operators are used to evaluate and/or combine expressions that result in a single logical value: `TRUE` or `FALSE`. The **_comparison operators_** compare two values (numeric, character - any type is possible) to get to a logical value, but always set-based! In the following chunk, each of the values in `x` is considered and if it is smaller than or equal to the value `4`, `TRUE` is returned, else `FALSE`.
 
-```{r}
+```{r logical-operators-ex}
 x <- c(1, 5, 4, 3)
 x <= 4
 ```
@@ -284,7 +284,7 @@ a > b & a < 3 ## returns a logical vector with test results
 
 Here is a special case. Can you figure out what happens there?
 
-```{r}
+```{r operators-special-case}
 6 - 2 : 5 < 3
 ```
 
@@ -305,7 +305,7 @@ sum(x > 3) ## how many are greater than 3?
 ```
 
 
-### Modulo: `%%`
+#### Modulo: `%%`
 
 The modulo operator gives the remainder of a division. 
 
@@ -317,7 +317,7 @@ The modulo operator gives the remainder of a division.
 
 The modulo is most often used to establish periodicity: `x %% 2` is zero for all even numbers. Likewise, `x %% 10` will be zero for every tenth value.
 
-### Integer division `%/%` and rounding
+#### Integer division `%/%` and rounding
 
 The integer division is the complement of modulo and gives the integer part of a division, it simply "chops off" the decimal part.
 
@@ -329,12 +329,12 @@ The integer division is the complement of modulo and gives the integer part of a
 
 Note that `floor()` does the same. In the same manner, `ceiling()` rounds up to the nearest integer, no matter how large the decimal part. Finally, there is the `round()` method to be used for - well, rounding. Be aware that rounding in R is not the same as rounding your course grade which always goes up at `x.5`. Rounding `x.5` values mathematically goes to the nearest even number:
 
-```{r}
+```{r rounding-demo}
 x <- c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5)
 round(x, 0)
 ```
 
-### The `%in%` operator
+#### The `%in%` operator
 
 The `%in%` operator is very handy when you want to know if the elements of one vector are present in another vector. An example explains best, as usual:
 
@@ -348,7 +348,7 @@ b %in% a
 There is no positional evaluation, it simply reports if the corresponding element in the first is present _anywhere_ in the second.
 
 
-## Selecting vector elements
+### Selecting vector elements
 
 You often want to get to know things about specific values within a vector  
 
@@ -383,25 +383,25 @@ x <- c(2, 4, 6, 3, 5, 1)
 
 Besides integers you can use logicals to perform selections:
 
-```{r}
+```{r logical-indexing}
 x[c(T, F, T, T, T, F)]
 ```
 
 As with all vector operations, shorter vectors are cycled as often as needed to cover the longer one:
 
-```{r}
+```{r indexing-cycling}
 x[c(F, T, F)]
 ```
 
 In practice you won't type literal logicals very often; they are ususaly the result of some comparison operation. Here, all even numbers are selected because their modulo will retun zero.
 
-```{r}
+```{r modulo-indexing}
 x[x %% 2 == 0]
 ```
 
 And all of the maximum values in a vector are retreived:
 
-```{r}
+```{r max-indexing}
 x <- c(2, 3, 3, 2, 1, 3)
 x[x == max(x)]
 ```
@@ -419,13 +419,13 @@ x[(length(x) - 1) : length(x)] ## parentheses required!
 
 The function `which()` returns indices for which the logical test evaluates to `true`:
 
-```{r}
+```{r which-demo}
 which(x >= 2) ## which positions have values 2 or greater?
 which(x == max(x)) ## which positions have the maximum value?
 ```
 
 
-## Vector creation methods
+### Vector creation methods
 
 Since vectors are the bricks with which _everything_ is built in R, there are many, many ways to create them. Here, I will review the most important ones.
 
@@ -507,9 +507,24 @@ This operation of two numeric vectors results in a logical vector:
 
 And this `paste()` call results in a character vector:
 
-```{r}
+```{r paste-to-character}
 paste(0:4, 5:9, sep = "-")
 ```
+
+### Matrices are vectors with dimensions
+
+We will not detail on them in this course, only this one small paragraph. This does not mean they are not important, but they are just not the focus here. Some functions require or return a matrix so you should be aware of them.
+
+
+```{r matrix_demo}
+m <- matrix(1:10, nrow = 2, ncol = 5) 
+m
+v <- 1:10
+dim(v) <- c(2, 5)
+v
+```
+
+You can convert to and from dataframes using `as.data.frame()` and `as.matrix()`. From and to simple vectors is removing or adding dimension attributes: `dim(m) <- NULL`.  
 
 
 ## R embedded plot types (optional) {#base_plotting}
@@ -695,7 +710,7 @@ polygon(density(male_weights), col="lightblue")
 
 This is the last of the basic plot types. A boxplot is a visual representation of the *5-number summary* of a numeric variable: minimum, maximum, median, first and third quartile. 
 
-```{r}
+```{r summary-vs-boxplot}
 persons <- rep(c("male", "female"), each = 100)
 weights <- c(rnorm(100, 80, 6), rnorm(100, 75, 8))
 #print 6-number summary (5-number + mean)
@@ -759,11 +774,11 @@ abline(a = -0.1, b = 0.3, lwd = 2, col = "purple")
 abline(lm(response ~ time),  lwd = 2, col = "maroon")
 ```
 
-## Graphical parameters to `plot()`
+### Graphical parameters to `plot()`
 
 There are _many_ parameters that can be passed to the plotting functions. Here is a small sample and their possible values.
 
-```{r}
+```{r plot-parameters-demo}
 series <- 1:20
 plot(0, 0, xlim=c(1,20) , ylim=c(0.5, 7.5), col="white" , yaxt="n" , ylab="" , xlab="")
 

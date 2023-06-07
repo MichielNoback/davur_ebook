@@ -1,0 +1,757 @@
+---
+output:
+  bookdown::html_document2:
+    # number_sections: no
+    toc: true
+    toc_float:
+      collapsed: false
+    # fig_width: 8
+    # fig_height: 4
+---
+
+# Exploratory Data Analysis II {#eda-2}
+
+```{r setup-eda-2, include=FALSE}
+options(digits = 3)
+knitr::opts_knit$set(cache = TRUE,
+                     tidy = TRUE,
+                     tidy.opts = list(blank = FALSE, width.cutoff = 60))
+
+```
+
+
+## Introduction
+
+In this last chapter we'll step back from the data mangling and have a look at an activity called Exploratory Data Analysis, EDA in short. All theory that is presented in previous chapters will be applied to two datasets 
+
+In statistics, *exploratory data analysis (EDA)* is an approach to analyzing data sets to summarize their main characteristics, often with visual methods. A statistical model can be used or not, but primarily EDA is for seeing what the data can tell us beyond the formal modeling or hypothesis testing task. 
+s. (Wikipedia) 
+
+#### The Cervical Cancer dataset {-}
+
+The UCI machine learning public dataset "Cervical cancer (Risk Factors) Data Set":
+
+"... collected at 'Hospital Universitario de Caracas' in Caracas, Venezuela. The dataset comprises demographic information, habits, and historic medical records of 858 patients. Several patients decided not to answer some of the questions because of privacy concerns."
+
+This dataset contains more than thirty variables of 858 subjects who participated in this research. The goal was to identify variables that could possibly be related to cervical cancer. Typically in this type of research there is one dependent variable - the variable you want to "explain". However in this dataset the last four variables are all markers for cervical cancer.
+
+#### Libraries {-}
+
+These are the packages used in this EDA:
+
+```{r setup, message=FALSE}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(stringr)
+##library(ggbiplot)
+```
+
+
+## The EDA
+
+### The codebook
+
+A codebook describes the contents, structure, and layout of a dataset. A well-documented codebook contains information intended to be complete and self-explanatory for each variable in a data file.
+
+You should always create a file called Codebook.txt to store names, descriptions and types of variables, if it is not yet present alongside the dataset you received.
+
+This makes it so much easier to add human-readable labels to plots, and column headers of tables that are supposed to be integrated in a report. The label `Hormonal Contraceptives (years) ` is so much better than `Hormonal.Contraceptives..years`.
+
+Is the following -part of the original codebook downloaded with the data- a good codebook?
+
+```
+(int) Age 
+(int) Number of sexual partners 
+(int) First sexual intercourse (age) 
+(int) Num of pregnancies 
+(int) Hormonal Contraceptives (years) 
+(int) IUD (years) 
+(bool) STDs 
+(int) STDs (number) 
+...
+(bool) Hinselmann: target variable 
+(bool) Schiller: target variable 
+(bool) Cytology: target variable 
+(bool) Biopsy: target variable
+```
+
+#### Elements of a good codebook entry {-}
+
+- **Name** the column name (num.sex.partner)
+- **Full name** what it abbreviates ("Number of sexual partners")
+- (optionally) **Label** the label you want to use in graphs and above tables.
+- **Data type** One of the R data (derived) data types: int/numeric/Date/factor/boolean...
+- **Unit** the unit of measurement (e.g. "mg/l plasma")
+- **Description** A full description of what is measured, and the way its value was collected (e.g. questionnaire, lab protocol xxxx).
+
+Now look again at the codebook above and answer again: is this a good codebook?
+
+What if the codebook is not present or not complete? There are several ways to try and fix this:   
+
+- read the original publication
+- see whether this publication has (online) supplements 
+- contact the primary investigators.   
+- as a *last resort*: try to deduce from context and domain knowledge  
+
+I have cleaned it up a bit and came to this. It is still not perfect; how would you improve on this?
+
+```{r}
+codebook <- read.csv("data/risk_factors_cervical_cancer_codebook.csv", 
+                     as.is = 1:3)
+head(codebook)
+```
+
+
+### Load and inspect the data
+
+Load the data and check the data type of the columns. Always beware of unusual encodings for missing data! This is one of the most common causes of erroneous analyses, besides data entry errors and sample swaps.
+
+You should get data loading right in an iterative process, using several functions to inspect the result each time you have adjusted a parameter. Use `head()` and -especially- `str()` to do this. Tibbles print their data type automatically so that gives an advantage over `data.frame`.  
+
+Here is a first attempt:
+
+```{r echo=T}
+datafile <- "data/risk_factors_cervical_cancer.csv"
+data <- read.table(datafile, 
+                   sep=",", 
+                   header = TRUE)
+str(data)
+```
+
+As you can see, many of the variables have been read incorrectly. These can be recognized by the fact that they have been read as `Factor` instead of the expected `int`. A closer look at the output also tells me why: missing values are apparently encoded with a question mark.
+This is fixed in iteration two:
+
+```{r echo=TRUE}
+data <- read.table(datafile,
+                   sep=",", 
+                   header = TRUE,
+                   na.strings = "?")
+str(data)
+```
+
+This looks pretty OK to me. Be alert for surprises down the line, though!
+
+
+#### Should you correct typos? {-}
+
+What do you think about this - it was taken from the Attribute Information on the website:
+
+```
+(bool) Smokes (years) 
+(bool) Smokes (packs/year) 
+```
+
+They are advertised as a boolean, but are they?  
+This kind of inspection should make you aware of possible problems that are going to arise later on. Booleans are very different from numbers after all. What is even more dangerous is that they can be treated interchangeably - in R you can treat a logical as an integer and an integer in a boolean context.
+
+This kind of discrepancy is the first thing you should address after loading your data. We'll get back to this shortly.
+
+I will now first change the column names to something shorter, using the codebook. Also, the data will be converted into a tibble because this is really a nicer data structure:
+
+```{r}
+names(data) <- codebook[,1]
+data <- as_tibble(data)
+data
+```
+
+Now let's have a look at the `smoke.years` variable:
+
+```{r smoke-years-inspection, fig.asp=.75, out.width='80%', fig.align='center', fig.cap="A histogram of the 'smoke.years' attribute"}
+ggplot(data, aes(x=smoke.years)) + 
+    geom_histogram(binwidth = 4, na.rm = T) + 
+    ylim(0, 50)
+```
+
+From the figure it is obvious that this attribute is really the number of years that the subject has smoked. As you can see, the zero-years smoking is absent - this data is only relevant for subjects where `smoker == 1`. Where `1` is actually not a logical (did you spot that already in the data?).  
+**Obviously, smoke.years should be an int **. The same counts for variable `smokes.packs.year`.
+
+
+#### Getting it right in the end {-}
+
+Here, for demonstration purposes I use a wrapper function `read.csv()` instead of `read.table()`. The tidyverse has data reading facilities as well of course, but these were not dealt with in this course.
+
+```{r echo=TRUE}
+data <- read.csv(datafile, na.strings = "?")
+names(data) <- codebook[,1]
+for(i in 1:nrow(codebook)) {
+  if(codebook[i, 2] == "logical"){
+    data[,i] <- as.logical(data[,i])
+  }
+}
+(data <- as_tibble(data))
+```
+
+
+#### Why such a hassle? {-}
+
+It makes it so much easier to run analyses from here on! Also, the code will be more readable making your research more **_transparent and reproducible_**. Two very important aspects of any analysis!
+Besides this, it will make adding labels to plots a breeze.
+
+
+### Exploring variables
+
+#### First steps {-}
+
+The first phase of any analysis should be to inspect all variables with respect to data **_distribution_** and **_datacorruption_**. You should also take special care to notice **_outliers_**, **_skewed data_** and the amount of **_missing data_**.   
+
+These functions and visualizations are used most often for this purpose:
+
+- `summary()`
+- `quantile()`
+- histogram
+- boxplot (or jitter, stripchart)
+- density plot
+- (contingency) tables
+
+As you can see, in this phase only **_univariate_** analyses and visualizations are employed.
+
+#### Inspecting some columns {-}
+
+Here, I will only inspect some columns since this entire process is for demonstration purposes only. I will start with columns 2 and three.
+
+```{r}
+summary(data[, 2:3])
+```
+
+Here is a visualization. I used `grid.arrange()` from the `gridExtra` package for arranging two plots in a single panel.
+
+```{r num-partners-inspection1, fig.asp=.9, out.width='80%', fig.align='center', fig.cap="The 'num.partners' (left) and 'first.sex' (right) attributes"}
+tmp <- data %>% select(2:3) %>% drop_na()
+p1 <- ggplot(tmp, mapping = aes(x = "", y = num.partners)) + 
+    geom_boxplot() + 
+    geom_jitter(width = 0.2, height = 0.1, alpha = 0.4, color = "blue") +
+    ylab("number of partners") + 
+    xlab(NULL)
+    
+p2 <- ggplot(tmp, mapping = aes(x = "", y = first.sex)) + 
+    geom_boxplot() +
+    geom_jitter(width = 0.2, height = 0.1, alpha = 0.4, color = "blue") +
+    ylab("age of first sex") + 
+    xlab(NULL)
+
+grid.arrange(p1, p2, nrow = 1)
+```
+
+Now look at these results and ask yourself:  
+
+- Are these summaries and distributions you would expect?
+- Do you see (hints of) outliers? Are these outliers "real data" or - for instance- data entry errors?
+- Do you think the questions were answered truthfully?
+
+Here is another boxplot, the workhorse of data visualization. The problem with discrete data is that they overlap 100% in plots, as is the case with the outliers here. Instead of overlaying with all jittered data you could apply this trick to only jitter the outliers. The trick there is to provide a `data = function(x) dplyr::filter(x, outlier)` argument in `geom_jitter()` where only the rows with outliers are selected.  
+Note that I already moved away from univeriate analysis.
+
+```{r}
+##define outlier function
+my_outlier <- function(x) {
+    x > median(x) + IQR(x) * 1.5
+}
+
+tmp <- data %>% 
+    select(c(horm.contracept.years, target.biopsy)) %>% 
+    drop_na() %>%
+    mutate(outlier = my_outlier(horm.contracept.years)) %>%
+    ungroup()
+
+ggplot(tmp, mapping = aes(x=target.biopsy, y=horm.contracept.years)) + 
+    geom_boxplot(outlier.shape = NA) + ##no outliers plotted here
+    geom_jitter(data = function(x) dplyr::filter(x, outlier), 
+                width = 0.2, height = 0.1, alpha = 0.5)
+```
+
+Let's also look at the STDs.
+
+```{r echo=T}
+summary(data$STDs.number)
+```
+
+These are strange numbers! Many missing values and many outliers apparently. A simple table view may help get insight here.
+
+```{r}
+data %>% group_by(STDs.number) %>% tally()
+```
+
+Why would there be o many missing values? I think people don't like to admit they've had an STD.
+
+#### Smoking data corrupted? {-}
+
+```{r}
+summary(data[, 5:7])
+```
+
+Obviously, these three variables describe the exact same thing: smoking behavior. But there is something funny going on. Let's investigate this further and deal with it.
+
+```{r echo=T}
+data %>% group_by(smoker) %>% tally()
+perc <- length(data$smoker) / sum(data$smoker, na.rm = T)
+```
+
+So `r round(perc, 2)`% of the subjects in this study is smoker.
+
+Verify the number of smokers via another route:
+
+```{r}
+sum(data$smoker & data$smoke.years > 0 & data$smokes.packs.year > 0, na.rm=T)
+```
+
+So is the smoker data corrupted? Probably not, but row 4 is dodgy at the least, and worth further investigation:
+
+```{r}
+data[4, c(1, 5, 6, 7)]
+```
+
+Let's look at the values in the the smoker columns in another way:
+
+```{r echo=T}
+data %>% 
+    select(smoker, smoke.years, smokes.packs.year) %>%
+    drop_na() %>%
+    filter(smoke.years > 0 & smoke.years == smokes.packs.year)
+```
+
+As reminder, here is the equivalent base R code - which do you prefer?
+
+```{r, eval = FALSE}
+data[!is.na(data$smoke.years) 
+     & data$smoke.years > 0 
+     & data$smoke.years == data$smokes.packs.year, c(5,6,7)]
+```
+
+What do you think happened here?    
+I personally think there was a sleepy person doing data entry in the wrong column, or something like that.
+
+Now the packs per year attribute.
+
+```{r}
+data %>% filter(smokes.packs.year > 0) %>%
+    ggplot(aes(x = smokes.packs.year)) +  
+        geom_histogram(bins = 25)
+```
+
+Do you know any smoker? Do they smoke at most 37 packs per year? I think not! This cannot be packs per year! Most smokers smoke 1-7 packs per week! This is exactly what this histogram shows.
+
+#### Dealing with data corruption {-}
+
+Two options remain for the `smokes.packs.year` column. the first is to adjust the units manually as I think is correct. The other is to simply discard the column.  
+Since the smoking data is redundant, I will choose the latter. if you have this kind of problems with crucial data columns, you should probably try to contact the authors/data collection team before changing the units yourself.
+
+### Variable engineering 
+
+#### Recoding strategies  {-}
+
+Often you will have to recode (or transform) some or all of your variables. This can be to be able to compare groups instead of numbers on a continuous scale (factorization), to make them comparable (normalization) or to get them in a more linear distribution (log transformation).
+
+Several techniques exist for different challenges:  
+
+- Factorization: convert to factor 
+    - seen with Smoking data
+- Normalization  
+    - min-max normalization
+    - scaling normalization  
+- Log transformation (log2, log10)
+- Dummy coding: when numeric attributes are required instead of factor data
+
+#### min-max normalization {-}
+
+All data is scaled from 0 to 1, where the lowest value in your data is mapped to zero and the highest to one. This method is easy and transparent, but the danger lies in unseen data. When new data is encountered with a wider distribution analyses with this approach may break.
+
+This is how to do it in R
+
+```{r echo=T}
+scale_min_max <- function(x) {
+     (x - min(x)) / (max(x) - min(x))
+}
+```
+
+Here is a demo of min-max normalization.
+
+```{r echo=T}
+x <- c(2, -1, 3, 5, 0, 4)
+scale_min_max(x)
+```
+
+#### scaling normalization {-}
+
+A slightly more used normalization technique is scaling normalization. It scales all variable to a mean of zero and with the same standard deviation.
+
+$$x' = \frac{x-\bar{x}}{\sigma}$$
+
+It is built right into R:
+
+```{r echo=T}
+x <- c(2, -1, 3, 5, 0, 4)
+scale(x)
+```
+
+#### dummy encoding {-}
+
+How to change this factor in a numeric representation usable for techniques that require numeric input such as clustering, linear modelling or regression?
+
+This is done with a technique called dummy coding and the essence is binary splitting. 
+Here is a small data set:
+
+```{r}
+pet_favour <- tibble(subject = c("Mike", "Roger", "Rose", "Megan", "Caitlin"),
+                    favour = factor(c("dog", "cat", "cat", "dog", "rat")))
+pet_favour
+```
+
+What we need here is three columns with 0 or 1 values for  
+
+- dog/not dog
+- cat/not cat
+- rat/not rat
+
+Below you can see an approach to this using some techniques from base R.
+
+```{r}
+encode_dummy <- function(x) {
+    lvls <- levels(x)
+    tmp <- as.data.frame(sapply(lvls, function(y) as.integer(x == y)))
+    names(tmp) <- paste0(lvls, "_y")
+    tmp
+}
+bind_cols(subject = pet_favour$subject, encode_dummy(pet_favour$favour))
+```
+
+There are of course also packages that can do this; e.g. have a look at `dummies`.
+
+#### "factorization" {-}
+
+Especially for visualization purposes, it can be more convenient to have a variable in a factor form instead of numeric form. For instance, this is the case with the smoking-related data in the current dataset.
+
+I will reduce all three 'smoking' variables to one variable and start building a 'clean' dataset.
+Here, the new variable `smoking` is the result of cutting the `smoke.years` variable into factor levels.
+
+```{r echo=T}
+smoking_f <- cut(data$smoke.years, 
+               breaks = c(0, 1, 5, 12, 100), 
+               labels = c("never", "short", "medium", "long"),
+               ordered_result = T,
+               right = F)
+
+clean_data <- data %>% 
+    mutate(smoking = smoking_f) %>%
+    select(age:num.preg, smoking, horm.contracept.ever:target.biopsy)
+table(clean_data$smoking, useNA = "always")
+```
+
+### Data redundancy in STD variables {-}
+
+There are many variables related to STDs:
+
+```{r}
+(std_columns <- codebook %>% 
+    select(abbreviation) %>% 
+    filter(str_detect(abbreviation, "STD_")))
+std_columns <- std_columns$abbreviation
+##alternative with base R:
+#codebook[grep(pattern = "STD_", x = codebook$abbreviation), 1]
+```
+
+Some of these are almost completely redundant, and most with extremely low -and thus useless- counts. Seen in absolute numbers, not many have multiple STDs, but statistically seen they are highly over represented - there are even more with two than with one STD:
+
+```{r}
+table(data$STDs.number, useNA = "always")
+```
+
+Only `r sum(data$STDs.number > 0, na.rm=T)` subjects have STDs (luckily!).
+
+These are the counts of occurrences of individual STDs:
+
+They are listed below. You can see a nice application of the `gather()` function to put the results in long format instead of wide.
+
+```{r echo=T}
+clean_data %>%
+    summarise_at(std_columns, function(x) sum(x, na.rm = T)) %>%
+    gather(key = "disease", value = "count", everything()) 
+```
+
+This is the same in base R using `apply()`:
+```{r eval = FALSE}
+apply(data[ ,std_columns], MARGIN = 2, FUN = function(x) sum(x>0, na.rm=T))
+```
+
+
+### The dependent variable
+
+In many datasets there is a single **_dependent variable_**, the variable you try to explain or model using all the other variables (hence the name "target" used here. In this case it is the question whether the subject has cervical cancer yes or no.
+
+Unfortunately there are four dependent variables:
+
+```{r}
+last <- length(names(data))
+(target_vars <- names(data)[(last-3):last])
+```
+
+**Which one(s) are you going to use?**  
+
+Let's investigate the pairwise correlations between them.
+
+```{r}
+target_names <- c("Hinselman", "Schiller", "cytology", "biopsy")
+cor_matrix <- cor(data[, 33:36])
+colnames(cor_matrix) <- target_names
+(cor_matrix <- as_tibble(cor_matrix))
+cor_matrix <- cor_matrix %>% mutate(target_name = target_names) %>% select(5, 1:4)
+```
+
+A **_
+map_** is a nice visualization for this type of data. Of course, ggplot really likes the long format so that needs to be done first with `gather()` (try to do this with `pivot_longer()` as an exercise):
+
+```{r 
+map, fig.asp=.9, out.width='70%', fig.align='center', fig.cap="A correlation 
+map of the four explanatory variables"}
+cor_matrix_long <- gather(cor_matrix, key = "method", value = "correlation", target_names)
+ggplot(data = cor_matrix_long, aes(x=target_name, y=method, fill=correlation)) + 
+    geom_tile() + 
+    labs(x=NULL, y=NULL) + 
+    scale_fill_gradient(high = "red", low = "white" )
+```
+
+This shows the correlation between the four target variables.
+
+Another way to explore this is a **_contingency table_**.
+
+```{r}
+## TO BE DONE
+```
+
+
+### Exploring relationships between variables
+
+Typically, relationships between variables are visualized using scatterplots, but other strategies exist. Several are explored here.
+
+#### The scatterplot {-}
+
+A simple scatterplot looking at the relationship between `first.sex` and `num.partners`.
+
+```{r scatterplot1, fig.asp=0.7, out.width='70%', fig.align='center', fig.cap="scatterplot first version"}
+baseplot_sp <- ggplot(clean_data, aes(x=first.sex, y=num.partners)) +
+   labs(x="Age of first sex", y="Number of sexual partners") 
+baseplot_sp + geom_point(na.rm=T)
+```
+  
+Do you notice the strange "outlier", a subject who had first sex at ten and had 29 sexual partners?
+More importantly, this is not showing the correct picture: there is a limited number of discrete values for each variable. Only around 100 points are visible where {r nrow(data)} are expected, so apparently many points overlap. This can be improved with alpha parameter to `geom_point`. Another strategy to improve is by using the `geom_jitter()` function, and combined with the `alpha` parameter. 
+Omitting outliers could improve the picture, but will of course not show the complete picture anymore.
+
+Here, I choose the transparency option together with a bit of jitter (but not too much to still show the discreteness of the measurements). I also added a trend line in the form of a smoother. The trend line is an addition that is a great visual help to guide your reader. My question to you is: look at the trend line and decide whether it is showing a false pattern. 
+
+```{r scatterplot2, fig.asp=0.7, out.width='70%', fig.align='center', fig.cap="scatterplot  with trendline"}
+baseplot_sp + 
+    geom_jitter(na.rm=T, alpha=0.2, 
+                shape=16, size=2, 
+                width = 0.2, height = 0.2,
+                color = "darkgreen") + 
+    geom_smooth(method="loess", na.rm=T)
+```
+
+
+The trend line shows the high impact of a single outlier! In contrast to common belief about age of first sex and "promiscuity", no apparent relationship is visible in this dataset when you omit the single outlier:
+
+```{r scatterplot3, fig.asp=0.7, out.width='70%', fig.align='center', fig.cap="scatterplot  with trendline"}
+clean_data %>% filter(num.partners < 25 ) %>%
+    ggplot(aes(x=first.sex, y=num.partners)) +
+        labs(x="Age of first sex", y="Number of sexual partners") +
+        geom_jitter(na.rm=T, alpha=0.2, 
+                shape=16, size=2, 
+                width = 0.2, height = 0.2,
+                color = "darkgreen") + 
+        geom_smooth(method="loess", na.rm=T)
+```
+
+#### Binning {-}
+
+A method not discussed before is **_binning_**, With binning, you cluster the individual data points into "buckets". The amount of cases in a bucket is then displayed using a color gradient.
+
+```{r, fig.width=6.5, fig.height=3.5}
+baseplot_sp + geom_bin2d(na.rm=T)
+```
+
+Here is a variation of binning - the hexagonal bin (requires package `hexbin`):
+
+```{r}
+library(hexbin)
+baseplot_sp + geom_hex(na.rm=T)
+```
+
+### Look for patterns with the dependent variable
+
+Why would you do that? The dependent variable is the thing you are interested in! Therefore it is a good idea to investigate variables in relation with the dependent variable.
+
+```{r, fig.width=6.5, fig.height=3.5}
+clean_data %>% filter(num.partners < 25 ) %>%
+    ggplot(aes(x=first.sex, y=num.preg, color=target.biopsy)) +
+        labs(x="Age of first sex", y="Number of pregnancies") +
+    geom_jitter(mapping = aes(color=target.biopsy), 
+                na.rm=T, width=0.2, height=0.2, 
+                alpha=0.5, shape=16, size=0.8) + 
+    ylim(0,10) +
+    geom_smooth(method="loess", na.rm=T)
+```
+
+Again, the heatmap comes in handy. Start with creating the matrix.
+
+```{r}
+selection <- c("num.partners", "first.sex", "num.preg", "horm.contracept.years", "IUD.years", "STDs.number", "target.biopsy")
+
+tmp <- clean_data %>% select(selection) %>% drop_na()
+cor_matrix <- cor(tmp)
+#cor_matrix
+
+#colnames(cor_matrix) <- target_names
+cor_matrix <- as_tibble(cor_matrix)
+(cor_matrix <- cor_matrix %>% mutate(var1 = selection) %>% select(8, 1:7))
+```
+
+And then create the plot. Here I used `pivot_longer()` instead of `gather()` to obtain the longer format required for ggplot2.
+
+```{r heatmap2, fig.asp=.9, out.width='100%', fig.align='center', fig.cap="A heatmap pairwise correlation of selected numeric variables"}
+cor_matrix_long <- pivot_longer(data = cor_matrix, cols = selection, names_to = "variable", values_to = "cor")
+ggplot(data = cor_matrix_long, aes(x=var1, y=variable, fill=cor)) + 
+    geom_tile() + 
+    labs(x=NULL, y=NULL) + 
+    scale_fill_gradient(high = "red", low = "white" )
+```
+
+As you can see, there is hardly any correlation between these numeric variables, and not with the target (dependent) variable `target.biopsy` either. This is not a hopeful result when the goal is to be able to predict cervical cancer occurrence.
+
+## Density plots show class distinction
+
+A density plot, split over the categories of your target variable, will often quickly reveal whether there is promise in a variable. I'll demonstrate with the `iris` dataset since the cervical cancer dataset is not so nice in that respect.
+
+```{r, fig.width=6.5, fig.height=3.5}
+ggplot(iris, aes(x=Petal.Length)) + geom_density(aes(color=Species))
+```
+In this plot, you can see that Setosa separates quite nicely, by the other two don't.
+
+### The 'xor' problem
+
+The density approach is not flawless! Consider this:
+
+```{r, fig.width=6.5, fig.height=3.5}
+var_x <- c(runif(300, -1, 0), runif(300, 0, 1))
+var_y <- c(runif(150, -1, 0), runif(150, 0, 1), runif(150, 0, 1), runif(150, -1, 0))
+label = rep(c(rep("sick", 150), rep("healthy", 150)), 2)
+df <- data.frame(dosage = var_x, response=var_y, patient_type = label)
+ggplot(data=df, mapping=aes(x=dosage)) + geom_density(aes(color=patient_type))
+```
+
+This looks like there is little to win, doesn't it?  
+Here's another view of the same data!
+
+
+```{r, fig.width=6.5, fig.height=3.5}
+ggplot(df, aes(x=dosage, y=response)) + geom_point()
+```
+Still not interesting!  Give it one more shot:
+
+
+```{r, fig.width=6.5, fig.height=3.5}
+ggplot(df, aes(x=dosage, y=response, color=patient_type)) + geom_point()
+```
+
+This is called the **_XOR_** problem because the cases follow an "Exclusive Or" rule.
+
+### Advanced Explorations
+
+#### PCA {-}
+
+First PCA will be shown with the iris dataset and then with the cervical cancer dataset.
+
+```{r pca-exec, echo=TRUE}
+ir.pca <- prcomp(iris[, -5],
+                 center = TRUE,
+                 scale. = TRUE)
+print(ir.pca)
+```
+
+The plot method returns a plot of the variances (y-axis) associated with the PCs (x-axis). 
+
+```{r pc-plot, echo=TRUE}
+plot(ir.pca, type = "l")
+```
+
+
+The summary method describe the importance of the PCs.
+
+```{r pca-summary, echo=TRUE}
+summary(ir.pca)
+```
+
+The PC plot
+
+```{r ggbiplot, warning=FALSE, message=FALSE}
+#library(devtools)
+#install_github("vqv/ggbiplot")
+library(ggbiplot)
+ggbiplot(ir.pca, obs.scale = 1, var.scale = 1, 
+              groups = iris[,5], ellipse = FALSE, 
+              circle = TRUE) + 
+    scale_color_discrete(name = '') +
+    theme(legend.direction = 'horizontal', legend.position = 'top')
+```
+
+
+Now the same procedure for the cervical cancer dataset, with a selection of numerical variables.
+
+
+```{r echo=TRUE}
+selection <- c("num.partners", "first.sex", "num.preg", "horm.contracept.years", "IUD.years", "STDs.number", "target.biopsy")
+tmp <- clean_data %>% select(selection) %>% drop_na()
+tmp
+cc.pca <- prcomp(tmp[, -7],
+                 center = TRUE,
+                 scale. = TRUE)
+print(cc.pca)
+```
+
+
+The plot method returns a plot of the variances (y-axis) associated with the PCs (x-axis). 
+
+```{r echo=TRUE}
+plot(cc.pca, type = "l")
+```
+
+
+The summary method describe the importance of the PCs.
+
+```{r echo=TRUE}
+summary(cc.pca)
+```
+
+PC plot
+
+```{r pca2, fig.asp=1.3, out.width='100%', fig.align='center', fig.cap="A PCA plot of the numerical variables"}
+ggbiplot(cc.pca, obs.scale = 1, var.scale = 1, 
+              groups = tmp$target.biopsy, ellipse = FALSE, 
+              circle = TRUE, alpha = 0.5) + 
+    scale_color_discrete(name = '') + 
+    theme(legend.direction = 'horizontal', legend.position = 'top')
+```
+
+This is very promising neither; no structure in the data, not in general and not in relation with the dependent variable.
+
+#### Clustering
+
+- Using clustering, you can sometimes see obvious patterns in the data.  
+- Most obvious are:  
+    - k-Means clustering
+    - Hierarchical clustering
+    
+#### k-Means clustering
+
+k-means is very sensitive to the scale of your data so you'll need to normalize it.
+
+```{r}
+#km_clusters <- kmeans()
+
+```
+
+
+#### hierarchical clustering
+
+TO BE DONE

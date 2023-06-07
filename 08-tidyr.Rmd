@@ -1,0 +1,235 @@
+# Tidying dataframes using Package `tidyr` {#tidyr}
+
+
+```{r setup-ch-tidyr, include=FALSE}
+options(digits = 3)
+knitr::opts_knit$set(cache = TRUE,
+                     tidy = TRUE,
+                     tidy.opts = list(blank = FALSE, width.cutoff = 60))
+
+library(tidyr)
+```
+
+This chapter explores the package `tidyr` which is part of the `tidyverse` set of packages.
+
+This package is an essential tool collection in the process of organizing you data in a **_tidy_** way.
+
+:::definitions
+A dataset is considered **_tidy_** when it is formed according to these rules:
+
+1. Each variable has its own column.
+2. Each observation has its own row.
+3. Each value has its own cell.
+:::
+
+:::info
+Why do we want tidy data?  
+
+- Because the entire tidyverse works with tidy data, especially the ggplot2 package.  
+- Pivoting data is also often used to make specific data representations for other purposes.  
+- Finally: we often receive "dirty" data that needs to be processed in order to be able to carry out our analyses.
+:::
+
+Here is an example dataset, downloaded from the WHO website [here](https://www.who.int/immunization/monitoring_surveillance/burden/vpd/surveillance_type/active/measles_monthlydata/en/)
+Note: the original data was exported from Excel to csv, and a text editor was used to replace single quote occurrences ("'") with an underscore. Otherwise, data will be corrupted.
+
+
+The data concerns disease occurrences for two diseases: measles and rubella ("rode hond" in Dutch).
+Suppose I would like to analyse distribution and timeline of these two diseases, in relation to each other.
+There are two problems here:
+1. The data needs to be clean
+2. The data needs to be combined from two files into one dataframe.
+
+Let's start with the first: measles. 
+Here is part of the measles data. It is not tidy. Why not?
+
+```{r load-measles, echo=F}
+measles <- read.table("data/measlescasesbycountrybymonth.csv", 
+                      sep=";", 
+                      header = T)
+knitr::kable(measles[1:15, 1:7], caption = "Why is this not a tidy dataset?")
+```
+
+The monthly counts are in separate columns. However, they are really all the same variable: measles cases. So this data needs to be tidied: There should be only one column called "cases" and another column called "month". Or maybe even a single column "Date"? Because year and month are actually elements of a single unit of course. We'll leave that for a later chapter.
+
+## The `pivot_longer()` function
+
+Tidying has never been simpler, using the `pivot_longer` function:
+
+```{r tidy-measles}
+measles_tidy <- pivot_longer(data = measles,
+                             cols = 5:16,
+                             names_to = "Month",
+                             values_to = "Cases")
+knitr::kable(head(measles_tidy, n=15))
+```
+
+In the `pivot_longer` function, you provide three pieces of information:  
+
+1. You need to tell which columns to collect the data and headers from. Here, all the month columns are collected: `cols = 5:16`. you can also use the names of the columns you want to gather.
+
+2. The name of the column to hold the "old" column headers: `names_to`. This is the name of the newly created column that will hold the information that is now present in the column headers that you are going to collect - in this case, the months names January-December. Hence, `names_to = Month`.
+
+3. The name for `values_to`. The `value_to` argument is the name of the column that will hold the actual measurements. In this case, the number of cases from each of the 12 month columns will be "gathered" in this column. Hence, `values_to = Cases`.
+
+The result is a "flattened but elongated" data structure. All data from the non-gathered columns (`Region`, `ISO3`, `Country`, and `Year`) will be expanded/duplicated for each of the 12 month rows that will be created.
+
+Here you can see the numbers as verification of the process:
+
+```{r verify-data-loading}
+## The original dimensions
+dim(measles)
+## The tidied data
+dim(measles_tidy)
+## 12 times 1746 is 20952 rows
+nrow(measles_tidy) / 12
+```
+
+Obviously, the data you gather into a single column must be a single measurement type!
+
+### Selecting columns
+The `cols=` argument can be specified using a whole bunch of different methods. A few are listed here.
+
+```{r tidyselect-helpers, eval = F}
+cols = -(1:4),
+cols = -(Region:Year),
+cols = January:December,
+cols = -c(Region, ISO3, Country, Year),
+```
+Later on, we'll encounter some more means to select columns using the _**tidyselect helpers**_.
+
+### Another example
+
+As an extra example, here is the dose_response data again.
+
+```{r read-dose-response-1}
+dose_response <- read.table("data/dose_response2.txt",
+                            header = T,
+                            sep=";",
+                            colClasses=c("character", "factor", "integer", "integer"))
+names(dose_response)
+```
+
+It is processed by pivot_longer as well. This time, a Regular Expression is used to parse the dose as numbers only out of the header names. 
+
+```{r pivot-longer-demo}
+tmp <- pivot_longer(data = dose_response,
+             cols = -c("patient", "sex"),
+             names_to = "dose",
+             names_pattern = "dose(10|100)mg",
+             values_to = "response")
+knitr::kable(tmp[1:10, ])
+```
+
+The argument `names_pattern = "dose(10|100)mg"` specifies, using parentheses and the "or" symbol `|` that we want to extract only the numbers 10 or 100 from the column names. Regular expressions are discussed in another chapter (\@ref(regex))
+
+Note however they are still character values so this requires a conversion:
+
+```{r mind-the-class, results='hold'}
+class(tmp$dose)
+tmp$dose <- as.integer(tmp$dose)
+```
+
+More sophisticated techniques dealt are with in the chapter on package `dplyr` (\@ref(mangling)).
+
+### A more complex problem: two sets of columns
+
+How about a case with two sets of columns? Here, to create an example, a `tibble` is used. This is an extension of the well-known `data.frame` type. It is also part of the `tidyverse` and will be discussed in more detail as well.
+
+```{r two-vars-pivoting-demo-1}
+set.seed(1234)
+two_two_col <- tibble(subject = letters[1:5],
+              T0_Control = rnorm(5, 10, 1),
+              T0_Treated = rnorm(5, 9.5, 1.2),
+              T1_Control = rnorm(5, 11, 1.5),
+              T1_Treated = rnorm(5, 16, 2))
+knitr::kable(two_two_col)
+```
+
+The measurements are spread over 4 columns and the column names actually represent the levels of **_two_** variables: Treatment and Time.
+Thus, to be tidy we need to mangle the data in this form:
+
+```
+subject time treatment response
+a       T0   Control   10.764
+a       T0   Treated   8.681
+a       T1   Control   13.057
+a       T1   Treated   15.188
+...
+```
+
+To solve this it requires another bit of knowledge of regular expressions:
+
+```{r two-vars-pivoting-demo-2}
+dose_response_long <- pivot_longer(data = two_two_col,
+             cols = -"subject",
+             names_pattern = "(T.)_(Control|Treated)",
+             names_to = c("Time", "Treatment"),
+             values_to = "Response")
+knitr::kable(head(dose_response_long, 8))
+```
+
+The expression `names_pattern = "(T.).(Control|Treated)"` tells the function there are two groups in the column names to be widened. These groups are defined by the two sets of parentheses `()`. The first group is defined by the letter "T" follows by a single character specified by the dot `.` which says "any character". The second group is `(Control|Treated)` which tells the function that it is formed by the word Control or Treated. In between is a random single underscore "_".  
+Alternatively, and actually much simpler, the `names_sep` argument could have been used. For instance, `names_sep = '_'` tells to split the column names at the underscore character character, yielding this result:
+
+```{r two-vars-pivoting-demo-3}
+alt <- pivot_longer(data = two_two_col,
+             cols = -"subject",
+             names_sep = "_",
+             names_to = c("Time", "Treatment"),
+             values_to = "Response")
+knitr::kable(head(alt, 8))
+```
+
+
+## Widening with `pivot_wider()`
+
+The opposite of `pivot_longer()` is `pivot_wider()`. First the simple case of a single column:
+
+```{r pivot-wider-demo-1}
+head(dose_response_long)
+```
+
+Here is the reverse operation with `pivot_wider`:
+
+```{r pivot-wider-demo-2}
+tmp <- pivot_wider(data = dose_response_long,
+                   names_from = c(Time, Treatment),
+                   values_from = Response)
+knitr::kable(head(tmp, 5))
+```
+
+## Other utility functions
+
+### Split columns with `separate()`
+
+The function `separate()` will split on the non-word character if no separator is specified. Here a separator is prided telling to split on an X with two other characters on either side.
+
+```{r separate-demo}
+tmp <- data.frame(x = 10:15, a = paste0(1:6, "zXb", letters[1:6]))
+tmp
+separate(data = tmp, col = a, sep = ".X.", into=c("b", "c"))
+```
+
+### Combine columns with `unite()`
+
+When you have two columns that should be logically combined into one, use the `unite()` function.
+For instance, dates and times are often placed in separate columns but they are two aspects of a single measurement: time.
+Here is a small example. In a later presentation, working with dates and times will be extensively treated.
+
+```{r unite-demo}
+activity <- data.frame(date = c("30/12/2019", "31/12/2019", "01/01/2020", "02/01/2020", "02/01/2020"),
+                 time = c("14:55", "21:01", "08:22", "11:56", "16:38"),
+                 activity = c(34, 48, 5, 19, 22))
+unite(activity, "datetime", date, time, sep = "T")
+```
+
+### Drop rows with missing values: `drop_na()`
+
+This function is extremely simple and useful. It drops rows with missing from a dataframe and returns a cured copy:
+
+```{r drop-na-demo}
+head(drop_na(airquality))
+```
+
+There is of course an equivalent in base R: `na.omit()`.

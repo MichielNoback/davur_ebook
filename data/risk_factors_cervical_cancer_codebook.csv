@@ -1,0 +1,37 @@
+abbreviation,class,full.name
+age,int,Age
+num.partners,int,Number of sexual partners
+first.sex,int,First sexual intercourse (age)
+num.preg,int,Num of pregnancies
+smoker,logical,Smokes
+smoke.years,int,Smokes (years) 
+smokes.packs.year,int,Smokes (packs/year) 
+horm.contracept.ever,logical,Hormonal Contraceptives
+horm.contracept.years,int,Hormonal Contraceptives (years)
+IUD.ever,logical,IntraUterine Device
+IUD.years,int,IUD (years)
+STD.ever,logical,STDs
+STDs.number,int,STDs (number)
+STD_condylomatosis,logical,STDs:condylomatosis
+STD_cervical.cond,logical,STDs:cervical condylomatosis
+STD_vaginal.cond,logical,STDs:vaginal condylomatosis
+STD_vulvo.per.cond,logical,STDs:vulvo-perineal condylomatosis
+STD_syph,logical,STDs:syphilis
+STD_pid,logical,STDs:pelvic inflammatory disease
+STD_gen.herpes,logical,STDs:genital herpes
+STD_moll.cont,logical,STDs:molluscum contagiosum
+STD_aids,logical,STDs:AIDS
+STD_hiv,logical,STDs:HIV
+STD_hepB,logical,STDs:Hepatitis B
+STD_HPV,logical,STDs:HPV
+STD.num.diagn,int,STDs: Number of diagnosis
+STD.time.since.first,int,STDs: Time since first diagnosis
+STD.time.since.last,int,STDs: Time since last diagnosis
+Dx.cancer,logical,Dx:Cancer
+Dx.cin,logical,Dx:CIN
+Dx.hpv,logical,Dx:HPV
+Dx,logical,Dx
+target.hinselman,logical,Hinselmann: target variable
+target.schiller,logical,Schiller: target variable
+target.cytology,logical,Cytology: target variable
+target.biopsy,logical,Biopsy: target variable

@@ -1,0 +1,252 @@
+# Exploratory Data Analysis I {eda-1}
+
+```{r eda-1-setup, include=FALSE}
+options(digits = 3)
+knitr::opts_knit$set(cache = TRUE,
+                     tidy = TRUE,
+                     tidy.opts = list(blank = FALSE, width.cutoff = 60))
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(GGally)
+```
+
+## Introduction
+
+This chapter introduces you to the concept of Exploratory Data Analysis (EDA). The purpose of an EDA is analysing a dataset with the goal of assessing its main characteristics, including quality and usability for subsequent statistical modelling and analysis. Data cleaning and transformation strategies are explored and often already applied. Data summary techniques and visualizations are used in an EDA. There is no fixed set of activities; each dataset poses its own questions and challenges.
+
+:::attention
+Datasets are often expensive and time-consuming to collect, and therefore they are usually collected with a specific goal in mind. The EDA you perform should always be with this goal in mind: is the dataset of sufficient quality to answer the scientific questions for which they were collected? 
+:::
+
+The current EDA is the first of two; this one mainly uses base R functionality (except for plotting where ggplot2 is used) while the next one mainly employs _tidyverse_ functionality.
+
+#### EDA outline {-}
+
+An EDA therefore may include:
+
+- **Dataset description**: how were they collected, what data types do the variables have, what are the units and physical quantities, how are missing data encoded, etc.
+- **Data summary**: number of cases, number of variables, basic statistical description (i.e. mean, median, sd etc.), variable distributions (normal or not, outliers, missing data, skewed distributions)
+- **Visual summaries** using boxplots, histograms, density plots. 
+- **Recoding or transformations of variables** may be required to get better results (e.g. from numeric to factor or vice versa, or log transformation of exponential data)
+- **Exploration of variable relations/covariance**. It is always interesting to know about correlations between variables, but this is especially the case when you have a _dependent_ variable for which you wish to build a statistical model in a later stage of your analysis.
+
+Note that your EDA results should _always_ be accompanied by text that describes your results and discusses the implications of them. your figures should be well annotated with a caption and legend if relevant. An EDA is _not_ a publication, but it will usually have a short introduction, a results section and a discussion. In contrast with a publication you usually _do_ show the code. This ensures complete transparency and reproducibility.
+
+In this chapter I will demonstrate a short EDA on the "Yeast dataset" from the UCI Machine Learning repository. 
+
+It is outside the scope of this short analysis to delve too deeply in the attribute background information, but you should realize that for a real analysis this is absolutely critical: without domain knowledge the you won't have the insight to identify strange, worrying or surprising results.
+
+
+## EDA of the Yeast dataset
+
+### Introduction
+
+The data were collected from the [UCI Machine Learning website](https://archive.ics.uci.edu/ml/datasets/Yeast). To ensure their continued availability the files were copied to a personal [repository](https://github.com/MichielNoback/datasets/tree/master/UCI_yeast_protein_loc).
+
+The data were accompanied by a _very_ short abstract: **_"Predicting the Cellular Localization Sites of Proteins"_**. The data description states there are 1484 instances, each with 8 attributes (variables) and a class label. The class label is the variable we wish to build a model for so this is the dependent variable.
+
+The _Attribute Information_ section describes these variables:
+
+1. Sequence Name: Accession number for the SWISS-PROT database
+2. `mcg`: McGeoch's method for signal sequence recognition.
+3. `gvh`: von Heijne's method for signal sequence recognition.
+4. `alm`: Score of the ALOM membrane spanning region prediction program.
+5. `mit`: Score of discriminant analysis of the amino acid content of the N-terminal region (20 residues long) of mitochondrial and non-mitochondrial proteins.
+6. `erl`: Presence of "HDEL" substring (thought to act as a signal for retention in the endoplasmic reticulum lumen). Binary attribute.
+7. `pox`: Peroxisomal targeting signal in the C-terminus.
+8. `vac`: Score of discriminant analysis of the amino acid content of vacuolar and extracellular proteins.
+9. `nuc`: Score of discriminant analysis of nuclear localization signals of nuclear and non-nuclear proteins.
+
+The sequence name is not interesting in this EDA: we are interested in patterns, not individuals. However, if there is an anomalous protein in the EDA it should be possible to retrace its origin so the identifier stays in the dataset.
+
+There seem to be two attributes (`mcg` and `gvh`) measuring the same property - the presence of a signal sequence which is the N-terminal part of a protein signalling the cellular machinery the protein should be exported.
+
+Very simply put, if this scoring system was perfect each of the attributes (except `mcg` and `gvh`) would unequivocally "assign" the protein in question to a cellular location: Cellular external matrix, membrane inserted, mitochondrial, endoplasmic reticulum lumen, peroxisomal, vacuolar or nuclear.
+
+The tenth variable in the data is the dependent or explanatory variable. The `yeast.names` file describes it like this:
+
+```
+Class Distribution. The class is the localization site. Please see Nakai &
+		       Kanehisa referenced above for more details.
+  CYT (cytosolic or cytoskeletal)                    463
+  NUC (nuclear)                                      429
+  MIT (mitochondrial)                                244
+  ME3 (membrane protein, no N-terminal signal)       163
+  ME2 (membrane protein, uncleaved signal)            51
+  ME1 (membrane protein, cleaved signal)              44
+  EXC (extracellular)                                 37
+  VAC (vacuolar)                                      30
+  POX (peroxisomal)                                   20
+  ERL (endoplasmic reticulum lumen)                    5
+```
+
+This tells me the different localizations are by no means equally distributed; there is an over representation of "cytosolic or cytoskeletal" and "nuclear" and a huge under representation of especially endoplasmic reticulum lumen proteins.
+
+### Data loading and prepping 
+
+Since I am going to rerun the code in this notebook often I am going to create a local copy, and load that one.
+
+```{r load-yeast-data}
+file_name <- "yeast.data"
+yeast_data_url <- paste0("https://raw.githubusercontent.com/MichielNoback/datasets/master/UCI_yeast_protein_loc/", file_name)
+yeast_local_location <- paste0("./data/", file_name)
+
+#only download if not present
+if (! file.exists(yeast_local_location)) {
+    download.file(url = yeast_data_url, 
+                  destfile = yeast_local_location)
+}
+
+yeast_data <- read.table(file = yeast_local_location,
+                         sep = ",",
+                         as.is = 1)
+str(yeast_data)
+```
+
+The data seems to have been loaded correctly and, as expected since that was stated in the original data description, there are no missing data.
+
+The column names were not defined in the data file so this will be fixed first. I will create a data frame that also holds the column descriptions. I have put the data in a small text file for easy loading and editing; the attribute descriptions copied/pasted into a text file and with find/replace converted in easy to load form, and a new `label` column added for use in plotting. There were a few occurrences of the `'` character which always corrupt data import into R. They were removed. 
+
+```{r fix-column-names}
+attribute_info <- read.table("data/yeast_attribute_info.txt", 
+                             sep = ":",
+                             header = TRUE,
+                             stringsAsFactors = FALSE)
+#attach column names
+(colnames(yeast_data) <- attribute_info$attribute)
+```
+
+To make this info easily accessible, a function is created that can be used to fetch either the description or the label.
+
+```{r attribute-utility-function, results='hold'}
+get_attribute_info <- function(attribute, resource = "label") {
+    if (! resource %in% c("label", "description")) {
+        stop(paste0("type ", resource, "is not an attribute resource"))
+    }
+    return(attribute_info[attribute_info$attribute == attribute, resource])
+}
+
+#test it
+get_attribute_info("gvh")
+get_attribute_info("accno", "description")
+```
+
+
+### Data verification
+
+The original data description stated that 1484 instances with 9 attributes + a class label are present.
+
+```{r verify-dimensions}
+dim(yeast_data)
+```
+
+This is correct.
+No missing data are supposed to be there:
+
+```{r missing-data-count}
+sum(complete.cases(yeast_data))
+```
+Also correct.
+
+The classes of the columns are also OK so the data is verified and found correct.
+
+### Attribute summaries
+
+A first scan of the attributes.
+
+```{r attribute-summaries}
+summary(yeast_data)
+```
+
+All these attributes seem to be in the range zero to one, except of course for the localization attribute and the accession number. This is not surprising since these attributes are all probabilities. The class distribution corresponds with the published data.
+
+The 
+The `pox` (`r get_attribute_info("pox")`) and `erl` (`r get_attribute_info("erl")`) attributes, seem to have a really strange distribution and should be investigated further.
+
+Here are all the numeric attributes in a single panel. I chose histogram over boxplot or density plot because it is more fine-grained than boxplot and very easy to interpret.
+
+```{r yeast-attributes-hist, fig.asp=0.7, out.width="100%", fig.cap = "Distributions of the numeric variables"}
+
+# a list to store the plots
+my_plots <- list()
+
+names_to_plot <- colnames(yeast_data[2:9])
+for (i in 1:length(names_to_plot)) {
+    col_to_plot <- names_to_plot[i]
+    plt <- ggplot(data = yeast_data,
+                  mapping = aes(x = !!sym(col_to_plot))) +
+        geom_histogram(bins = 30) +
+        xlab(col_to_plot)
+    my_plots[[i]] <- plt
+}
+grid.arrange(grobs = my_plots, nrow = 2)
+```
+
+Here, it can be seen that the attributes "ER-retention" and "Peroxisomal" are pretty much uninformative, a problem probably largely caused by the low abundance of proteins in these classes. Surprisingly enough, the "Vacuolar" property which is also low-abundant, does not have this extreme distribution.
+
+What is also striking is that, although these attributes are probabilities of targeting signals, none (with the exception of the two low-abundance ones) show a more or less bi-modal distribution as you would naively expect.
+
+### Attribute relationships
+
+Here is a quick scan of variable relationship, excluding the dependent variable. The `pairs()` function is used for that. I excluded `erl` and `pox` because they do not add information to the picture.
+
+```{r yeast-pairs-plot, fig.asp=1, out.width="100%", fig.cap = "Relations between the numeric variables"}
+
+
+# Function to return points and geom_smooth
+# allow for the method to be changed
+wrap_fn <- function(data, mapping, method="loess", ...){
+      p <- ggplot(data = data, mapping = mapping) + 
+      geom_point(size = 0.5, alpha = 0.4, color = "darkblue") + 
+      geom_smooth(method=method, formula = 'y ~ x', ...)
+      p
+    }
+
+ggpairs(yeast_data[c(2, 3, 4, 5, 8, 9)], 
+        progress = FALSE,
+        lower = list(continuous = wrap_fn))
+```
+
+NB: I found suggestions on how to adjust color, size etc [here](https://stackoverflow.com/questions/35085261/how-to-use-loess-method-in-ggallyggpairs-using-wrap-function). If this is too complicated for you, you can simply use `ggpairs(yeast_data[c(2, 3, 4, 5, 8, 9)], progress = FALSE))`, or alternatively, base R has a nice `pairs()` function this creates a similar but less good looking plot.
+
+
+By adding the smoother it is made clear that the only pair which shows a clear correlation is the pair `mcg` / `gvh` which actually predict the same property. Therefore it would have been very surprising indeed if they would _not_ have a correlation. The strength of this correlation -the **_R-squared_**- is not very strong.
+
+### Correlations to the dependent variable
+
+As a first investigation, numeric variables are split on the location variable. These plots are screated using the base R plotting system.
+
+```{r corr-to-dependent, fig.align = 'center', fig.asp=0.7, out.width="70%", fig.cap = "Correlations with the dependent variable"}
+library(RColorBrewer)
+colors <- RColorBrewer::brewer.pal(8, name = "Accent")
+#col = c("darkblue", "darkgreen", "magenta", )
+col_i <- 0
+for (name in names(yeast_data[2:9])) {
+    col_i <- col_i + 1
+    boxplot(yeast_data[, name] ~ yeast_data$loc,
+            xlab = NULL,
+            ylab = get_attribute_info(name),
+            col = colors[col_i])
+}
+```
+
+Quite a few of the variables correlate pretty well with the dependent variable. These do so very well: `alm`, `mit`, `erl`, `pox`. Others are not: `nuc`, `vac`, and some are ambiguous - they discriminate, but not exclusively: `mcg`, `gvh`.
+
+
+Here are some summary statistics for the numeric variables split on the dependent variable:
+
+```{r summary-stats-dep-var}
+options(digits=2)
+
+tmp <- t(aggregate( . ~ loc, data = yeast_data[, -1], FUN = mean))
+knitr::kable(tmp)
+
+tmp <- t(aggregate( . ~ loc, data = yeast_data[, -1], FUN = median))
+knitr::kable(tmp)
+
+```
+
+
+
+

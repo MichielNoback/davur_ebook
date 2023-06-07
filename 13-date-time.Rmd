@@ -1,0 +1,216 @@
+# Working with date-time data {#date-time}
+
+```{r setup-stringr, include=FALSE}
+options(digits = 3)
+knitr::opts_knit$set(cache = TRUE,
+                     tidy = TRUE,
+                     tidy.opts = list(blank = FALSE, width.cutoff = 60))
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(lubridate)
+```
+
+## The `lubridate` package
+
+### Parsing character data
+
+When working in a lab you will often encounter time-measured data. For instance, growth curves, animal behavior observations etc.
+
+The tidyverse package `lubridate` can help you with that. It is quite an expensive package; only the bare essentials will be dealt with here. For a bit more complete overview have a look at the [cheat sheet](graphics/lubridate.pdf).
+
+A small fictitious dataset will be used here to explore some of the concepts. It can be found in file `data/time_series_drug_test.txt`.
+
+```{r lubridate-data}
+ts <- read.table("data/time_series_drug_test.txt", 
+                 header = T,
+                 sep = ";",
+                 as.is = 2:3)
+ts <- as_tibble(ts)
+ts
+```
+
+If you simply want to show the timeseries as a plot, the date and time columns need to be combined first. The tidyr package has `unite()`, or do it with `mutate()`
+
+```{r lubridate-unite}
+ts %>% 
+    unite("date_time", date, time, sep = "T") %>% 
+    head(3)
+```
+
+As you can see, the original data columns are lost in this operation. Using `mutate()` and `paste()` does keep them intact however. I will take this approach because I want the old columns for demonstration purposes.
+
+```{r lubridate-mutate}
+ts <- ts %>% 
+    mutate(date_time = paste(date, time, sep=" "))
+head(ts, 3)
+```
+
+Let's reshuffle. I like it when my dependent variable comes last. 
+
+```{r lubridate-select}
+ts <- ts %>% select(subject, date, time, date_time, control, response)
+head(ts, 3)
+```
+
+If I attempt to plot the response over time for each of the subjects I get into trouble:
+
+```{r lubridate-ggplot, error=TRUE}
+ggplot(data = ts, 
+       mapping = aes(x = date, y = response, linetype = subject)) + 
+    geom_line()
+```
+
+Also, when I would like to calculate something like the change per hour in response level over the different measurements this would be difficult indeed. Take a minute to think about this. Do you know any technique in base R that you've encountered so far that supports this?  
+Actually there are some functions in baser R that can do this, but we'll stick to the tidyverse.
+
+So this is the area of the `lubridate` package. I included a `library(lubridate)` statement at the top of this document so that's not needed anymore.
+
+Let's start with reading in date and time variables. There are many dedicated (wrapper) functions for reading date and time data. The `date` variable has the format "**D**ay/**M**onth/**Y**ear" so the function `dmy()` should be fine here:
+
+```{r lubridate-mutate-2}
+ts <- ts %>% 
+    mutate(date = dmy(ts$date))
+ts %>% head(3)
+```
+
+As you can see, the type has changed into `date`. Let's try the plot again:
+
+```{r lubridate-mutate-3, error=TRUE}
+ggplot(data = ts, 
+       mapping = aes(x = date, y = response, linetype = subject)) + 
+    geom_line()
+```
+
+
+Now we're getting somewhere. The times are not taken into account yet, so it is simply mapped to 00:00 hours on that day. Also, we're not really interested in the specific date, we want to know the change from T = 0. We'll get to that.
+
+Parsing time is the same as parsing the date, we have an "**H**our:**M**inute" format so the function to take is `hm()` (there is also an `hms()`):
+
+```{r  lubridate-hm}
+hm(ts$time)[1:5]
+```
+
+And yes, there is also an `dmy_hm()` function:
+
+```{r lubridate-dmy-hs}
+dmy_hm(ts$date_time)[1:5]
+```
+As long as the format is not too esoteric, lubridate will figure out the separator quite well.
+ 
+If you want full control -or simply want to remember only one or two functions- you could take either one of `fast_strptime()` or `parse_date_time()`. Both take a **_format string_** as argument: a string in which you specify the way your date-time character data are structured The most used symbols are these (although you should really also look at the help page):
+
+- **`b`** or **`B`** Abbreviated or full month name in the current locale. The C parser currently understands only English month names.
+- **`d`** Day of the month as decimal number (01--31 or 0--31)
+- **`H`** Hours as decimal number (00--24 or 0--24).
+- **`I`** Hours as decimal number (01--12 or 1--12).
+- **`m`** Month as decimal number (01--12 or 1--12). 
+- **`M`** Minute as decimal number (00--59 or 0--59).
+- **`p`** AM/PM indicator in the locale. Normally used in conjunction with I and not with H. 
+- **`S`** Second as decimal number (00--61 or 0--61).
+- **`y`** Year without century (00--99 or 0--99). In parse_date_time() also matches year with century (Y format).
+- **`Y`** Year with century.
+
+Function `parse_date_time()` is the most lenient of the two with respect to the **_format string_**:
+ 
+```{r lubridate-parse-1}
+parse_date_time(ts$date_time, "d.m-y H:M")[1:5] ##doesn't care I have a typo in my format string
+ts <- ts %>% mutate(date_time = parse_date_time(ts$date_time, "d/m/y H:M"))
+head(ts, 3)
+```
+
+The `fast_strptime()` is much more picky, but much faster. You specify the date(-time) format using`%` sign together with one of the symbols listed above:
+
+```{r lubridate-parse-2}
+fast_strptime('29/12/2019 07:44', '%d/%m/%Y %H:%M')
+```
+
+```{r lubridate-parse-3, eval = FALSE}
+## When in tibble context, you need to set `lt = F`...
+ts %>% 
+    mutate(date_time = fast_strptime(date_time, '%d/%m/%Y %H:%M', lt = F))
+```
+
+I think sticking to the first will suffice.
+
+### Current time
+
+The functions `today()` and `now()` are your friends.
+
+
+```{r lubridate-current}
+##output will vary!
+paste("the day is ", today())
+paste("and to be really exact: ", now())
+```
+
+
+### Getting elements from date-time objects
+
+Once you have the date-time object processed, you can look at the individual elements.
+
+There are -again- many functions related to this. Have a look at the [cheat sheet](graphics/lubridate.pdf) for details. Here are the most-used components:
+
+- **`date(x)`** Date component leaving the time out.
+- **`year(x)`** The year. 
+- **`month(x, label, abbr)`** The month. When called without other argument, you get the month number (e.g. 2). With the `label = TRUE` argument you will get text (e.g. Feb) and `abbr = FALSE` you get the full name of the month (February).
+- **`day(x)`** The day of the month. 
+- **`wday(x,label,abbr)`** The day of week. Label and abbr behaves the same as with `month()`.
+- **`hour(x)`** The hour
+- **`minute(x)`** Minutes.
+- **`second(x)`** Seconds.
+- **`week(x)`** Week of the year.
+
+A use case demonstration: On what days were the samples taken of the times series used so far?
+
+```{r lubridate-wday, results='hold'}
+
+ts %>% 
+    group_by(day_of_week = wday(date_time, label=T)) %>% 
+    summarize(sample_count = n())
+# or, shorter
+#ts %>% group_by(day_of_week = wday(date_time, label=T)) %>% tally()
+```
+
+What was the mean response on the different times of the day:
+
+```{r lubridate-hour}
+ts %>% 
+    group_by(hour_of_day = hour(date_time)) %>% 
+    summarize(mean = mean(response))
+```
+
+And when split over the control/treatment group as well:
+
+```{r lubridate-hour-2}
+ts %>% 
+    group_by(control, hour_of_day = hour(date_time)) %>% 
+    summarize(mean = median(response),
+              n = n())
+```
+
+Finally, let's close off with a plot
+
+```{r lubridate-hour-3}
+ggplot(data = ts, 
+       mapping = aes(x = date_time, y = response, color = subject)) + 
+    geom_line()
+```
+
+As practice, you could try to generate a response plot like this where subjects 1 to 3 have corrected values based on the non-treated group.
+
+### Calculations with date-time
+
+The example below shows the most basic calculation: the difference between two date-time objects.
+
+```{r lubridate-calc}
+ts %>% 
+    group_by(subject) %>%
+    select(subject, date_time) %>% 
+    mutate(lagged = lag(date_time), 
+           diff = date_time - lagged) 
+```
+
+You can define periods, durations and work with time intervals. However, this is outside the scope of this course.
+For this more advanced time math you should refer to the cheat sheet or the official docs.
+

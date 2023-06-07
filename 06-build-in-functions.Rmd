@@ -1,16 +1,78 @@
 # Built-in Functions
 
+
+```{r, include=FALSE}
+options(digits = 3)
+library(ggplot2)
+knitr::opts_knit$set(cache = TRUE,
+                     tidy = TRUE,
+                     tidy.opts = list(blank = FALSE, width.cutoff = 60))
+```
+
+
 This chapter deals with the most-used functions that R has to offer. A clean installation of R already contains hundreds of functions; see [here](https://stat.ethz.ch/R-manual/R-devel/library/base/html/00Index.html) for a complete listing of functions in the `base` package.
 Obviously, this eBook is not the platform to discuss these exhaustively. Therefore, I chose to only deal with the ones I use regularly.  
 Besides that, the tidyverse packages `tidyr` and `dplyr` offer functionality that are better alternatives for many base R functions. These packages are discussed in later chapters. 
 
-## Dealing with NAs
+
+## Descriptive statistics
+
+R provides a wealth of descriptive statistics functions. The most important ones of them are listed below. The ones with an asterisk are described in more detail in following paragraphs.
+
+| function        |  purpose             | 
+|-----------------|----------------------| 
+| `mean( )`       | mean                 | 
+| `median( )`     | median               | 
+| `min( )`        | minimum              | 
+| `max( )`        | maximum              | 
+| `range( )`      | min and max          | 
+| `var( )`        | variance s^2         | 
+| `sd( )`         | standard deviation s | 
+| `summary( )`    | 6-number summary     | 
+| `quantile( )` * | quantiles            | 
+| `IQR( )`  *     | interquantile range  | 
+
+
+#### The `quantile()` function {-}
+
+This function gives the data values corresponding to the specified quantiles. The function defaults to the quantiles `0%  25%  50%  75% 100%`: these are the _quartiles_ of course.
+
+```{r quantiles-1}
+quantile(ChickWeight$weight)
+quantile(ChickWeight$weight, probs = seq(0, 1, 0.2))
+```
+
+#### Interquantile range `IQR()` {-}
+
+Function `IQR()` gives the range between the 25% and 75% quantiles.
+
+```{r quantiles-2}
+IQR(ChickWeight$weight)
+## same as
+quantile(ChickWeight$weight)[4] - quantile(ChickWeight$weight)[2]
+## same as
+diff(quantile(ChickWeight$weight, probs = c(0.25, 0.75)))
+```
+
+#### `boxplot()` is `summary()` visualized {-}
+
+Boxplot is a graph of the 5-number summary, but `summary()` also gives the mean 
+
+```{r box_demo, fig.height=2.5, fig.width=3.5}
+summary(ChickWeight$weight)
+boxplot(ChickWeight$weight)
+```
+
+
+## General purpose functions
+
+### Dealing with NAs
 
 Dealing with NA is a **_very big thing_**. When you work with external data there is always the possibility that some values will be missing.
 
 You should be aware that it is not possible to test for `NA` values (Not Available) values in any other way; using `==` will simply return `NA`:
 
-```{r}
+```{r dealing-with-na-1}
 x <- NA
 x == NA
 ```
@@ -18,20 +80,20 @@ x == NA
 Important functions for dealing with that are `na.omit()` (`drop_na()` in dplyr) and `complete.cases()`. The first drops rows from a dataframe that contain at least one NA; the other returns a logical indicating which rows are complete; i.e. without any NA.  
 Besides that, many functions in R have a (variant of) the `na.rm = ` argument. For instance, when the `sum()` function encounters an NA in its input vector, it will always return `NA`:
 
-```{r}
+```{r dealing-with-na-2}
 x <- c(1, 2, 3, NA)
 sum(x)
 sum(x, na.rm = TRUE)
 ```
 
 
-## Convert numeric vector to factor: `cut()`
+### Convert numeric vector to factor: `cut()`
 
 Sometimes it is useful to work with a factor instead of a numeric vector. For instance, when working with a Body Mass Index (bmi) variable it may be nice to split this into a factor for some analyses.
 The function `cut()` is used for this.
 Suppose you have the following fictitious dataset
 
-```{r, tidy = F}
+```{r cut-demo-1, tidy = F}
 ## body mass index
 bmi <- c(22, 32, 21, 37, 28, 34, 26, 29,
          41, 18, 22, 27, 32, 31, 26)
@@ -61,7 +123,7 @@ with(my_data, boxplot(income ~ bmi_class))
 
 The `breaks =` argument specifies the split positions; the `right = F` arguments specifies that the interval is _inclusive_ on the lower (left) boundary:
 
-```{r}
+```{r cut-demo-4}
 x <- c(2, 5, 10)
 cut(x, breaks = c(0, 2, 5, 10), right = F)
 cut(x, breaks = c(0, 2, 5, 10), right = T)
@@ -71,64 +133,12 @@ An interval written as `(5,10]` means it is from -but excluding- 5 to -but inclu
 Note that in the first example the last value (10) becomes NA because 10 is exclusive in that interval specification.
 
 
-## Descriptive statistics
-
-R provides a wealth of descriptive statistics functions. The most important ones of them are listed below. The ones with an asterisk are described in more detail in following paragraphs.
-
-| function        |  purpose             | 
-|-----------------|----------------------| 
-| `mean( )`       | mean                 | 
-| `median( )`     | median               | 
-| `min( )`        | minimum              | 
-| `max( )`        | maximum              | 
-| `range( )`      | min and max          | 
-| `var( )`        | variance s^2         | 
-| `sd( )`         | standard deviation s | 
-| `summary( )`    | 6-number summary     | 
-| `quantile( )` * | quantiles            | 
-| `IQR( )`  *     | interquantile range  | 
-
-
-#### The `quantile()` function {-}
-
-This function gives the data values corresponding to the specified quantiles. The function defaults to the quantiles `0%  25%  50%  75% 100%`: these are the _quartiles_ of course.
-
-```{r}
-quantile(ChickWeight$weight)
-quantile(ChickWeight$weight, probs = seq(0, 1, 0.2))
-```
-
-#### Interquantile range `IQR()` {-}
-
-Function `IQR()` gives the range between the 25% and 75% quantiles.
-
-```{r}
-IQR(ChickWeight$weight)
-## same as
-quantile(ChickWeight$weight)[4] - quantile(ChickWeight$weight)[2]
-## same as
-diff(quantile(ChickWeight$weight, probs = c(0.25, 0.75)))
-```
-
-#### `boxplot()` is `summary()` visualized {-}
-
-Boxplot is a graph of the 5-number summary, but `summary()` also gives the mean 
-
-```{r box_demo, fig.height=2.5, fig.width=3.5}
-summary(ChickWeight$weight)
-boxplot(ChickWeight$weight)
-```
-
-
-## General purpose functions
-
-
-#### Memory management {-}
+### Memory management {-}
 
 When working with large datasets it may be useful to free some memory once in a while (i.e. intermediate results). Use `ls()` to see what is in memory; use `rm()` to delete single or several items: `rm(genes)`, `rm(x, y, z)` and clear all by typing `rm(list = ls())`
 
 
-#### File system operations {-}
+### File system operations {-}
 
 Several functions exist for working with the file system:  
 
@@ -138,7 +148,7 @@ Several functions exist for working with the file system:
 - A `path` can be defined as `"E:\\emile\\datasets"` (Windows) or, on Linux/Mac using relative paths `"~/datasets"` or absolute paths `"/home/emile/datasets"`. 
 
 
-#### Glueing character elements: `paste()` {-}
+### Glueing character elements: `paste()` {-}
 
 Use `paste()` to combine elements into a string
 
@@ -150,7 +160,7 @@ paste(1:12, month.abb)
 
 There is a variant, `paste0()` which uses no separator by default. 
 
-#### A local namespace: `with()` {-}
+### A local namespace: `with()` {-}
 
 When you have a piece of related code operating on a single dataset, use `with()` so you don't have to type its name all the time.
 
@@ -165,7 +175,7 @@ with(airquality, {
 Local variables such as `mdl` will not end up in the global environment. 
 
 
-#### Writing data to file {-}
+### Writing data to file {-}
 
 To write a data frame, matrix or vector to file, use `write.table(myData, file="file.csv")`. Standard is a comma-separated file with both column- and row names, unless otherwise specified:  
 
@@ -174,24 +184,24 @@ To write a data frame, matrix or vector to file, use `write.table(myData, file="
 - `sep = ";"`
 - `sep = "\t" # tab-separated`
 
-#### Saving R objects to file {-}
+### Saving R objects to file {-}
 
 Use the `save()` function to write R objects to file for later use.
 This is especially handy with intermediate results in long-running analysis workflows.
 
-```{r eval = FALSE}
+```{r save-obejcts-to-file, eval = FALSE}
 x <- stats::runif(20)
 y <- list(a = 1, b = TRUE, c = "oops")
 save(x, y, file = "xy.RData")
 ```
 
 
-#### Writing a plot to file {-}
+### Writing a plot to file {-}
 
 Use one of the functions `png()`, `jpeg()`, `tiff()`, or `bmp()` for these specific file types. They have widely differing properties, especially with respect to file size.  
 Use `width` and `height` to specify size. Default unit is pixels. Use other unit: `units = "mm"`
 
-```{r eval = F}
+```{r writing-plot-to-file, eval = F}
 png("/path/to/your/file.png",
     width = 700, height = 350, units = "mm")
 plot(cars)
@@ -200,7 +210,7 @@ dev.off() # don't forget this one!
 
 A ggplot figure can be written to file like this:
 
-```{r}
+```{r writing-ggplot-to-file}
 png("myplot.png")
 myplot <- ggplot(mtcars, aes(wt, mpg)) + 
   geom_point()

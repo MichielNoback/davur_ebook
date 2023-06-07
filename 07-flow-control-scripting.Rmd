@@ -1,7 +1,5 @@
 # Flow control and scripting
 
-## Introduction
-
 So far you have only used the functions that are build in R, or in some installed packages such as ggplot2. Moreover, the only R code you have seen was written in the console or in the code chunks of an RMarkdown document.  
 
 This code consisted of (series of) R statements with one or more function calls.  
@@ -104,7 +102,7 @@ if (age < 18) {
 
 This code chunk checks if a file exists and only downloads it if it is not present
 
-```{r eval=FALSE}
+```{r ifelse-demo-6, eval=FALSE}
 my_data_file <- "/some/file/on/disk"
 ## fetch file
 if (!file.exists(my_data_file)) {
@@ -134,7 +132,7 @@ x
 When you want to assign values to a vector based on some condition, you need to use the third form, the `ifelse()` function.
 
 When you use the regular if/else structures on dataframes you don't get what you want:
-```{r}
+```{r ifelse-function}
 # In newer versions of R this yields an error; in older versions
 # only first value (row) is evaluated and this value is cycled.
 # The whole column gets value 1
@@ -151,7 +149,7 @@ head(airquality)
 Besides decision making with if/else, you can also make use of the list type in combination with the fact that function can be passed around like any other object.
 
 
-```{r}
+```{r ifelse-alternative}
 
 message_maker <- list(
     silent = function(message){
@@ -241,7 +239,7 @@ A function is a piece of functionality that you can execute by typing its name, 
 Thus, functions are named blocks of code with a **_single well-defined purpose_** which make them reusable. 
 You have already used many **_predefined_** or build in functions of R: `str`, `max`, `read.table` etc. If you type the name of a function without parenthesis you get its definition.
 
-```{r}
+```{r get-function-definition}
 sum
 ```
 
@@ -318,7 +316,7 @@ my_power(10) ## defaults to 2
 
 As we have seen many times before, you do not _need_ to pass arguments by name. In the above example, the names were not used. When you do not use the names of arguments, the order in which you pass them is important; they must match the order in which they are declared in the function. If you use their names, their order is not important:
 
-```{r}
+```{r argument-order-matters}
 my_power(power = 4, x = 2)
 ```
 
@@ -359,7 +357,7 @@ An R script is a text file with the extension `.R` that contains R code. When it
 
 Here is the contents of a very simple R script called `source_demo.R`
 
-```{r eval = FALSE}
+```{r script-demo-1, eval = FALSE}
 x <- 42
 x # echo to console
 print(paste0("x = ", x)) #explicit print
@@ -372,7 +370,7 @@ demo_function <- function(message) {
 
 You can load this script int your R session by _sourcing_ it; just call `source(path/to/source_demo.R)`. Alternatively, when you have it open in the RStudio editor, you can click the "source" button at the top right of the editor panel. After that, you can use the functions and variables defined within the script:
 
-```{r}
+```{r script-demo-2}
 source("data/source_demo.R")
 x
 demo_function("hi!")
@@ -385,5 +383,23 @@ demo_function("hi!")
 - To store entire workflows outside RMarkdown
 - To run R code from the commandline (terminal)
 - To call from other scripts and build **_applications_** or **_packages_**
+
+### Some coding style rules rules for writing code {#coding_style}
+
+
+- Names of variables start with a lower-case letter
+- Words are separated using underscores
+- Be descriptive with names
+- Function names are verbs
+- Write all code and comments in English
+- Preferentially use one statement per line
+- Use spaces on both sides of ALL operators
+- Use a space after a comma
+- Indent code blocks -with {}- with 4 or 2 spaces, but be consistent
+
+Follow Hadleys' style guide [http://adv-r.had.co.nz/Style.html](http://adv-r.had.co.nz/Style.html)
+
+
+
 
 

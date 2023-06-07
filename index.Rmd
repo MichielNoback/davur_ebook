@@ -14,6 +14,9 @@ description: "This gitbook accompanies some courses in Data Analysis & Visualiza
 
 # Getting started
 
+
+## Introduction
+
 Welcome, you have landed at the ebook accompanying my R courses for Life Science students.
 
 Before reading on, you should check whether you are ready to work with R on your own computer.
@@ -32,10 +35,6 @@ knitr::write_bib(c(
 
 ## RStudio Shortcuts {#shortcuts}
 
-You can label chapter and section titles using `{#label}` after them, e.g., we can reference Chapter \@ref(shortcuts). If you do not manually label them, there will be automatic labels anyway.
-
-
-
 Here are the best keyboard shortcuts for RStudio:  
 
 - `ctr + 1` go to code editor
@@ -45,26 +44,6 @@ Here are the best keyboard shortcuts for RStudio:
 - `ctr + shift + k` knit current document
 - `ctr + alt + c` run current code chunk
 - `ctr + shift + o` source the current document
-
-> //TODO
-
-
-
-
-## Some coding style rules rules for writing code {#coding_style}
-
-
-- Names of variables start with a lower-case letter
-- Words are separated using underscores
-- Be descriptive with names
-- Function names are verbs
-- Write all code and comments in English
-- Preferentially use one statement per line
-- Use spaces on both sides of ALL operators
-- Use a space after a comma
-- Indent code blocks -with {}- with 4 or 2 spaces, but be consistent
-
-Follow Hadleys' style guide [http://adv-r.had.co.nz/Style.html](http://adv-r.had.co.nz/Style.html)
 
 
 

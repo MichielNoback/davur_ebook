@@ -138,21 +138,6 @@ ggplot(data = ChickWeight,
 
 From here on, I will only use the base R plotting system for quick-and-dirty visualizations, just like you should.
 
-## Matrices are vectors with dimensions
-
-We will not detail on them in this course, only this one small paragraph. This does not mean they are not important, but they are just not the focus here. Some functions require or return a matrix so you should be aware of them.
-
-
-```{r matrix_demo}
-m <- matrix(1:10, nrow = 2, ncol = 5) 
-m
-v <- 1:10
-dim(v) <- c(2, 5)
-v
-```
-
-You can convert to and from dataframes using `as.data.frame()` and `as.matrix()`. From and to simple vectors is removing or adding dimension attributes: `dim(m) <- NULL`.  
-
 
 ## Lists
 
@@ -221,7 +206,7 @@ l[[2]][2]
 
 When you need multiple elements of a list, use **_single brackets_**. Remember: single brackets return a list; that's why you need single brackets here.
 
-```{r}
+```{r list-vector-indexing}
 l[c(1,2,1)]
 ```
 
@@ -266,92 +251,12 @@ genes
 
 By wrapping this dataframe in a more modern variant of `data.frame`, the `tibble`, you can see the structure: each column has a single datatype but rows can have differing types for neighboring fields.
 
-```{r}
+```{r df-to-tibble}
 dplyr::as_tibble(genes)
 ```
 
 
-### Selections on dataframes
-
-Making selections on dataframes is not very surprising when you already know how to do it with vectors and lists. There is only one extension. The fact that it is a square grid-like structure makes it possible to add an extra way of making selections: combining rows and column selections as subgrids. This section extensively reviews all means of making selections.
-
-This is a summary:  
-
-- Select a single column using `$` will return a vector
-- Selecting with double brackets `[[<name>]]` or `[[<index>]]` will return a vector
-- Selecting with single brackets `[<name>]` or `[<index>]` will return a dataframe
-- Selecting with row-and-column coordinates `[row_selection, col_selection]` returns either a vector or a dataframe, depending on the selection made. Here, `row_selection` and `col_selection` can be 
-    - a numerical vector of length 1 or more
-    - a logical vector of length 1 or more
-    - empty (to select all rows/columns)
-    
-Here follow a few examples.
-
-```{r data-frame2, prompt = TRUE}
-genes[2,1] 		    #row 2, column 1
-genes[2, 1:2]     #row 2, columns 1 and 2
-genes[2, c(1, 3)] #row 2, column 1 and 3
-genes$name 	      #column "name"
-genes[, c("name", "expression")]	#columns "name" and "expression", all rows
-genes[, 1:2] 	    #columns 1 and 2, all rows
-genes[1:2, ]      #row 1 and 2, all columns
-```
-
-As with vectors and lists, R will cycle selectors, and you can select an element as often as you want.
-
-```{r data_frame4}
-genes[c(T, F), 1]	#every uneven row, column 1
-genes[c(1, 1, 1, 2), ]	#three times row 1 and row 2
-```
-
-A dataframe is much like a list, but not entirely equal:
-
-```{r data-frame5}
-genes[["name"]] ## select column w. double brackets
-class(genes) ## it is NOT a list though
-str(genes)
-```
-
-:::attention
-A dataframe can usually be treated as if it was a list, but a list can rarely be treated as a dataframe.
-:::
-
-
-#### Selections with `subset()` {-}
-
-:::info
-This section is optional; we are going to proceed with the `dplyr` package that makes these operations easier.
-:::
-
-Function `subset()` can serve as alternative to "bracket-based" selections (`[ , ]`).
-You can use `subset()` to make both **column** and **row selections**. Here, using `subset = `, the rows are selected for which Solar.R is available using the `is.na()` function.
-
-```{r}
-head(subset(airquality, subset = !is.na(Solar.R)))
-```
-
-Note that you don't even need to use quotes for column names.
-
-Select columns only with the `select = ` argument.
-
-```{r}
-head(subset(airquality, select = c(Ozone, Solar.R)))
-```
-
-Of course, you can combine row and colum selection:
-
-```{r}
-head(subset(airquality, 
-            subset = !is.na(Solar.R), 
-            select = c(Ozone, Solar.R)))
-# shorthand notation
-#subset(airquality, Day == 1, select = -Temp)
-```
-
-`subset()` can be used more sophisticated; however we are going to see `subset()` on steroids in the next course: the functions in package `dplyr`.
-
-
-## Importing dataframes using `read.table()`
+### Importing dataframes using `read.table()`
 
 Usually your data comes from file, loaded into memory as a `data.frame`. The most common data transfer- and storage format is text. The text file will have column separators that can be any of a wide range of characters called **_delimiters_**, but tab- or comma-delimited fields are most common.  
 
@@ -447,7 +352,7 @@ Always apply this sequence of steps and repeat until you are satisfied with the 
 4. Rinse and repeat
 
 
-## Simple dataframe manipulations
+### Simple dataframe manipulations
 
 There are various other helper methods the you can use to inspect the contents and nature of your dataframe columns and rows:
 
@@ -471,7 +376,7 @@ ggplot(data = whale_selenium,
 ```
 
 
-### Changing column names {-}
+#### Changing column names {-}
 
 Sometimes the existing column names are not convenient to work with (unclear, too long etc.). In that case it may be a good idea to change the column names. To do this you can use either `names()` or `colnames()`.
 
@@ -483,12 +388,12 @@ colnames(whale_selenium) <- c("pancreas", "colon")
 head(whale_selenium, n=2)
 ```
 
-```{r echo = FALSE, results = "hide"}
+```{r rename-cols, echo = FALSE, results = "hide"}
 colnames(whale_selenium) <- c("liver", "tooth")
 ```
 
 
-### Adding columns {-}
+#### Adding columns {-}
 
 You can add a single column by simply specifying its name and the value(s) to be attached.
 
@@ -505,7 +410,7 @@ cbind(whale_selenium, "brain" = c(1, 0)) #cycled values!
 ```
 
 
-### Adding rows: `rbind()` {-}
+#### Adding rows: `rbind()` {-}
 
 Adding rows to a dataframe is similar. There is however a constraint: the column names of both dataframes need to match for this operation to succeed.
 
@@ -515,5 +420,85 @@ my_data2 <- data.frame(colA = 4:5, colB = c("d", "e"))
 my_data_complete <- rbind(my_data1, my_data2)
 my_data_complete
 ```
+
+
+### Selections on dataframes
+
+Making selections on dataframes is not very surprising when you already know how to do it with vectors and lists. There is only one extension. The fact that it is a square grid-like structure makes it possible to add an extra way of making selections: combining rows and column selections as subgrids. This section extensively reviews all means of making selections.
+
+This is a summary:  
+
+- Select a single column using `$` will return a vector
+- Selecting with double brackets `[[<name>]]` or `[[<index>]]` will return a vector
+- Selecting with single brackets `[<name>]` or `[<index>]` will return a dataframe
+- Selecting with row-and-column coordinates `[row_selection, col_selection]` returns either a vector or a dataframe, depending on the selection made. Here, `row_selection` and `col_selection` can be 
+    - a numerical vector of length 1 or more
+    - a logical vector of length 1 or more
+    - empty (to select all rows/columns)
+    
+Here follow a few examples.
+
+```{r data-frame2, prompt = TRUE}
+genes[2,1] 		    #row 2, column 1
+genes[2, 1:2]     #row 2, columns 1 and 2
+genes[2, c(1, 3)] #row 2, column 1 and 3
+genes$name 	      #column "name"
+genes[, c("name", "expression")]	#columns "name" and "expression", all rows
+genes[, 1:2] 	    #columns 1 and 2, all rows
+genes[1:2, ]      #row 1 and 2, all columns
+```
+
+As with vectors and lists, R will cycle selectors, and you can select an element as often as you want.
+
+```{r data_frame4}
+genes[c(T, F), 1]	#every uneven row, column 1
+genes[c(1, 1, 1, 2), ]	#three times row 1 and row 2
+```
+
+A dataframe is much like a list, but not entirely equal:
+
+```{r data-frame5}
+genes[["name"]] ## select column w. double brackets
+class(genes) ## it is NOT a list though
+str(genes)
+```
+
+:::attention
+A dataframe can usually be treated as if it was a list, but a list can rarely be treated as a dataframe.
+:::
+
+
+#### Selections with `subset()` {-}
+
+:::info
+This section is optional; we are going to proceed with the `dplyr` package that makes these operations easier.
+:::
+
+Function `subset()` can serve as alternative to "bracket-based" selections (`[ , ]`).
+You can use `subset()` to make both **column** and **row selections**. Here, using `subset = `, the rows are selected for which Solar.R is available using the `is.na()` function.
+
+```{r subset-demo-1}
+head(subset(airquality, subset = !is.na(Solar.R)))
+```
+
+Note that you don't even need to use quotes for column names.
+
+Select columns only with the `select = ` argument.
+
+```{r subset-demo-2}
+head(subset(airquality, select = c(Ozone, Solar.R)))
+```
+
+Of course, you can combine row and colum selection:
+
+```{r subset-demo-3}
+head(subset(airquality, 
+            subset = !is.na(Solar.R), 
+            select = c(Ozone, Solar.R)))
+# shorthand notation
+#subset(airquality, Day == 1, select = -Temp)
+```
+
+`subset()` can be used more sophisticated; however we are going to see `subset()` on steroids in the next course: the functions in package `dplyr`.
 
 

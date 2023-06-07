@@ -10,7 +10,7 @@ But disregarding the time investment: This is data science. You collect data (in
 
 ([source](https://www.nytimes.com/2020/04/02/nyregion/spanish-flu-nyc-virus.html))
 
-## Why do statistical programming?
+### Why do statistical programming?
 
 Since you're a life science student -that is my target audience at least-, you have probably worked with Excel or SPSS at some time. Have you ever wondered  
 
@@ -26,7 +26,7 @@ With R - as with any programming language,
 - The analysis is central, not the output. This guarantees complete reproducibility
 
 
-### Overview of the toolbox {-}
+## Overview of the toolbox {-}
 
 This chapter will introduce you to a toolbox that will serve you well during your data quests.  
 It consists of 
@@ -36,11 +36,11 @@ It consists of
 - R Markdown as documenting and reporting tool
 
 
-## Tool 1: The R programming language
+### Tool 1: The R programming language
 
 ![](figures/Rlogo.png)
 
-Nobody likes to pay for computer tools. Furtunately, R is completely free. Moreover, it is completely open source. This is of course one of the main reasons for its popularity; other statistical tools are not free and sometimes downright expensive.  
+Nobody likes to pay for computer tools. Fortunately, R is completely free. Moreover, it is completely open source. This is of course one of the main reasons for its popularity; other statistical tools are not free and sometimes downright expensive.  
 Besides this free nature, R is very popular because it has an interactive mode. We call this a read–evaluate–print loop: REPL. This means you don't need to write programs to run code. You simply type a command in the **_console_**, press enter and immediately get the result on the line below.  
 
 As stated above, because you store your analyses in code, repeating these analyses -possibly with with new data or changed settings- is very easy.  
@@ -78,7 +78,7 @@ ggplot(DF, aes(variable, value, fill = variable)) +
 ![A custom jitter visualization](figures/ptsd-jitter-5-1s.png)
 
 
-## Tool 2: RStudio as development environment
+### Tool 2: RStudio as development environment
 
 ![RStudio logo](figures/RStudioLogo.png)
 
@@ -109,7 +109,7 @@ Here is the same piece of code, which is a plain text file, in two different edi
 It is clearly visible where the code elements, numeric data and character data are within the code. 
 
 
-## Tool 3: R Markdown
+### Tool 3: R Markdown
 
 ![](figures/markdown_logo.png)
 

@@ -1,0 +1,474 @@
+# Package `ggplot2` revisited {#ggplot2-adv}
+
+```{r, include=FALSE}
+options(digits = 3)
+## Utility functions: show_palette()
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(kableExtra)
+library(DT)
+knitr::opts_knit$set(cache = TRUE,
+                     tidy = TRUE,
+                     tidy.opts = list(blank = FALSE, width.cutoff = 60))
+```
+
+
+This chapter deals with more advanced aspects of plotting with ggplot.  
+
+
+## Dedicated plots
+
+### Multivariate Categorical Data
+
+Visualizing multivariate categorical data requires another approach. Scatter- and line plots and histograms are all unsuitable for factor data. Here are some plotting examples that work well for categorical data. Copied and adapted from [STHDA site](http://www.sthda.com/english/articles/32-r-graphics-essentials/129-visualizing-multivariate-categorical-data/).
+
+The first example deals with the builtin dataset `HairEyeColor`. It is a contingency table and a `table` object so it must be converted into a dataframe before use.
+
+```{r ggplot-adv-data-1}
+hair_eye_col_df <- as.data.frame(HairEyeColor)
+head(hair_eye_col_df)
+```
+
+#### Bar plots of contingency tables {-}
+
+```{r faceted-barplot, fig.asp=.75, out.width='80%', fig.align='center'}
+ggplot(hair_eye_col_df, aes(x = Hair, y = Freq)) +
+    geom_bar(aes(fill = Eye), 
+           stat = "identity", 
+           color = "white",
+           position = position_dodge(0.7)) + #causes overlapping bars
+    facet_wrap(~ Sex) 
+```
+
+#### Balloon plot {-}
+
+Here is a dataset called `housetasks` that contains data on who does what tasks within the household. 
+
+```{r ggplot-adv-data-2}
+(housetasks <- read.delim(
+  system.file("demo-data/housetasks.txt", package = "ggpubr"),
+  row.names = 1))
+```
+A balloon plot is an excellent way to visualize this kind of data. The function `ggballoonplot()` is part of the ggpubr package ("'ggplot2' Based Publication Ready Plots"). Have a look at [this page](https://rpkgs.datanovia.com/ggpubr/) for a nice review of its possibilities. 
+
+```{r balloonplot1, fig.asp=.75, out.width='80%', fig.align='center'}
+ggpubr::ggballoonplot(housetasks, fill = "value")
+```
+
+As you can see the counts map to both size and color.
+Balloon plots can also be faceted.
+
+```{r balloonplot2, fig.asp=.75, out.width='80%', fig.align='center'}
+ggpubr::ggballoonplot(hair_eye_col_df, x = "Hair", y = "Eye", size = "Freq",
+              fill = "Freq", facet.by = "Sex",
+              ggtheme = theme_bw()) +
+  scale_fill_viridis_c(option = "C")
+```
+
+### The `GGally::ggPairs()` function {-}
+
+The `ggpairs()` function of the `GGally` package allows you to build a scatterplot matrix just like the base R `pairs()` function.
+
+Scatterplots of each pair of numeric variable are drawn on the left part of the figure. Pearson correlation is displayed on the right. Variable distribution is available on the diagonal.
+
+```{r ggpairs-demo, fig.asp=.75, out.width='80%', fig.align='center', message=FALSE}
+airquality_no_na <- na.omit(airquality)
+GGally::ggpairs(airquality_no_na[1:4], progress = FALSE)
+```
+
+Look at [https://www.r-graph-gallery.com/199-correlation-matrix-with-ggally.html](https://www.r-graph-gallery.com/199-correlation-matrix-with-ggally.html) for more examples.
+
+### Marginal plots using `ggExtra::ggMarginal()` {-}
+
+You can use `ggMarginal()` to add marginal distributions to the X and Y axis of a ggplot2 scatterplot. 
+It can be done using histogram, boxplot or density plot using the `ggExtra` package
+
+```{r ggmarginal-demo, fig.asp=.75, out.width='80%', fig.align='center', warning=FALSE}
+library(ggExtra)
+airquality <- airquality %>% 
+    mutate(Month_f = factor(month.abb[Month]))
+
+# base plot
+p <- ggplot(airquality, aes(x=Temp, y=Ozone, color=Month_f)) +
+      geom_point() +
+      theme(legend.position="none")
+
+p1 <- ggMarginal(p, type="histogram")
+p2 <- ggMarginal(p, type="density")
+p3 <- ggMarginal(p, type="boxplot")
+
+gridExtra::grid.arrange(p1, p2, p3, nrow = 1)
+```
+
+
+See [https://www.r-graph-gallery.com/277-marginal-histogram-for-ggplot2.html](https://www.r-graph-gallery.com/277-marginal-histogram-for-ggplot2.html) for more details.
+
+
+
+## Advanced plotting aspects
+
+### Plot panels from `for` loops using `gridExtra::grid.arrange()`
+
+Sometimes you may wish to create a panel of plots using a `for` loop, similarly to the use of `par(mfrow = c(rows, cols))` in base R. There are a few caveats to this seemingly simple notion.
+
+For instance, to create a set of boxplots for a few columns of the `airquality` dataset, you would do something like this in base R: 
+
+```{r panel-plots-base-R, results='hold'}
+# set the number of rows and columns
+par(mfrow = c(2, 2))
+
+# iterate the column names
+for (n in names(airquality[, 1:4])) {
+    boxplot(airquality[, n], 
+            xlab = n)
+}
+
+# reset par
+par(mfrow = c(1, 1))
+```
+
+When you naively migrate this structure to a ggplot setting, it will become something like this.
+
+```{r panel-plots-ggplot-1, out.width="30%", results='hold'}
+par(mfrow = c(2, 2))
+
+for (n in names(airquality[, 1:4])) {
+    plt <- ggplot(data = airquality,
+                  mapping = aes(y = n)) +
+        geom_boxplot() +
+        xlab(n)
+    print(plt)
+}
+
+par(mfrow = c(1, 1))
+```
+
+This is surely not the plot you would have expected: a single straight line, and no panel of plots. It turns out you can not use variables as selectors in `aes()`. 
+Until recently, you needed to use `aes_string()` for that purpose; see below (not evaluated):
+
+```{r panel-plots-ggplot-2, eval=FALSE}
+par(mfrow = c(2, 2))
+
+for (name in names(airquality[, 1:4])) {
+    plt <- ggplot(data = na.omit(airquality),
+                  mapping = aes_string(x = factor(""), y = name)) +
+        geom_boxplot() +
+        xlab(NULL) +
+        xlab(name)
+    print(plt)
+}
+
+par(mfrow = c(1, 1))
+```
+
+However, since ggplot2 version 3.0.0. you need to use a different technique.
+You can do it using the `!!` operator on the variable after call to `sym()`. This will unquote and evaluate variable in the surrounding environment.
+
+Here is a recent version.
+
+```{r panel-plots-ggplot-3, out.width="30%", results='hold'}
+par(mfrow = c(2, 2))
+
+for (name in names(airquality[, 1:4])) {
+    plt <- ggplot(data = na.omit(airquality),
+                  mapping = aes(x = factor(""), y = !!sym(name))) +
+        geom_boxplot() +
+        xlab(NULL) +
+        xlab(name)
+    print(plt)
+}
+
+par(mfrow = c(1, 1))
+```
+Also note that if you omit the `print(plt)` call this outputs _nothing_, which is really quite confusing. You need to explicitely print the plot, not implicitly as you normally can.  
+
+
+This works as required except for the panel-of-plots part. The `mfrow` option to `par()` does not work with `ggplot2`. This can be fixed through the use of the `gridExtra` package.  
+
+```{r panel-plots-ggplot-4, fig.asp=.75, out.width='80%', fig.align='center', message=FALSE}
+library(gridExtra)
+
+# a list to store the plots
+my_plots <- list()
+
+#use of indices instead of names is important!
+for (i in 1:4) {
+    n <- names(airquality)[i]
+    plt <- ggplot(data = airquality_no_na,
+                  mapping = aes(y = !!sym(n))) +
+        geom_boxplot() +
+        xlab(n)
+    my_plots[[i]] <- plt   # has to be integer, not name!
+}
+grid.arrange(grobs = my_plots, nrow = 2)
+
+#OR: use do.call() to process the list in grid.arrange
+#do.call(grid.arrange, c(my_plots, nrow = 2))
+```
+
+So the rules for usage of a for-loop to create a panel of plots:
+
+- use `aes_string()` to specify your columns
+- store the plots in a list
+- use `grid.arrange()` to create the panel, wrapped in the `do.call()` function.
+
+
+### Plot adjustments
+
+This section describes aspects that fall outside the standard realm of plot construction.
+
+#### Scales, Coordinates and Annotations {-}
+
+Scales and Coordinates are used to adjust the way your data is mapped and displayed. Here, a log10 scale is applied to the y axis using `scale_y_log10()` and the x axis is reversed (from high to low values instead of low to high) using `scale_x_reverse()`.
+
+```{r tweeking, fig.asp=.75, out.width='80%', fig.align='center'}
+ggplot(data = cars, mapping = aes(x = speed, y = dist)) + 
+    geom_point() +
+    scale_y_log10() + 
+    scale_x_reverse() 
+```
+
+In other contexts, such as geographic information analysis, the scale is extremely important.
+The default coordinate system in ggplot2 is `coord_cartesian()`. In the plot below, a different coordinate system is used. 
+
+```{r polarplot, fig.asp=.75, out.width='80%', fig.align='center'}
+# function to compute standard error of mean
+se <- function(x) sqrt(var(x)/length(x)) 
+
+DF <- data.frame(variable = as.factor(1:10), value = log2(2:11))
+
+ggplot(DF, aes(variable, value, fill = variable)) +
+    geom_bar(width = 1, stat = "identity", color = "white") +
+    geom_errorbar(aes(ymin = value - se(value), 
+                      ymax = value + se(value), 
+                      color = variable), 
+                      width = .2) + 
+    scale_y_continuous(breaks = 0:nlevels(DF$variable)) +
+    coord_polar() 
+```
+
+#### Labels {-}
+
+You have seen the `xlab()`, `ylab()`, and `labs()` functions at work already.
+
+#### Themes {-}
+
+The theme is used to make changes to the overall appearance of the plot. Two approaches exist. The simplest one is selecting a specific theme and make some minor adjustments at most.
+Here are is the minimal theme where the text sizes have been modified somewhat.
+
+```{r themes1, fig.asp=.75, out.width='80%', fig.align='center'}
+ggplot(data = airquality, mapping=aes(x=Temp, y=Ozone)) +
+  geom_point(mapping = aes(color = Month_f)) + 
+  geom_smooth(method = "loess", formula = y ~ x) +
+  xlab(expression("Temperature " (degree~F))) +
+  ylab("Ozone (ppb)") +
+  labs(color = "Month") +
+  theme_minimal(base_size = 14)
+```
+
+Note that if the `color = Month_f` aesthetic would have been put in the main ggplot call, the smoother would have been split over the Month groups.
+
+Alternatively, the theme can be specified completely, as show below.
+
+```{r themes2, fig.asp=.75, out.width='80%', fig.align='center'}
+ggplot(data = na.omit(airquality), mapping = aes(x = Temp, y = Ozone)) +
+  geom_point(mapping = aes(color = Month_f)) + 
+  geom_smooth(method = "loess") +
+  xlab("Temperature (F)") +
+  ylab("Ozone (ppb)") +
+  labs(color = "Month") +
+  theme(axis.text.x = element_text(size = 12, colour = "blue", face = "bold"),
+        axis.text.y = element_text(size = 12, colour = "red", face = "bold"),
+        axis.title.x = element_text(size = 16, colour = "blue", face = "bold.italic"),
+        axis.title.y = element_text(size = 14, colour = "red", face = "bold.italic"),
+        axis.line = element_line(colour = "darkblue", size = 1, linetype = "solid"),
+        panel.background = element_rect(fill = "lightblue", size = 0.5, linetype = "solid"),
+        panel.grid.minor = element_blank())
+```
+
+As you can see, there are `element_text()`, `element_line()` and `element_rect()` functions to specify these types of plot elements. The `element_blank()` function can be used in various theme aspects to prevent it from being displayed.
+
+##### Adjust or set global theme {-}
+
+You can specify within your document or R session that a certain theme should be used throughout. You can do this by using the `theme_set()`, `theme_update()` and `theme_replace()` functions, or with the esoteric `%+replace%` operator. Type `?theme_set` to find out more.
+
+#### Annotation {-}
+
+A final layer that can be added one containing **_annotations_**. Annotations are elements that are added manually to the plot. This can be a text label, a fictitious data point, a shaded box or an arrow indicating a region of interest.  
+
+In the `annotate()` method, you specify the geom you wish to add (e.g. "text", "point")
+The panel below demonstrates a few.
+
+
+```{r annotation, fig.asp=.75, out.width='80%', fig.align='center'}
+(outlier <- airquality[!is.na(airquality$Ozone) & airquality$Ozone > 150, ])
+
+ggplot(data = na.omit(airquality), mapping = aes(x = Temp, y = Ozone)) +
+  annotate("rect", xmin = 72, xmax = 77, ymin = 0, ymax = 50, 
+           alpha = 0.1, color = "blue", fill = "blue") +
+  annotate("point", x = outlier$Temp, y = outlier$Ozone, 
+           color = "darkred", size = 4, alpha = 0.3) + 
+  geom_point(mapping = aes(color = Month_f)) + 
+  geom_smooth(method = "loess", formula = y ~ x) +
+  xlab("Temperature (F)") +
+  ylab("Ozone (ppb)") + 
+  annotate("text", x = outlier$Temp, y = outlier$Ozone -5, label = "Outlier") + 
+  annotate("segment", x = outlier$Temp + 5, xend = outlier$Temp + 1, 
+           y = outlier$Ozone + 4, yend = outlier$Ozone, 
+           color = "darkred", size = 2, arrow = arrow()) 
+```
+
+Note there is a `geom_rectangle()` as well, but as I have discovered after much sorrow, it behaves quite unexpectedly when using the `alpha = ` argument on its fill color. For annotation purposes you should always use the `annotate()` function.
+
+
+## Developing a custom visualization
+
+### An experimental PTSD treatment 
+
+This chapter shows the iterative process of building a visualization where both the audience and the data story are taken into consideration.
+
+The _story_ revolves around data that was collected in a research effort investigating the effect of some treatment of subjects with PTSD (Post-traumatic stress disorder). Only one variable of that dataset is shown here, a stress score.
+
+Since the group size was very low, and there was no control group, statistical analysis was not really feasible.
+
+But the question was: is there an indication of positive effect and a reason to continue the investigations?
+An attempt was made by developing a visualization to answer this question.
+
+#### The data {-}
+
+The collected data was a distress score collected at three time points: 0 months (null measure, T0), 3 months (T1) and 12 months (T2) through questionnaires.
+
+```{r read-distress-data, echo = FALSE, out.width="80%"}
+distress_data <- read.table("data/distress_score_timeseries.txt", sep = "\t", header = T, dec=",")
+knitr::kable(distress_data, caption = "Distress data")
+```
+
+You can see this is a really small dataset. 
+
+#### Choose a visualization {-}
+
+Before starting the visualization, several aspects should be considered:
+
+- The **audience**:
+    - people do not want to read lots of numbers in a table\
+    - in this case no knowledge of statistics (and this is usually the case)
+- The **data**:
+    - here, small sample size is an issue
+    - this dataset has connected measurements (timeseries-like)
+
+For this dataset I chose a **_jitterplot_** as basis because it is well suited for small samples. A boxplot tends to be indicative of information that simply is not there with small datasets. Moreover, a boxplot has a certain complexity that people who are not schooled in statistics have problems with.
+
+#### Tidy the data {-}
+
+To work with ggplot2, a tidy ("long") version of the data is required. 
+In the next chapter this will be dealt with in detail. 
+Here the T0, T1 and T2 columns are **_gather_**ed into a single column because they actually represent a single variable: Time. All measured stress values, also a single variable, are gathered into a single column as well. This causes a flattening of the data (less columns, more rows). 
+
+```{r ptsd-tidy}
+distress_data_tidy <- pivot_longer(data = distress_data,
+                                   cols = c(T0, T1, T2),
+                                   names_to = "Timepoint",
+                                   values_to = "Stress")
+
+distress_data_tidy$Timepoint <- factor(distress_data_tidy$Timepoint, ordered = T)
+knitr::kable(head(distress_data_tidy, n = 10), caption = "Tidied data")
+```
+
+#### A first version {-}
+
+This is the first version of the visualization. The jitter has been created with `geom_jitter`. The plot symbols have been made transparent to keep overlapping points visible. The plot symbols have been made bigger to support embedding in (PowerPoint) presentations. A little horizontal jitter was introduced to have less overlap of the symbols, but not too much - the discrete time points still stand out well. Vertical jitter omitted since the data are already measured in a continuous scale. A typical use case for vertical jitter is when you have discrete (and few) y-axis measurements.
+
+```{r ptsd-jitter-1, fig.asp=.75, out.width='80%', fig.align='center', fig.cap="A first attempt"}
+ggplot(distress_data_tidy, aes(x=Timepoint, y=Stress)) +
+    geom_jitter(width = 0.1, size = 2, alpha = 0.6)
+```
+
+
+#### Add mean and SD {-}
+
+To emphasize the trend in the timeseries, means and standard deviations from the mean were added using `stat_summary()`. Always be aware of the orders of layers of your plot! Here, the `stat_summary` was placed "below" the plot symbols. Again, size was increased for enhanced visibility in presentations. Why not the median? Because of the audience! Everybody knows what a mean is, but few know what a median is - especially at management level.
+
+```{r ptsd-jitter-2, fig.asp=.75, out.width='80%', fig.align='center', fig.cap="With mean and standard deviation"}
+mean_sd <- function(x) {
+  c(y = mean(x), ymin = (mean(x) - sd(x)), ymax = (mean(x) + sd(x)))
+}
+
+ggplot(distress_data_tidy, aes(x = Timepoint, y = Stress)) +
+    stat_summary(fun.data = mean_sd, color = "darkred", size = 1.5) +
+    geom_jitter(width = 0.1, size = 2, alpha = 0.6)
+```
+
+#### Emphasize worst cases {-}
+
+To emphasize the development of subjects who were in the worst shape at the onset of the research (T0), the top 25% with respect to distress score at T0 were highlighted.
+
+```{r ptsd-highlight-worst-at-T0, fig.asp=.75, out.width='80%', fig.align='center', fig.cap="Worst cases emphasised"}
+distress_data$high_at_T0 <- ifelse(distress_data$T0 > quantile(distress_data$T0, 0.75), "Q4", "Q1-Q3")
+
+distress_data_tidy <- gather(distress_data,
+                        key=Timepoint,
+                        value=Stress, "T0", "T1", "T2")
+distress_data_tidy$Timepoint <- factor(distress_data_tidy$Timepoint, ordered = T)
+knitr::kable(head(distress_data))
+```
+
+The color is added using `aes(color = high_at_T0)` within the `geom_jitter()` call.
+
+```{r ptsd-jitter-3, fig.width=8, fig.height=4.5}
+p <- ggplot(distress_data_tidy, aes(x=Timepoint, y=Stress)) +
+    stat_summary(fun.data=mean_sd, color = "darkred", size = 1.5) +
+    geom_jitter(width = 0.1, size = 2, alpha = 0.6, aes(color = high_at_T0))
+p
+```
+
+
+### Last tweaks: fonts and legend
+
+The plot is more or less ready. Now is the time to adjust the plot "theme".
+
+```{r ptsd-jitter-5, fig.width=8, fig.height=4.5}
+p + theme_minimal(base_size = 14) +
+    theme(legend.position = "top") +
+    labs(color="Group")
+```
+
+### The code 
+
+Here is the code used for data preparation:
+
+```{r ptsd-data-prep-code, eval=FALSE}
+
+distress_data$high_at_T0 <- ifelse(
+    distress_data$T0 > quantile(distress_data$T0, 0.75), "Q4", "Q1-Q3")
+
+distress_data_tidy <- gather(distress_data,
+                        key=Timepoint,
+                        value=Stress, "T0", "T1", "T2")
+distress_data_tidy$Timepoint <- factor(distress_data_tidy$Timepoint,
+                                       ordered = T)
+
+mean_sd <- function(x) {
+  c(y = mean(x), ymin=(mean(x)-sd(x)), ymax=(mean(x)+sd(x)))
+}
+```
+
+
+This is the final code for the plot
+
+```{r ptsd-plot-code, eval=FALSE}
+ggplot(distress_data_tidy, aes(x=Timepoint, y=Stress)) +
+    stat_summary(fun.data=mean_sd, color = "darkred", size = 1.5) +
+    geom_jitter(width = 0.1,
+                size = 2,
+                alpha = 0.6,
+                aes(color = high_at_T0)) +
+    labs(color="Group") +
+    theme_minimal(base_size = 14) +
+    theme(legend.position = "top") +
+    labs(color="Group")
+```
+
+
+
+

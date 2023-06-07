@@ -1,0 +1,1761 @@
+# Exercise solutions
+
+```{r}
+#this is for rounding numbers in this session
+options(digits=3)
+```
+
+## Getting started
+
+### Install the tools
+
+No solution for this one.
+
+## Toolbox
+
+### Résumé
+
+No solution for this one.
+
+
+## Basic R
+
+### Math in the console
+
+```{r results = 'hold'}
+31 + 11
+66 - 24
+126 / 3
+12^2 
+256**0.5
+(3 * (4 + 8^0.5))/(5^3)
+```
+
+
+### First look at functions
+
+**A**  
+Answer: `paste()` and `paste0()`. The difference lies in the _separator_, which is an empty string in `paste0()` and one space in `paste()`. Moreover, the separator can be configured in `paste()` using the `sep = ` parameter.
+
+```{r paste-ex-1}
+paste("welcome ", "to ", "R", sep = "")
+paste0("welcome ", "to ", "R")
+```
+
+**B**  
+Answer: `abs()` returns the _absolute_ value. Simply put, a number with the minus sign removed if present.
+
+```{r abs-ex-1}
+abs(-20)
+abs(20)
+```
+
+**C**  
+Answer: it combines (**c**oncatenates) its arguments into a single vector. The first example creates a "character" (text data) and the second a "numeric" (numeric data).
+
+```{r c-ex-1}
+c(1, 2, "a")
+class(c(1, 2, "a"))
+c(1, 2, 3)
+class(c(1, 2, 3))
+```
+
+
+**D**  
+
+```{r install-packages-demo-1, eval = FALSE}
+#install it. Note the quotes
+install.packages("RColorBrewer")
+#load it into your session. Note the absence of quotes
+library(RColorBrewer)
+```
+
+**E**  
+
+```{r rounding-numberz-a, eval = FALSE}
+ceiling(numberz)
+trunc(numberz) # or signif(numberz, 3)
+round(numberz, 3)
+floor(numberz)
+```
+
+**F**  
+
+```{r convert-names-a, eval = FALSE}
+strsplit(names, " ")
+```
+
+**G**  
+
+```{r find-correct-a, eval = FALSE}
+unique(birds)
+```
+
+### Variables
+
+```{r variables-ex-1}
+x <- 20
+y <- 10
+z <- 3
+
+x + y
+x^z
+#OR
+#x**z
+q <- x * y * z
+sqrt(q)
+q/pi
+log10(x * y)
+```
+
+### Vectors
+
+#### Circles {-}
+
+The circumference of a circle is $2\pi\cdot r$, its surface $4\pi \cdot r^2$ and its volume $4/3 \pi\cdot r^3$.
+Given this vector of circle radiuses,
+
+```{r radiuses-defined2}
+radiuses <- c(0, 1, 2, pi, 4)
+```
+
+**A**  
+Calculate their cirumference.
+
+```{r circle-circumference}
+2 * pi * radiuses
+```
+
+**B**  
+Calculate their surface.
+
+```{r circle-surface}
+4 * pi * radiuses^2
+```
+
+**C**  
+Calculate their volume.
+
+```{r circle-volume}
+4/3 * pi * radiuses^3
+```
+
+#### Creating vectors {-}
+
+Create the following vectors, as efficiently as possible. The functions `rep()`, `seq()` and `paste0()` and the colon operator `:` can be used, in any combination.
+
+
+**A**   
+`[1] 1 2 5 1 2 5`
+
+```{r create-vector-A}
+rep(c(1, 2, 5), times = 2)
+```
+
+
+**B**  
+`[1] 9 9 9 8 8 8 7 7 7 6 6 6 5 5 5`
+
+```{r create-vector-B}
+rep(9:5, each = 3)
+```
+
+**C**  
+` [1] 1 1 1 4 4 4 9 9 9 1 1 1 4 4 4 9 9 9`
+
+```{r create-vector-C}
+rep(c(1, 4, 9), times = 2, each = 3)
+```
+
+**D**  
+` [1] "1a" "2b" "3c" "4d" "5e" "1a" "2b" "3c" "4d" "5e"`
+
+```{r create-vector-D}
+rep(paste0(1:5, letters[1:5]), times = 2)
+```
+
+**E**  
+`[1] "0z"   "0.2y" "0.4x" "0.6w" "0.8v" "1u"`
+
+```{r create-vector-E}
+paste0(seq(from = 0, to = 1, length.out = 6), letters[26:21])
+```
+
+**F**  
+`[1] "505" "404" "303" "202" "101" "000"`
+```{r create-vector-F}
+paste0(5:0, 0, 5:0)
+```
+
+**G [Challenge]**  
+`[1] "0.5A5.0" "0.4B4.0" "0.3C3.0" "0.2D2.0" "0.1E1.0"`
+
+```{r create-vector-G}
+paste0(seq(from = 0.5, to = 0.1, by = -0.1),  LETTERS[1:5], 5:1, ".0")
+```
+
+
+
+### Stair walking and heart rate 
+
+```{r stair-walking-exp-1, out.width='80%', fig.asp=.75, fig.align='center'}
+#number of steps on the stairs
+stair_height <- c(0, 5, 10, 15, 20, 25, 30, 35)
+#heart rate after ascending the stairs
+heart_rate <- c(66, 65, 67, 69, 73, 79, 86, 97)
+plot(heart_rate ~ stair_height,
+      main = "Heart rate versus stair height",
+      xlab = "number of steps",
+      ylab = "heart rate (beats/minute)",
+      type = "l",
+      lwd = 2,
+      col = "blue")
+```
+
+### More subjects
+
+```{r stair-walking-exp-2, out.width='80%', fig.asp=.75, fig.align='center'}
+#number of steps on the stairs
+stair_height <- c(0, 5, 10, 15, 20, 25, 30, 35)
+#heart rates for subjects with normal weight
+heart_rate_1 <- c(66, 65, 67, 69, 73, 79, 86, 97)
+heart_rate_2 <- c(61, 61, 63, 68, 74, 81, 89, 104)
+#heart rates for obese subjects
+heart_rate_3 <- c(58, 60, 67, 71, 78, 89, 104, 121)
+heart_rate_4 <- c(69, 73, 77, 83, 88, 96, 102, 127)
+plot(x = stair_height,
+    y = heart_rate_1,
+    main = "Heart rate vs stair height",
+    xlab = "number of steps",
+    ylab = "heart rate (beats/min.)",
+    type = "b",
+    lwd = 2,
+    col = "green",
+    ylim = c(55, 130))
+points(x = stair_height,
+    y = heart_rate_2,
+    col = "green",
+    type = "b",
+    lwd = 2)
+points(x = stair_height,
+    y = heart_rate_3,
+    col = "red",
+    type = "b",
+    lwd = 2)
+points(x = stair_height,
+    y = heart_rate_4,
+    col = "red",
+    type = "b",
+    lwd = 2)
+```
+
+Yes! there is a better more efficient way to do this, but we have not dealt with that yet.
+
+### Chickens on a diet
+
+```{r chicken-diets1, out.width='80%', fig.asp=.75, fig.align='center'}
+
+time <- c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 21)
+chick_1 <- c(42, 51, 59, 64, 76, 93, 106, 125, 149, 171, 199, 205)
+chick_2 <- c(40, 49, 58, 72, 84, 103, 122, 138, 162, 187, 209, 215)
+chick_3 <- c(42, 53, 62, 73, 85, 102, 123, 138, 170, 204, 235, 256)
+chick_4 <- c(41, 49, 61, 74, 98, 109, 128, 154, 192, 232, 280, 290)
+
+plot(x = time, y = chick_1,
+         type = "l",
+         lwd = 2,
+         col = "blue",
+         ylim = c(40, 300))
+points(x = time, y = chick_2,
+         type = "l",
+         lwd = 2,
+         lty = 3,
+         col = "blue")
+points(x = time, y = chick_3,
+         type = "l",
+         lwd = 2,
+         lty = 1,
+         col = "red")
+points(x = time, y = chick_4,
+         type = "l",
+         lwd = 2,
+         lty = 3,
+         col = "red")
+```
+
+### Chicken bar plot
+
+```{r chicken-diets2, out.width='80%', fig.asp=.75, fig.align='center'}
+maxima <- c(max(chick_1), max(chick_2), max(chick_3), max(chick_4))
+
+barplot(maxima,
+    names = c("Chick 1","Chick 2","Chick 3","Chick 4"),
+    ylab = "Maximum weight (grams)",
+    col = "gold",
+    main = "Maximum chick weights")
+```
+
+### Discoveries 
+
+**A**    
+```{r discoveries-1, out.width='80%', fig.asp=.75, fig.align='center'}
+barplot(table(discoveries),
+    main = "great discoveries per year",
+    xlab = "number of discoveries",
+    ylab = "frequency",
+    col = "green")
+```
+
+**B**    
+```{r discoveries-2, eval = FALSE}
+summary(discoveries)
+```
+
+**C**    
+```{r discoveries-3, out.width='80%', fig.asp=.75, fig.align='center'}
+plot(discoveries,
+         xlab = "year",
+         ylab = "number of discoveries",
+         main = "Great discoveries",
+         col = "blue", 
+         lwd = 2)
+```
+
+
+### Lung cancer    
+
+**A**    
+```{r lung-cancer-1, out.width='80%', fig.asp=.75, fig.align='center'}
+total.col <- "red"
+m.col <- "blue"
+f.col <- "green"
+plot(ldeaths,
+         main = "deaths from lung cancer",
+         xlab = "year",
+         ylab = "number",
+         col = total.col,
+         ylim = c(0, 4000),
+         lwd = 2
+)
+lines(fdeaths, col = f.col, lwd = 2)
+lines(mdeaths, col = m.col, lwd = 2)
+legend(
+    "topleft", 
+    legend = c("total", "female", "male"), 
+    col = c(total.col, f.col, m.col), 
+    lty = 1)
+```
+
+**B**   
+
+```{r lung-cancer-2, out.width='80%', fig.asp=.75, fig.align='center'}
+boxplot(
+    fdeaths, mdeaths, ldeaths
+)
+```
+
+ANSWER: You can see a single outlier in the `fdeaths` set. We can identify the year by finding out when this occurred:
+
+```{r finding-outliers}
+max(fdeaths) ## 1141
+which(fdeaths == max(fdeaths)) ## index 26
+fdeaths
+```
+
+So this was February 1976. A quick Google search turned up a pdf document "CDC Influenza Surveillance" that states 
+
+> "The 1975-1976 influenza season was noteworthy because of several events. a) An H3N2 influenza virus (A/Victoria/3/75), isolated first in April 1975, caused a wide- spread epidemic late in the influenza season in the United States. Based on pneumonia- and influenza-associated mortality which peaked in February and March 1976, this was the most severe epidemic experienced by the United States since the 1968-1969 Hong Kong epidemic."
+
+([direct link](https://stacks.cdc.gov/view/cdc/287/cdc_287_DS1.pdf))
+
+As you may know, (lung) cancer patients are especially vulnerable for influenza infections.
+
+## Complex datatypes
+
+### Creating factors
+
+**A**  
+```{r eval = FALSE}
+animal_risk <- c(2, 4, 1, 1, 2, 4, 1, 4, 1, 1, 2, 1)
+animal_risk_factor <- factor(x = animal_risk,
+                             levels = c(1, 2, 3, 4),
+                             labels = c("harmless", "risky", "dangerous", "deadly"),
+                             ordered = TRUE)
+barplot(table(animal_risk_factor))
+```
+
+**B**  
+```{r}
+set.seed(1234)
+wealth_male <- sample(x = letters[1:4], 
+                 size = 1000,
+                 replace= TRUE, 
+                 prob = c(0.7, 0.17, 0.12, 0.01))
+wealth_female <- sample(x = letters[1:4], 
+                 size = 1000,
+                 replace= TRUE, 
+                 prob = c(0.8, 0.15, 0.497, 0.003))
+
+wealth_labels <- c("poor", "middle class", "wealthy", "rich")
+
+wealth_male_f <- factor(x = wealth_male,
+                        levels = letters[1:4],
+                        labels = wealth_labels,
+                        ordered = TRUE)
+
+wealth_female_f <- factor(x = wealth_female,
+                        levels = letters[1:4],
+                        labels = wealth_labels,
+                        ordered = TRUE)
+
+#combine
+wealth_all_f <- factor(c(wealth_male_f, wealth_female_f),
+                        levels = 1:4,
+                        labels = wealth_labels,
+                        ordered = TRUE)
+
+prop.table(table(wealth_all_f)) * 100
+
+#getting this data right may be a bit of a challenge...
+bar_data <- rbind(table(wealth_female_f), table(wealth_male_f))
+rownames(bar_data) <- c("female", "male")
+
+barplot(bar_data, beside = T, legend = rownames(bar_data))
+```
+
+
+### A dictionary with a named vector
+
+**A**    
+```{r named-vector-1}
+codons <- c("G", "P", "K", "S")
+names(codons) <- c("GGA", "CCU", "AAA", "AGU")
+
+my_DNA <- "GGACCUAAAAGU"
+my_prot <- ""
+for (i in seq(from = 1, to = nchar(my_DNA), by = 3)) {
+        codon <- substr(my_DNA, i, i+2)
+        my_prot <- paste0(my_prot, codons[codon])
+}
+print(my_prot)
+```
+
+**B**    
+```{r eval = F}
+nuc_weights <- c(491.2, 467.2, 507.2, 482.2)
+names(nuc_weights) <- c('A', 'C', 'G', 'U')
+
+mol_weight <- 0
+for (i in 1:nchar(my_DNA)) {
+        nuc <- substr(my_DNA, i, i);
+        print(nuc)
+        mol_weight <- mol_weight + nuc_weights[nuc]
+}
+mol_weight
+```
+
+
+### Protein concentrations with Lowry
+
+
+```{r}
+bsa_conc <- c(0,	0,	0.025,	0.025,	0.075,	0.075,	0.125,	0.125)
+```
+
+
+```{r}
+OD750 <- c(0.063,	0.033,	0.16,	0.181,	0.346,	0.352,	0.491,	0.488)
+```
+
+**A**  
+
+```{r}
+dilution <- data.frame(bsa_conc, OD750)
+```
+
+**B**  
+
+```{r}
+names(dilution) <- c("prot_conc", "absorption")
+```
+
+**C**  
+
+```{r}
+bsa_conc2 <- c(0.175,	0.175,	0.25,	0.25)
+OD750_2 <- c(0.597,	0.595,	0.743,	0.742)
+```
+
+
+```{r}
+df_temp <- data.frame("prot_conc" = bsa_conc2,
+                      "absorption" = OD750_2)
+```
+
+**D**  
+
+```{r}
+dilution <- rbind(dilution, df_temp)
+```
+
+**E**  
+
+```{r}
+# Your code here
+plot(dilution$abs ~ dilution$prot_conc,
+     main = "Absorbance as a function of protein concentration",
+     xlab = "Protein concentration (mg/ml)",
+     ylab = "Absorbance at 750 nm (AU)",
+     ylim = c(0,1),
+     col = rgb(0, 0, 1, 0.5),
+     pch = 19,
+     cex = 0.8,
+     type = "b")
+```
+
+**F**  
+
+```{r}
+even <- dilution[c(T, F), ]
+odd <- dilution[c(F, T), ]
+dilution_duplo <- cbind(odd, even)
+dilution_duplo
+```
+
+**G**  
+
+```{r}
+dilution_duplo[, 3] <- NULL
+names(dilution_duplo) <- c("prot_conc", "abs1", "abs2")
+dilution_duplo
+```
+
+**H**  
+
+```{r}
+dilution_duplo$mean <- (dilution_duplo$abs1 + dilution_duplo$abs2) / 2
+dilution_duplo
+```
+
+**I**  
+
+```{r}
+barplot(dilution_duplo$mean ~ dilution_duplo$prot_conc,
+     main = "Absorbance as a function of protein concentration",
+     xlab = "Protein concentration (mg/ml)",
+     ylab = "Absorbance 750nm (AU)",
+     ylim = c(0, 1),
+     col = "darkgreen")
+```
+
+
+### HPLC data
+
+
+```{r}
+co <- c(100,	100,	75,	75,	50,	50,	25,	25,	10,	10,	5, 5)
+pa <- c(1969017,	1858012,	1399762,	1449423,	963014,	832137,	467856,	562012,	200123,	145545,	94567,	64752)
+```
+
+**A**  
+
+```{r}
+# Your code here
+hplc_data <- data.frame("conc" = co, "peak_area" = pa)
+```
+
+**B**  
+
+```{r eval = F}
+# Your code here
+hplc_data <- hplc_data[order(hplc_data$conc), ]
+```
+
+**C** 
+
+```{r}
+# Your code here
+plot(hplc_data$peak_area ~ hplc_data$conc,
+     main = "Peak area as a function of thymol concentration",
+     xlab = "Thymol concentration (μg/ml)",
+     ylab = "Peak area (AU)",
+     col = "blue")
+reg_mod = lm(hplc_data$peak_area ~ hplc_data$conc)
+abline(reg_mod, col = "red", lwd = 2)
+```
+
+
+### Airquality 
+
+**A**    
+```{r airquality-1, out.width='80%', fig.asp=.75, fig.align='center'}
+plot(airquality$Solar.R, airquality$Temp,
+         main = "Temperature as a function of Solar radiation",
+         xlab = "Solar radiation (lang)",
+         ylab = "Temperature (F)")
+abline(lm(airquality$Temp ~ airquality$Solar.R), col = "blue", lwd = 2)
+```
+
+**B**    
+```{r airquality-2, out.width='80%', fig.asp=.75, fig.align='center'}
+with(datasets::airquality, {
+  m <- factor(Month, levels = 5:9, labels = month.abb[5:9])
+  boxplot(Temp ~ m, 
+    main = "Temperature over the months",
+    xlab = "Month",
+    ylab = "Temperature (F)")})
+```
+
+
+**C**    
+```{r airquality-3, out.width='80%', fig.asp=.75, fig.align='center'}
+#first create Temp Celcius column:
+#(°F    -    32)    x    5/9 = °C
+airquality$Temp.C <- (airquality$Temp - 32) * 5/9
+#get the required data
+airquality[airquality$Temp.C == min(airquality$Temp.C), c("Temp.C", "Month", "Day")]
+```
+
+**D**    
+```{r airquality-4, out.width='80%', fig.asp=.75, fig.align='center'}
+hist(airquality$Wind, xlab = "Wind speed (mph)")
+abline(v = mean(airquality$Wind), col = "blue", lwd = 2)
+abline(v = median(airquality$Wind), col = "red", lwd = 2)
+```
+
+**E**    
+```{r airquality-5, out.width='80%', fig.asp=.75, fig.align='center'}
+##remove temp celcius agan
+airquality$Temp.C <- NULL
+pairs(airquality, panel = panel.smooth)
+```
+
+Calculate pairwise correlation.
+```{r airquality-cor, eval = FALSE}
+cor(na.omit(airquality))
+```
+
+The Ozone~Temp pair has the strongest correlation. A scatterplot of this pair:
+
+```{r airquality-strongest-corr, fig.cap = "Ozone dependency on Temp"}
+plot(airquality$Ozone ~ airquality$Temp,
+     xlab = "Temperature (F)",
+     ylab = "Ozone (ppb)",
+     col = "blue")
+ozone_wind_lm <- lm(airquality$Ozone ~ airquality$Temp)
+r_squared <- round(summary(ozone_wind_lm)$r.squared, 2)
+abline(ozone_wind_lm, col = "red", lwd = 2)
+text(x = 60, y = 125, labels = paste0("R^2 = ", r_squared))
+```
+
+
+### File reading practice
+
+
+**File 01**  
+
+```{r eval = FALSE}
+my_dir <- "data/file_reading"
+my_file <- "file01.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    comment.char = "#",
+    header = T,
+    sep = ",",
+    dec = ".",
+    na.strings = "ND",
+    as.is = c(1, 3))
+```
+
+**File 02**  
+
+```{r eval = FALSE}
+my_file <- "file02.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    comment.char = "$",
+    header = T,
+    sep = "\t",
+    dec = ",",
+    na.strings = "?",
+    as.is = c(1, 3)
+)
+```
+
+**File 03**  
+
+```{r eval = FALSE}
+my_file <- "file03.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    header = T,
+    sep = ";",
+    dec = ".",
+    na.strings = "ND",
+    as.is = c(1, 3)
+)
+```
+
+**File 04**  
+
+```{r eval = FALSE}
+my_file <- "file04.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    header = T,
+    sep = "\t",
+    dec = ",",
+    na.strings = "no data",
+    as.is = c(1, 3)
+)
+```
+
+**File 05**  
+
+```{r eval = FALSE}
+my_file <- "file05.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    comment.char = "#",
+    header = T,
+    sep = ";",
+    dec = ".",
+    na.strings = "ND",
+    as.is = c(1, 3)
+)
+```
+
+**File 06**  
+
+```{r eval = FALSE}
+my_file <- "file06.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    comment.char = "#",
+    header = T,
+    sep = ",",
+    dec = ".",
+    na.strings = "-",
+    as.is = c(1, 3))
+my_data
+```
+
+**File 07**  
+
+```{r eval = FALSE}
+my_file <- "file07.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    comment.char = "#",
+    header = F,
+    sep = ";",
+    dec = ".",
+    na.strings = "-",
+    as.is = c(1, 3))
+```
+
+**File 08**  
+
+```{r eval = FALSE}
+my_file <- "file08.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    comment.char = "@",
+    header = T,
+    sep = ";",
+    dec = ".",
+    na.strings = "ND",
+    as.is = c(1, 3))
+```
+
+**File 09**  
+
+```{r eval = FALSE}
+my_file <- "file09.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    header = T,
+    sep = ";",
+    dec = ".",
+    na.strings = "?",
+    as.is = c(1, 3))
+```
+
+**File 10**  
+
+```{r eval = FALSE}
+my_file <- "file10.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    header = F,
+    sep = ",",
+    dec = ".",
+    na.strings = "no data",
+    as.is = c(1, 3))
+```
+
+**File 11**  
+
+```{r eval = FALSE}
+my_file <- "file11.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    header = T,
+    sep = ";",
+    dec = ".",
+    na.strings = "-",
+    as.is = c(1, 3))
+```
+
+**File 12**  
+
+```{r eval = FALSE}
+my_file <- "file12.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    header = T,
+    sep = ",",
+    dec = ".",
+    na.strings = "-1",
+    as.is = c(1, 3))
+```
+
+**File 13**  
+
+```{r eval = FALSE}
+my_file <- "file13.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    comment.char = "$",
+    header = F,
+    sep = ",",
+    dec = ".",
+    na.strings = "?",
+    as.is = c(1, 3))
+```
+
+**File 14**  
+
+```{r eval = FALSE}
+my_file <- "file14.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    comment.char = "$",
+    header = T,
+    sep = ",",
+    dec = ".",
+    na.strings = "no data",
+    as.is = c(1, 3))
+```
+
+**File 15**  
+
+```{r eval = FALSE}
+my_file <- "file15.txt"
+my_path <- paste0(my_dir, "/", my_file)
+my_data <- read.table(
+    my_path,
+    comment.char = "#",
+    header = T,
+    sep = "\t",
+    dec = ",",
+    na.strings = "?",
+    as.is = c(1, 3))
+```
+
+
+
+### Bird observations
+
+```{r load-bird-observations}
+bird_obs <- read.table("data/Observations-Data-2014.csv", 
+                                             sep=";", 
+                                             head=T, 
+                                             na.strings = "", 
+                                             quote = "", 
+                                             comment.char = "")
+```
+
+
+**A**    
+```{r, eval = FALSE}
+## look at the loaded data structure
+str(bird_obs)
+```
+
+Apparently, all variables are loaded as a factor; also the `Date.start`, `Date.end` (should be dates of course), `Number` (should be `integer`) and `Notes` (should be `character`) columns. In the original column names there are spaces and these are replaced by dots. First column `Species..` is a serial number and the second `Species` is the English species name.
+
+**B**    
+```{r, eval = FALSE}
+nrow(bird_obs)
+```
+
+**C**    
+```{r, eval = FALSE}
+class(bird_obs$Number)
+```
+
+**D**    
+```{r}
+bird_obs$Count <- as.integer(bird_obs$Number)
+head(bird_obs[, c(4, 8, 14)], n=50)
+```
+
+The factor **_levels_** have been converted into integers, not the original values!
+
+**E**    
+```{r}
+#best is to get it right from the start: read with as.is argument
+bird_obs <- read.table("data/Observations-Data-2014.csv",
+                                sep=";",
+                                head=T,
+                                na.strings = "",
+                                quote = "",
+                                comment.char = "",
+                                as.is = c(1, 6, 7, 8, 13))
+str(bird_obs)
+##alternatively, convert it after loading:
+#bird_obs$Count <- as.numeric(as.character(bird_obs$Number))
+```
+
+Convert Number column to Count of integers.
+
+```{r}
+bird_obs$Count <- as.integer(bird_obs$Number)
+```
+
+Note that there are other ways to achieve this, e.g. the `colClasses` argument to `read.table()`.
+
+**F**    
+```{r, eval = FALSE}
+head(bird_obs[, c(4, 8, 14)], n=50)
+sum(is.na(bird_obs$Count))
+```
+
+**G**    
+```{r, eval = FALSE}
+#What is the maximum number of birds in a single sighting?
+
+bird_obs[bird_obs$Count == max(bird_obs$Count, na.rm = T), ]
+##OR
+bird_obs[!is.na(bird_obs$Count) & bird_obs$Count == max(bird_obs$Count, na.rm = T), ]
+
+#What is the mean sighting count
+mean(bird_obs$Count, na.rm = T)
+
+#What is the median of the sighting count
+median(bird_obs$Count, na.rm = T)
+```
+
+**H**    
+```{r bird-obs-1, out.width='80%', fig.asp=.75, fig.align='center'}
+hist(bird_obs$Count)
+```
+
+Not very helpful, now is it? Try fiddling with the `breaks` argument.
+
+```{r bird-obs-2, out.width='80%', fig.asp=.75, fig.align='center'}
+plot(density(bird_obs$Count, na.rm=T),
+         main = "density of Counts")
+```
+
+Better results with a log transformation (and some coloring)
+
+```{r bird-obs-3, out.width='80%', fig.asp=.75, fig.align='center'}
+d <- density(log(bird_obs$Count), na.rm=T)
+plot(d, main = "density of log-transformed Counts")
+polygon(d, col = "red", border = "blue")
+```
+
+The Shapiro test gives us a numeric indication of the fit to a normal distribution:
+
+```{r bird-obs-count-shapiro}
+shapiro.test(bird_obs$Count)
+```
+
+The P-value -way below 0.05- indicates this is not a normal distribution. But we've seen that already of course.
+
+**I**    
+```{r, eval = FALSE}
+#How many different species were recorded?
+length(unique(bird_obs$Common.name))
+
+#How many genera do they constitute?
+length(unique(bird_obs$Genus))
+
+#What species from the genus "Puffinus" have been observed?
+#the actual sightings
+bird_obs[bird_obs$Genus == "Puffinus", c(2, 3, 4, 6, 14)]
+#the species
+unique(bird_obs[bird_obs$Genus == "Puffinus", "Common.name"])
+```
+The challenge
+
+```{r bird-obs-names-challenge}
+common_names <- unique(bird_obs$Common.name)
+scientific_names <- unique(paste0(bird_obs$Genus, " ", bird_obs$Species))
+paste0("number of common names: ", length(common_names), "; number of scientific names: ",  length(scientific_names))
+```
+
+So there is something fishy going on.
+My guess is that one more species has two common names for two _subspecies_ where, of course, there will be only one scientific species name. Which? Dunno. Can you find out?  
+
+OK, I couldn't help myself. I do NOT expect you to be able to do serious mangling like this at the end of this course!
+
+```{r investigate-birdnames-further}
+scientific_all <- paste0(bird_obs$Genus, " ", bird_obs$Species)
+##combine scientific and common andf make unique
+combined <- unique(paste0(scientific_all, ":", bird_obs$Common.name))
+#split it again, and convert to dataframe (strsplit gives a list)
+combined_split <- strsplit(x = combined, split = ":")
+combined_split <- as.data.frame(do.call(rbind, combined_split))
+#count frequencies of Scinetific names
+combined_split_table <- as.data.frame(table(combined_split[,1]))
+#where is the count above 1?
+combined_split_table[combined_split_table$Freq > 1, ]
+```
+
+And which are tehse as Common Name?
+
+```{r}
+species_sel <- combined_split_table[combined_split_table$Freq > 1, ]$Var1
+species_sel
+
+combined_split[combined_split$V1 %in% species_sel, ]
+```
+
+Ahhh simple typos, for 3 out of 5, and data entering errors: The cause of so many data analysis problems. Scientific name _Pterodroma ultima_ is certainly not that of the Mute Swan: a data entering error, and the same counts for _Tachycineta bicolor_: it is the name of the Tree Swallow. 
+
+
+**J**  
+```{r, eval = FALSE}
+#these are the values that need to be rescued:
+table(bird_obs[is.na(bird_obs$Count), "Number"])
+#I suggest you take the lowest of the range-like values: 
+#1-3 becomes 1; 2-3 becomes 2; 100s becomes 100 etc
+#then do something like
+tmp <- bird_obs$Number[1:50]
+tmp
+gsub("(\\d+)-(\\d+)", "\\1", tmp)
+```
+
+## Functions
+
+### The `cut()` function I
+
+```{r}
+fold_change <- c(0.10, 8.50, 0.95, 56.08, 0.90, 99.15, 1.00, 0.01, 0.65, 1.10, 2.34, 62.2)
+```
+
+**A**  
+
+```{r}
+induc_type <- cut(fold_change, 
+                  breaks = c(0, 0.9, 1.1, Inf), 
+                  labels = c("repression", "no_change", "induction"), 
+                  right = FALSE,
+                  ordered_result = T)
+induc_type
+```
+
+**B**  
+
+```{r}
+induction <- data.frame(fold_induction = fold_change, 
+                        induction_type = induc_type)
+```
+
+**C**  
+
+```{r}
+plot(induction$induction_type,
+     main = "Gene expression after dihydrotestosterone treatment.",
+     ylab = "Number of genes",
+     names = c("repressed", "no change", "induced"),
+     col = "blue")
+```
+
+
+### The `cut()` function II
+
+```{r eval = F}
+remote_location <- "https://raw.githubusercontent.com/MichielNoback/davur1_gitbook/master/data/gene_expression_data.txt"
+read.table(remote_location,  )
+```
+
+**A**  
+
+````{r eval = F}
+gene_array <- read.table(
+    remote_location,
+    header = T,
+    sep = ",",
+    dec = ".",
+    na.strings = "",
+    as.is = c(1, 3))
+```
+
+**B**  
+
+```{r eval = F}
+induction_repression <- cut(gene_array$fold_change,
+  breaks = c(0, 9, 1.1,  Inf), 
+  right = F,
+  labels = c("repression", "no_change", "induction"),
+  ordered_result = T)
+gene_array$induction_repression <-induction_repression
+```
+
+**C**  
+
+```{r eval = F}
+plot(gene_array$induction_repression,
+     main = "Gene expression after dihydrotestosterone treatment",
+     ylab = "number of genes",
+     ylim = c(0, 600),
+     names = c("repressed", "no change", "induced"),
+     col = "blue")
+```
+
+
+
+## Regular Expressions
+
+### Restriction enzymes
+
+**A**  
+```{r eval = FALSE}
+pacI_re <- "TTAATTAA"
+patterns <- c("T{2}A{2}T{2}A{2}",
+           "(TTAA){2}", 
+           "(T{2}A{2}){2}")
+for(ptrn in patterns){
+    print(grepl(ptrn, pacI_re))
+}
+```
+
+**B**  
+```{r eval = FALSE}
+sfiI_re <- "GGCCACGTAGGCC"
+patterns <- c("G{2}C{2}[GATC]{5}G{2}C{2}",
+           "GGCC[GATC]{5}GGCC", 
+           "[GC]{4}[GATC]{5}[GC]{4}") #last one is less specific!
+for(ptrn in patterns){
+    print(grepl(ptrn, sfiI_re))
+}
+```
+
+### Prosite Patterns  
+
+**A**  
+PS00211:  
+"[LIVMFYC]-[SA]-[SAPGLVFYKQH]-G-[DENQMW]-[KRQASPCLIMFW]-[KRNQSTAVM]-[KRACLVM]-[LIVMFYPAN]-{PHY}-[LIVMFW]-[SAGCLIVP]-{FYWHP}-{KRHP}-[LIVMFYWSTA]." 
+
+```{r}
+PS00211<- "[LIVMFYC][SA][SAPGLVFYKQH]G[DENQMW][KRQASPCLIMFW][KRNQSTAVM][KRACLVM][LIVMFYPAN][^PHY][LIVMFW][SAGCLIVP][^FYWHP][^KRHP][LIVMFYWSTA]"
+```
+
+**B**  
+PS00018: 
+"D-{W}-[DNS]-{ILVFYW}-[DENSTG]-[DNQGHRK]-{GP}-[LIVMC]-[DENQSTAGC]-x(2)- [DE]-[LIVMFYW]." 
+
+```{r}
+PS00018 <- "D[^W][DNS][^ILVFYW][DENSTG][DNQGHRK][^GP][LIVMC][DENQSTAGC].{2} [DE][LIVMFYW]"
+```
+
+
+### Fasta Headers  
+
+```{r}
+library(stringr)
+fasta_headers <- readLines("./data/fasta_headers.txt")
+```
+
+**A**  
+```{r eval = FALSE}
+str_match(fasta_headers, "\\[(.+)\\]")[, 2]
+str_match(fasta_headers, "\\[([[:alpha:]]+ [[:alpha:]]+) ?(.+)?\\]")[, 2]
+```
+
+**B**  
+```{r eval = FALSE}
+str_match(fasta_headers, ">([[:alpha:]]{2,3}\\|\\w+)\\|")[, 2]
+```
+
+**C**  
+```{r eval = FALSE}
+str_match(fasta_headers, ">.+\\| (.+?) \\[")[, 2]
+```
+
+
+
+## Scripting
+
+### Illegal reproductions
+
+#### The mean {-}
+
+```{r, eval = FALSE}
+my_mean <- function(x) {
+        sum(x, na.rm = T) / length(x)
+}
+``` 
+
+#### Standard deviation {-}
+
+```{r, eval = FALSE}
+my_sd <- function(x) {
+        sqrt(sum((x - mean(x))^2)/(length(x)-1))
+}
+```
+
+#### Maximum {-}
+
+```{r eval = FALSE}
+set.seed(123) 
+my_nums <- sample(10000, 1000)
+my_max <- function(x) {
+    max_val <- 0
+    for (i in my_nums) {
+        if (i > max_val) {
+            max_val = i
+        }
+    }
+    return(max_val)
+}
+```
+
+### Find match locations {-}
+
+```{r eval = FALSE}
+where_is_it <- function(x, look_for) {
+    found <- integer(0)
+    for (i in 1:length(x)) {
+        elmnt <- x[i]
+        if (elmnt == look_for) {
+            found <- c(found, i)
+        }
+    }
+    return(found)
+}
+x <- c("Pro", "Glu", "Lys", "Pro", "Ser")
+where_is_it(x, "Pro")
+##expected:
+#[1] 1 4
+```
+
+
+#### Median {-}     
+
+```{r, eval = FALSE}
+my_median <- function(x) {
+        sorted <- sort(x)
+        if(length(x) %% 2 == 1) {
+                #uneven length
+                my_median <- sorted[ceiling(length(x)/2)]
+        } else {
+                my_median <- (sorted[length(x)/2] + sorted[(length(x)/2)+1]) / 2
+        }
+        return(my_median)
+}
+```
+
+
+### Count odd and even numbers
+
+```{r eval = FALSE}
+count_odd_even <- function(x) {
+    evens <- sum(x %% 2 == 0)
+    odds <- sum(x %% 2 == 1)
+    #OR, more efficient
+    #odds <- length(x) - evens
+    tmp <- c(even = evens, odd = odds)
+    return(tmp)
+}
+count_odd_even(c(1,2,3,4,5,5))
+```
+
+
+### Add column compared to mean
+
+```{r eval = FALSE}
+add_compared_to_mean <- function (df, name) {
+    if (! is.data.frame(df)) {
+        stop(paste0("'", df, "' is not a dataframe."))
+    }
+    if(! name %in% colnames(df)) {
+        stop(paste0("'", name, "' is not an existing column."))
+    }
+    if(! is.numeric(df[, name])) {
+        stop(paste0("'", name, " is not a numeric column."))
+    }
+    the_col <- df[, name]
+    tmp <- ifelse(the_col > mean(the_col), "greater", "less")
+    df$compared_to_mean <- tmp
+    return(df)
+}
+my_df <- data.frame(a = c(2, 4, 2, 3, 4, 3, 1, 5), b = rep(c("x", "y"), 4))
+add_compared_to_mean(my_df, "a")
+```
+
+
+
+### Interquantile ranges
+
+```{r eval = FALSE}
+interquantile_range <- function(x, lower = 0, upper = 1) {
+  if (! is.numeric(x) | 
+      ! is.numeric(lower) |
+      ! is.numeric(upper)) {
+    stop("all three arguments should be numeric")
+  }
+  lower_val <- quantile(x, probs = lower)
+  upper_val <- quantile(x, probs = upper)
+  tmp <- upper_val - lower_val
+  #a named vector is always nice, for acces but also for display purposes
+  names(tmp) <- paste0(lower*100, "-", upper*100, "%")
+  tmp
+}
+tst <- rnorm(1000)
+interquantile_range(tst) # 0 to 1
+interquantile_range(tst, 0.25, 0.75) # custom
+#interquantile_range("foo") # error!
+```
+
+
+### Vector distance
+
+```{r vector-distance, eval = FALSE}
+distance <- function(p, q) {
+    if (! is.numeric(p) | ! is.numeric(q)) {
+        stop("non-numeric vectors passed")
+    }
+    if (length(p) != length(q)) {
+        stop("vectors have unequal length")
+    }
+    sqrt(sum((p - q)^2))
+}
+```
+
+
+#### Other distance measures {-}
+
+
+```{r other-distance-measures}
+my_distance <- function(p, q, method = "euclidean") {
+  if (! (is.numeric(p) & is.numeric(q))) {
+    stop("One or both of the vectors is not numeric")
+  }
+  if (length(p) != length(q)) {
+    stop("Vectors are not of equal length")
+  }
+  if (method == "euclidean") {
+    return(sqrt(sum((p - q)^2)))
+  }
+  else if (method == "manhattan") {
+    return(sum(abs(p-q)))
+  }
+  else {
+    stop(paste0("Method not found: ", method))
+  }
+}
+my_distance(c(0,0,0), c(1, 1, 1))
+```
+
+### Quadratic equation solver
+
+
+```{r eval = FALSE}
+abc_solver <- function(a, b, c) {
+    discriminant <- (b ^ 2) - (4 * a * c)
+    if (discriminant < 0) {
+        return("This quadratic equation can not be solved.")
+    }
+    else if (discriminant > 0) {
+        x1 <- ((-1 * b) + sqrt(discriminant)) / (2 * a)
+        x2 <- ((-1 * b) - sqrt(discriminant)) / (2 * a)
+        return(c(x1, x2))
+    }
+    else{
+        x <- (-1 * b) / (2 * a)
+        return(x)
+    }
+}
+abc_solver(a = 1, b = 2, c = 3)
+abc_solver(a = 3, b = 7, c = 4)
+abc_solver(a = 2, b = 4, c = 2)
+```
+
+
+### G/C percentage of DNA
+
+```{r, eval = FALSE}
+GC_perc <- function(seq, strict = TRUE) {
+        if (is.na(seq)) {
+                return(NA)
+        }
+        if (length(seq) == 0) {
+                return(0)
+        }
+        seq.split <- strsplit(seq, "")[[1]]
+        gc.count <- 0
+        anom.count <- 0
+        for (n in seq.split) {
+                if (length(grep("[GATUCgatuc]", n)) > 0) {
+                        if (n == "G" || n == "C") {
+                                gc.count <- gc.count + 1
+                        }
+                } else {
+                        if (strict) {
+                                stop(paste("Illegal character", n))
+                        } else {
+                                anom.count <- anom.count + 1     
+                        }
+                }
+        }
+        ##return perc
+        ##print(gc.count)
+        if (anom.count > 0) {
+                anom.perc <- anom.count / nchar(seq) * 100
+                warning(paste("Non-DNA characters have percentage of", anom.perc))
+        }
+        return(gc.count / nchar(seq) * 100)
+}
+```
+
+
+
+## Function `apply` and its relatives
+
+
+
+
+
+### Whale selenium 
+
+```{r read-remote-file-1}
+whale_sel_url <- "https://raw.githubusercontent.com/MichielNoback/davur1/gh-pages/exercises/data/whale_selenium.txt"
+whale_selenium <- read.table(whale_sel_url,
+        header = T,
+        row.names = 1)
+```
+
+**A**    
+```{r, eval = FALSE}
+apply(X = whale_selenium, MARGIN = 2, FUN = mean)
+```
+
+**B**  
+```{r, eval = FALSE}
+apply(X = whale_selenium, MARGIN = 2, FUN = sd)
+```
+
+
+**C**    
+```{r, eval = FALSE}
+my.sem <- function(x) {
+        sem <- sd(x) / sqrt(length(x))
+}
+apply(X = whale_selenium, MARGIN = 2, FUN = my.sem)
+```
+
+**D**    
+```{r whale-selenium-hist, out.width='80%', fig.asp=.75, fig.align='center'}
+whale_selenium$ratio <- apply(X = whale_selenium, 
+            MARGIN = 1, 
+            FUN = function(x){
+                    x[2] / x[1]
+            })
+hist(whale_selenium$ratio,
+         xlab = "Tooth / Liver Selenium ratio",
+         main = "Histogram of Tooth / Liver Selenium ratios")
+```
+
+**E**  
+Inline expressions are like this: `r mean(cars$speed)` MpH.
+
+
+### ChickWeight 
+
+This exercise revolves around the `ChickWeight` dataset of the built-in `datasets` package. 
+
+**A**    
+```{r}
+#MANY WAYS TO GET THERE
+length(split(ChickWeight, ChickWeight$Chick))
+#OR
+sum(tapply(ChickWeight$Diet, ChickWeight$Chick, FUN = function(x){1}))
+#OR
+length(unique(ChickWeight$Chick))
+#OR
+nrow(aggregate(x = ChickWeight, by = list(ChickWeight$Chick), FUN = function(x){x}))
+```
+
+**B**  
+```{r}
+aggregate(formula = weight ~ Diet, data=ChickWeight, FUN = mean, na.rm = T)
+#OR
+aggregate(x = ChickWeight$weight, by = list(Diet = ChickWeight$Diet), FUN = mean, na.rm = T)
+```
+
+**C**  
+```{r}
+coplot(weight ~ Time | Diet, data = ChickWeight, panel = panel.smooth)
+```
+
+**D**  
+This is the "naive" solution:
+
+```{r}
+#A naive for-loop here - is this the best solution?
+ChickWeight$weight_gain <- NA #create the column with missing values
+for (i in 1:nrow(ChickWeight)) {
+        #skip first row and rows that are preceded by values for another chick
+        if (i > 1 && ChickWeight$Chick[i] == ChickWeight$Chick[i-1]) {
+                ChickWeight[i, "weight_gain"] <- ChickWeight$weight[i] - ChickWeight$weight[i-1] 
+        }
+}
+```
+
+This is the most efficient way of dealing with this in base R. Function `do.call()` is out of scope for this course!
+
+```{r}
+weight_gain <- function(x) {
+    #x is a dataframe
+    leaded <- c(x$weight)
+    lagged <- c(NA, x$weight[1:(length(x$weight)-1)])
+    x$gain <- leaded - lagged
+    x
+}
+
+split_cw <- split(x = ChickWeight, f = ChickWeight$Chick)
+new_cw <- do.call(rbind, lapply(X = split_cw, FUN = weight_gain))
+
+head(new_cw)
+```
+
+**E**  
+```{r eval = F}
+local_file <- "ChickWeight_weight_gain.Rdata"
+download.file(paste0("https://github.com/MichielNoback/davur1_gitbook/raw/master/data/", local_file), local_file)
+load(local_file)
+#attach
+ChickWeight$weight_gain <- stored.weight.gain
+```
+
+```{r eval = F}
+tapply(X = ChickWeight$weight_gain, INDEX = ChickWeight$Diet, FUN = mean, na.rm = T)
+#or with aggregate
+aggregate(formula = weight_gain ~ Diet, data = ChickWeight, FUN = median)
+#or with split and sapply
+sapply(split(ChickWeight[, "weight_gain"], ChickWeight$Diet), sd, na.rm = T)
+```
+
+**F**  
+```{r weight-gain-boxplot, out.width='80%', fig.asp=.75, fig.align='center'}
+boxplot(weight_gain ~ Diet, data = ChickWeight)
+```
+
+
+### Food constituents 
+
+**A**  
+```{r}
+foods <- read.table(
+        "https://raw.githubusercontent.com/MichielNoback/davur1_gitbook/master/data/food_constituents.txt", header = T)
+```
+
+```{r eval = FALSE}
+levels(foods$Type)
+table(foods$Type)
+```
+
+**B**  
+```{r eval = FALSE}
+mean(foods[foods$Type == "chocolate", "kcal"])
+```
+
+**C**  
+```{r eval = FALSE}
+#aggregate over Type
+mean.fat <- aggregate(formula = fat.total ~ Type, data = foods, FUN = mean)
+#order and select first
+mean.fat[order(mean.fat$fat.total, decreasing = T)[1], ]
+```
+
+**D**  
+```{r eval = FALSE}
+mean.energy <- aggregate(formula = kcal ~ Type, data = foods, FUN = mean)
+mean.energy[order(mean.energy$kcal)[1], ]
+mean.energy[order(mean.energy$kcal, decreasing = T)[1], ]
+```
+
+**E**  
+```{r foods-boxplot, out.width='80%', fig.asp=.75, fig.align='center'}
+#more verbose means possible; this efficient way demonstrating use of %in%
+foods$solid.state <- !foods$Type %in% c("milk", "beverage")
+boxplot(formula = carb.sugar ~ solid.state, 
+                data = foods,
+                main = "Sugar content of foods categories", 
+                names = (c("Drink", "Solid")),
+                ylab = "Sugar (g/100g product)")
+```
+
+**F**  
+\[NO WORKED SOLUTION HERE\]
+
+
+
+### Urine properties
+
+
+```{r download-urine-data-2}
+urine_file_name <- "urine.csv"
+url <- paste0("https://raw.githubusercontent.com/MichielNoback/datasets/master/urine/", urine_file_name)
+local_name <- paste0("../", urine_file_name) #specifiy your own folder!
+download.file(url = url, destfile = local_name)
+```
+
+**A**  
+```{r load-urine-data}
+urine <- read.table(local_name, 
+                     sep = ",",
+                     header = TRUE)
+```
+
+**B**  
+```{r convert-column-r}
+names(urine)[2] <- "ox_crystals"
+urine$ox_crystals <- factor(urine$ox_crystals, levels = c(0, 1), labels = c("no", "yes"))
+```
+
+**C**  
+```{r urine-mean-and-sd-1}
+mean_sd <- function(x) {
+    # returns a named vector
+    c("mean" = round(mean(x, na.rm = T), 2), 
+      "sd" = round(sd(x, na.rm = T), 2))
+}
+apply(X = urine[, 3:8], MARGIN = 2, FUN = mean_sd)
+```
+
+**D**  
+```{r urine-mean-and-sd-2}
+aggregate(cbind(gravity, ph, osmo, cond, urea, calc) ~ ox_crystals, 
+          data = urine, 
+          FUN = function(x) round(mean(x, na.rm = T), 2))
+```
+
+**E**  
+```{r}
+pairs(urine[, 3:8])
+```
+
+**F**  
+```{r}
+#install.packages("gplots")
+library("gplots")
+cormat <- cor(urine[, 3:8], use = "complete.obs")
+heatmap.2(cormat, col = bluered(100), trace = "none", density.info = "none")
+```
+
+**G**  
+```{r create-ph-factor}
+ph_factor <- cut(urine$ph, 
+    breaks = c(4.5, 5.5, 7.0, 8.0), 
+    labels = c("acidic", "neutral", "basic"))
+urine$ph_factor <- ph_factor
+
+mean_median_sd <- function(x) {
+    # X is a dataframe!
+    apply(X = x[3:8],
+          MARGIN = 2,
+          FUN = function(y) {
+              # returns a named vector
+              c("mean" = round(mean(y, na.rm = T), 2), 
+                "median" = median(y, na.rm = T),
+                "sd" = round(sd(y, na.rm = T), 2))            
+          })
+}
+
+urine_split <- split(x = urine, 
+      f = urine$ph_factor)
+
+lapply(X = urine_split,
+       FUN = mean_median_sd)
+```
+
+
+### Bird observations revisited
+
+```{r eval = FALSE}
+bird_obs <- read.table("data/Observations-Data-2014.csv",
+                                sep=";",
+                                head=T,
+                                na.strings = "",
+                                quote = "",
+                                comment.char = "",
+                                as.is = c(1, 6, 7, 8, 13))
+bird_obs$Count <- as.integer(bird_obs$Number)
+```
+
+**A**    
+```{r bird-counts-barplot, out.width='80%', fig.asp=.75, fig.align='center'}
+c.split <- split(x = bird_obs, f = bird_obs$County)
+c.counts <- sapply(c.split, nrow)
+barplot(c.counts[order(c.counts, decreasing = T)],
+                main = "Bird observations per county",
+                ylab = "Observations",
+                las = 2)
+```
+
+**B**    
+```{r eval = FALSE}
+obs.split <- split(x = bird_obs, f = bird_obs$Observer.1)
+obs.counts <- sapply(obs.split, nrow)
+obs.counts <- obs.counts[obs.counts > 10]
+obs.counts[order(obs.counts, decreasing = T)]
+```
+
+**C**    
+```{r eval = FALSE}
+obs.counts[order(obs.counts, decreasing = T)][1]
+```
+
+**D**    
+```{r eval = FALSE}
+g.split <- split(bird_obs, bird_obs$Genus)
+g.species <- lapply(g.split, function(x) {
+        unique(x$Common.name)
+})
+#create ordering
+g.species.count <- sapply(g.species, length)
+g.order <- order(g.species.count, decreasing = T)
+#apply order to list and select only first five
+g.species[g.order[1:5]]
+```
+
+**E**  
+```{r eval = FALSE}
+bird_obs$Date.start <- as.Date(bird_obs$Date.start, format = "%d-%b-%y")
+date.series <- aggregate(Count ~ Date.start, data = bird_obs, FUN = sum, na.rm = T)
+#2024 is an error input, remove it
+date.series <- date.series[1:nrow(date.series)-1, ]
+plot(x = date.series$Date.start, y = date.series$Count, ylim = c(0, 250))
+```
+
+
