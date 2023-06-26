@@ -19,19 +19,9 @@ pre code {
 
 /*Attention blocks*/
 
-div.protocol{
-    max-width: 800px;
-    font-size: 1em;
-    padding: 0.5em;
-    margin: 1em 0;
-    border-radius: 3px;
-    border: 1px solid rgb(180,180,180);
-    background-color: rgb(230,230,230);
-    display: block;
-}
 
 div.attention, div.warning, div.info, div.definitions {
-    width: 600px;
+    /*width: 600px;*/
     font-size: 1em;
     padding: 0.5em;
     margin: 1em 0;

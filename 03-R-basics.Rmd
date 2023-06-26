@@ -1,4 +1,4 @@
-# Basic R - coding
+# Basic R 
 
 ## Vectors, fuctions and variables
 
@@ -147,7 +147,7 @@ In R you usually assign a value to a variable using "`<-`", so "`x <- 42`" is eq
 
 ### Vectors
 
-### R is completely vector-based
+#### R is completely vector-based {-}
 
 In R, _**all data lives inside vectors**_. When you type '2 + 4', R will execute the following series of actions:  
 
@@ -158,7 +158,7 @@ In R, _**all data lives inside vectors**_. When you type '2 + 4', R will execute
 Step 3 is a crucial one. It is essential to grasp this aspect in order to understand R. Therefore we'll revisit it later in more detail.
 
 
-#### The atomic datatypes
+#### The atomic datatypes {-}
 
 R knows five basic types of data; other datatypes are build by combining these into more complex structures (discussed in a later chapter):
 
@@ -180,7 +180,7 @@ All these types are created in similar ways and can often be converted into othe
 **Note 3:** There are also date/time types but they are not discussed here
 
 
-#### Creating vectors
+#### Creating vectors {-}
 
 You will see shortly that there are many ways to create vectors: a custom collection, a series, a repetition of a smaller set, a random sample from a distribution, etc. etc.
 
@@ -221,8 +221,6 @@ class(c(2, 4, 3))
 ```
 
 
-### Vector fiddling
-
 #### Vector arithmetic {-}
 
 Let's have a look at what it means to work with vectors, as opposed to singular values (also called _scalars_). An example is probably best to get an idea. 
@@ -243,7 +241,7 @@ x - z
 
 As you can see this generates a warning that "longer object length is not a multiple of shorter object length". However, R will proceed anyway, cycling the shorter one. 
 
-### Other operators
+### Operators
 
 Here is a complete listing of operators in R. Some operators such as `^` are _unary_, which means they have a single _operand_; a single value or they operate on. On the other hand, _binary_ operators such as `+` have two _operands_.
 
@@ -256,7 +254,7 @@ knitr::kable(operators)
 
 The `<<-` assignment operator is the same as `<-` but assigns to a variable in the Global environment.
 
-#### Logical operators
+#### Logical operators {-}
 
 Logical operators are used to evaluate and/or combine expressions that result in a single logical value: `TRUE` or `FALSE`. The **_comparison operators_** compare two values (numeric, character - any type is possible) to get to a logical value, but always set-based! In the following chunk, each of the values in `x` is considered and if it is smaller than or equal to the value `4`, `TRUE` is returned, else `FALSE`.
 
@@ -305,7 +303,7 @@ sum(x > 3) ## how many are greater than 3?
 ```
 
 
-#### Modulo: `%%`
+#### Modulo: `%%` {-}
 
 The modulo operator gives the remainder of a division. 
 
@@ -317,7 +315,7 @@ The modulo operator gives the remainder of a division.
 
 The modulo is most often used to establish periodicity: `x %% 2` is zero for all even numbers. Likewise, `x %% 10` will be zero for every tenth value.
 
-#### Integer division `%/%` and rounding
+#### Integer division `%/%` and rounding {-}
 
 The integer division is the complement of modulo and gives the integer part of a division, it simply "chops off" the decimal part.
 
@@ -334,7 +332,7 @@ x <- c(0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5)
 round(x, 0)
 ```
 
-#### The `%in%` operator
+#### The `%in%` operator {-}
 
 The `%in%` operator is very handy when you want to know if the elements of one vector are present in another vector. An example explains best, as usual:
 
@@ -348,7 +346,7 @@ b %in% a
 There is no positional evaluation, it simply reports if the corresponding element in the first is present _anywhere_ in the second.
 
 
-### Selecting vector elements
+#### Selecting vector elements {-}
 
 You often want to get to know things about specific values within a vector  
 

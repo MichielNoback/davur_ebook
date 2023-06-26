@@ -426,6 +426,16 @@ deaths <- data.frame(
 ggplot(data = deaths, mapping = aes(x = month, y = deaths)) +
     geom_line(aes(linetype = sex))
 ```
+When you want to add lines of same type, color and width, you can use the `group=` argument in `geom_line()`. In the next example, all the chickens on the same diet get the same colour:
+
+```{r geom-line-group-example, fig.asp=.75, out.width='80%', fig.align='center'}
+ggplot(data = ChickWeight,
+       mapping = aes(x = Time, y = weight, color = Diet)) +
+    geom_line(aes(group=Chick)) +
+    theme_classic()
+```
+
+
 
 
 ### Size {-}
@@ -598,14 +608,30 @@ ggplot(data=airqual, mapping = aes(x = Month, y = Temp, fill = Month)) +
 
 ### Barplot {-}
 
-The bar plot is similar to a histogram in appearance, but quite different in intent. Where a histogram visualizes the density of a continuous variable, a bar plot tries to visualize the counts or weights of distinct groups.
+The bar plot is similar to a histogram in appearance, but quite different in intent. Where a histogram visualizes the density of a continuous variable, a bar plot tries to visualize the counts (or weights) of distinct groups.
 
-Here is a small example where the ten subjects of the `sleep` dataset have been charted (the x axis), and the `extra` column provided the height of the bar, split over the two groups. When no weight is provided, the occurrences of the different group levels will be counted and sued as weight.
+If you don't provide a `weight` aesthetic, geom_bar will count all occurrences of the different values in the provided x-axis variable. Here is an example.
 
 ```{r barplot1, fig.asp=.75, out.width='80%', fig.align='center'}
-ggplot(data = sleep, mapping = aes(ID)) +
-    geom_bar(aes(weight = extra, fill = group))
+ggplot(data = esoph,
+       mapping = aes(x = alcgp)) +
+    geom_bar(fill = "darkgreen") +
+    theme_classic()
 ```
+
+You can provide a `weight` argument In that case the counts will be replaced by the literal value found in that variable.
+Here is a small example where the ten subjects of the `sleep` dataset have been charted (the x axis), and the `extra` column provided the height of the bar, split over the two groups. I used the `position` argument to get side-by-side bars instead of stacked on top of each other.
+
+```{r barplot2, fig.asp=.75, out.width='80%', fig.align='center'}
+ggplot(data = sleep, mapping = aes(ID)) +
+    geom_bar(aes(weight = extra, fill = group), 
+             position = position_dodge(width=0.7),
+             alpha = 0.6, color = "black") +
+    scale_fill_manual(values = c("darkblue", "red")) +
+    labs(x = "student ID", y = "increase in sleep (h)", fill = "Drug") + 
+    theme_classic()
+```
+The `position = ` argument could have been `"dodge"` for simple side-by-side plotting of the bars.
 
 
 ### Overview of the main geoms {-}

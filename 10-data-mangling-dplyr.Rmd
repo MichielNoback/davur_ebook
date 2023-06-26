@@ -1,7 +1,9 @@
 # Data mangling with dplyr {#dplyr}
 
 ```{r dplyr-setup, include=FALSE}
-options(digits = 3)
+options(digits = 3,
+        tibble.print_min = 6,
+        tibble.print_max = 8)
 knitr::opts_knit$set(cache = TRUE,
                      tidy = TRUE,
                      tidy.opts = list(blank = FALSE, width.cutoff = 60))
@@ -35,6 +37,11 @@ Before embarking on an overview of the most important functions, let's first loo
 The sections below are copied (and adapted) in part from the `dplyr` and `tibble` vignettes which can be found [here](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html) and [here](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html)
 
 In this chapter I will often use the term **_case_** instead of row and **_variable_** instead of column since they more precisely describe the essence. Also, these terms are used more in the tidyverse packages.
+
+:::warning
+There are many functions in the dplyr package; they will not be exhaustively covered here.  
+Also, they get deprecated/superseded in a disturbing pace. You should therefore always check out the latest recommended strategy.
+:::
 
 ### Tibbles
 
@@ -165,6 +172,8 @@ Dplyr aims to provide a function for each basic verb of data manipulation:
 
 ## Selecting
 
+### Selecting rows
+
 #### Selecting rows by index: `slice()` {-}
 
 If you simply want to select rows by index, use `slice()`
@@ -211,59 +220,40 @@ Using `str_detect()` from the `stringr` tidyverse package this is also possible:
 t %>% filter(str_detect(x, "bb"))
 ```
 
+#### `filter()` across multiple columns {-}
 
-#### Selecting variables: `select()`  {-}
+Suppose you have a dataframe with multiple columns holding numeric data, and you want to apply a filter step taking all these columns into account. For instance, suppose we have this dataset:
 
-This function is similar to the `select` argument of the `subset()` function.
-
-Choose variables from a table. Closely related to `rename()` discussed below; `select()` keeps only the listed variables and `rename()` keeps all variables. 
-
-When you use the `key = value` format this will result in a rename of the variable.
-
-```{r select-demo-1}
-select(dose_response_long, patient, gender = sex)
+```{r if_any_example-1}
+(patient_data <- tibble(ID = LETTERS[1:6],
+                       age = c(33, 21, 57, 28, 82, 72),
+                       RHR_day1 = c(48, 54, 61, 55, 66, 62),
+                       RHR_day2 = c(49, 52, 56, 61, 62, 65),
+                       RHR_day3 = c(52, 56, 53, 60, 64, 69)))
 ```
 
-Use the minus sign when you want to select everything _but_ a variable:
+Now, if we want to filter rows where any of the rows has a Resting Heart rate above 62, we could do this.
 
-```{r select-demo-2}
-select(dose_response_long, -patient, -sex)
-## same as 
-#select(dose_response_long, -c(patient, sex))
+```{r if-any-example-2}
+filter(patient_data,
+       if_any(3:5, function(x) x > 62))
 ```
 
-You can use the colon operator to indicate a range of variables:
+The function `function(x) x > 60` could (and preferably should) be replaced by a Lambda expression (discussed later in this chapter):
 
-```{r select-demo-3}
-select(dose_response_long, patient:Dose)
+```{r if-any-example-3, eval = FALSE}
+filter(patient_data,
+       if_any(3:5, ~ .x > 62)) 
 ```
 
 
-#### Tidyselect helpers {-}
+Note that in this particular case, the pivot_longer function followed by a normal filter operation could also have done the job. You should try it yourself.  
 
-With `select()` and `rename()`, but also with `mutate(across())` and the pivot functions from tidyr, you can use the special helper functions of the tidyselect package:
-
-- `starts_with()`: Starts with a prefix.
-- `ends_with()`: Ends with a suffix.
-- `contains()`: Contains a literal string.
-- `matches()`: Matches a regular expression.
-- `num_range()`: Matches a numerical range like x01, x02, x03.
-- `one_of()`: Matches variable names in a character vector.
-- `everything()`: Matches all variables.
-- `last_col()`: Select last variable, possibly with an offset.
+:::attention
+There is a related function, `if_all()` that works the same.
+:::
 
 
-```{r select-demo-4}
-select(dose_response_long, contains("o"))
-```
-
-#### Renaming variables: `rename()` {-}
-
-Rename variables from a table.
-
-```{r rename-demo-1}
-dose_response_long %>% rename(Patient = patient, Gender = sex)
-```
 
 #### Selecting from ranked data {-}
 
@@ -280,18 +270,6 @@ This is especially interesting with grouped data:
 ```{r top-n-demo-2}
 dose_response_long %>% group_by(Dose) %>% top_n(3, Response)
 ```
-
-
-#### Extract a column as vector {-}
-
-Using `pull()` you can obtain atomic vectors.
-
-```{r pull-demo-1}
-pull(dose_response_long, Response)
-```
-
-This is of course the same as `dose_response_long[[4]]` or `dose_response_long$Response` but the difference is that `pull()` can be applied in a `%>%` pipeline.  
-With `dose_response_long[, 4]` it matters whether you are working with a tibble or a dataframe; a tibble returns a tibble and a dataframe returns a vector.
 
 #### Sorting with `arrange()` {-}
 
@@ -325,7 +303,93 @@ sample_frac(dose_response_long, 0.05, replace = TRUE)
 
 The workings of `sample_n()` are obvious I guess.
 
+### Selecting columns
+
+#### Selecting variables: `select()`  {-}
+
+This function is similar to the `select` argument of the `subset()` function.
+
+Choose variables from a table. Closely related to `rename()` discussed below; `select()` keeps only the listed variables and `rename()` keeps all variables. 
+
+When you use the `key = value` format this will result in a rename of the variable.
+
+```{r select-demo-1}
+select(dose_response_long, patient, gender = sex)
+```
+
+Use the minus sign when you want to select everything _but_ a variable:
+
+```{r select-demo-2}
+select(dose_response_long, -patient, -sex)
+## same as 
+#select(dose_response_long, -c(patient, sex))
+```
+
+You can use the colon operator to indicate a range of variables:
+
+```{r select-demo-3}
+select(dose_response_long, patient:Dose)
+```
+
+#### Conditionally select columns {-}
+
+Here is our patient_data from before:
+
+```{r select-conditionally-1}
+patient_data
+```
+What if we wanted to select any heart rate column that has an average over 60?
+
+```{r select-conditionally-2}
+patient_data %>%
+    select(-ID, -age) %>%
+    select_if(~ mean(.x) > 58)
+```
+OK, but what if we also want the ID and age column retained. This took me a while to figure out. I have the feeling it could be done better.
+
+```{r}
+patient_data %>%
+    select(ID, age, where(~ is.numeric(.) && mean(.) > 58)) 
+```
+
+This uses `where()`, one of the tidyselect helpers we'll see used more. These are discussed next.
+
+#### Tidyselect helpers {-}
+
+With `select()` and `rename()`, but also with `mutate(across())` and the pivot functions from tidyr, you can use the special helper functions of the tidyselect package:
+
+- `starts_with()`: Starts with a prefix.
+- `ends_with()`: Ends with a suffix.
+- `contains()`: Contains a literal string.
+- `matches()`: Matches a regular expression.
+- `num_range()`: Matches a numerical range like x01, x02, x03.
+- `one_of()`: Matches variable names in a character vector.
+- `everything()`: Matches all variables.
+- `last_col()`: Select last variable, possibly with an offset.
+- `where()`: Select on a condition (predicate applied to the column) 
+
+
+```{r select-demo-4}
+select(dose_response_long, contains("o"))
+```
+
+
+
+#### Extract a column as vector {-}
+
+Using `pull()` you can obtain atomic vectors.
+
+```{r pull-demo-1}
+pull(dose_response_long, Response)
+```
+
+This is of course the same as `dose_response_long[[4]]` or `dose_response_long$Response` but the difference is that `pull()` can be applied in a `%>%` pipeline.  
+With `dose_response_long[, 4]` it matters whether you are working with a tibble or a dataframe; a tibble returns a tibble and a dataframe returns a vector.
+
+
+
 ## Adding and changing variables
+
 
 ### Window functions
 
@@ -413,7 +477,17 @@ Element-wise minimum
     pmin(c(5, 4, 2, 8, 1), c(2, 2, 3, 4, 3))
     ```
 
-### Mutate {mutate}
+### Mutate
+
+
+#### Renaming variables: `rename()` {-}
+
+Rename variables from a table.
+
+```{r rename-demo-1}
+dose_response_long %>% rename(Patient = patient, Gender = sex)
+```
+
 
 #### Add one or more variables: `mutate()` {-}
 
@@ -514,11 +588,13 @@ Using indices:
 ```{r accross-example-3}
 iris %>% summarize(across(1:4, mean))
 ```
+
 Using column names (no quotes required):
 
 ```{r accross-example-4, eval = F}
 iris %>% summarize(across(c(Sepal.Length, Sepal.Width), mean))
 ```
+
 Using text matching on column names:
 
 ```{r accross-example-5, eval = F}
@@ -753,7 +829,7 @@ dose_response_long %>%
     summarise(avg = mean(Response))
 ```
 
-### Operations on rows {-}
+### Operations on rows
 
 Rows are just a special case of groups.  
 

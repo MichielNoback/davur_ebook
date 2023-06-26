@@ -17,7 +17,100 @@ knitr::opts_knit$set(cache = TRUE,
 This chapter deals with more advanced aspects of plotting with ggplot.  
 
 
+
 ## Dedicated plots
+
+### Binning geoms for too many points
+
+Sometimes there are simply too many data points for a scatter plot to be intelligible, even with minimum point size and maximum transparency. In that case you will need to do some binning of the points, a form of data reduction.
+
+For instance, this will not work:
+
+```{r geom-bin-example-1}
+size <- 10000
+sim_data <- tibble(x = rnorm(size, 100, 10), 
+                   y = x + rnorm(x, mean = 5, 5))
+ggplot(data = sim_data, mapping = aes(x, y)) +
+    geom_point() +
+    theme_classic()
+```
+
+In  such cases some binning comes in handy. There are several available:
+
+* `geom_hex()`: hexagonal heatmap
+* `geom_bin_2d()`: rectangular heatmap
+* `geom_density_2d()` and `geom_density_2d_filled()`: two-dimensional density
+
+Here is a `geom_hex()` example with a custom color scale:
+
+```{r geom-bin-example-2}
+ggplot(data = sim_data, mapping = aes(x, y)) +
+    geom_hex() +
+    scale_fill_gradient(low = "white", high = "red") +
+    theme_classic()
+```    
+
+### Multiple y-axis values for a single x-axis value
+
+When you have multiple measurements for a single x-axis point there are already several options available to you: 
+Since this is growth data I caried out a log2-transformation on the weight variable
+- `geom_line()`: Multiple lines; these tend to get cluttered really quick
+
+```{r multiple-y-axis-measurements-1, fig.asp=.75, out.width='80%', fig.align='center'}
+ggplot(data = ChickWeight,
+       mapping = aes(x = Time, y = weight, color = Diet)) +
+    geom_line(aes(group=Chick)) +
+    scale_y_log10() +
+    theme_classic()
+```
+- `geom_point()` or `geom_jitter()`: Tend to lead away from observing patterns
+
+```{r multiple-y-axis-measurements-2, fig.asp=.75, out.width='80%', fig.align='center'}
+ggplot(data = ChickWeight,
+       mapping = aes(x = Time, y = weight, color = Diet)) +
+    geom_point() +
+    scale_y_log10() +
+    theme_classic()
+```
+
+- `geom_boxplot()`: Multiple boxplots are already better but also get cluttered. 
+
+```{r multiple-y-axis-measurements-3, fig.asp=.75, out.width='90%', fig.align='center'}
+ggplot(data = ChickWeight,
+       mapping = aes(x = factor(Time), y = weight, fill = Diet)) +
+    geom_boxplot() +
+    scale_y_log10() +
+    theme_classic()
+```
+-  `geom_violin()`: Multiple violin plots; only when sufficient data are present
+
+```{r multiple-y-axis-measurements-4, fig.asp=.75, out.width='90%', fig.align='center'}
+ggplot(data = ChickWeight,
+       mapping = aes(x = factor(Time), y = weight, fill = Diet)) +
+    geom_violin() +
+    scale_y_log10() +
+    theme_classic()
+```
+
+- `geom_errorbar()` and related (`geom_linerange()`, `geom_crossbar()` and `geom_pointrange()`): Sometimes the best solution for more focus on the data patterns. Here, I added some shift on the x-axis (Time) in order to prevent the points and error bars to overlap.
+
+
+```{r multiple-y-axis-measurements-5, fig.asp=.75, out.width='90%', fig.align='center'}
+ChickWeight %>%
+    group_by(Diet, Time) %>%
+    summarize(mean = mean(weight), 
+              min = min(weight),
+              max = max(weight), 
+              .groups = "drop") %>%
+    mutate(Time = Time + 0.20 * as.numeric(Diet)) %>% # shift to prevent overlap
+    ggplot(mapping = aes(x = Time, y = mean, color = Diet)) +
+        geom_point(size = 2) +
+        geom_errorbar(aes(ymin = min, ymax = max), width = 0.2, linewidth = 0.3) + 
+        scale_y_log10() +
+        theme_classic()
+```
+
+
 
 ### Multivariate Categorical Data
 
@@ -66,25 +159,38 @@ ggpubr::ggballoonplot(hair_eye_col_df, x = "Hair", y = "Eye", size = "Freq",
   scale_fill_viridis_c(option = "C")
 ```
 
-### The `GGally::ggPairs()` function {-}
+### The `corrplot::corrplot()` function  
+
+R package `corrplot` provides a visualization interface to correlation matrices. It has _many_ parameters. Here is a simple example with the airquality dataset
+
+```{r corrplot-1}
+library(corrplot)
+M = cor(na.omit(airquality[, 1:4]))
+corrplot(M,  order = 'AOE', type = 'lower')
+```
+
+Look at the [docs](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html) for more details.
+
+
+### The `GGally::ggPairs()` function  
 
 The `ggpairs()` function of the `GGally` package allows you to build a scatterplot matrix just like the base R `pairs()` function.
 
 Scatterplots of each pair of numeric variable are drawn on the left part of the figure. Pearson correlation is displayed on the right. Variable distribution is available on the diagonal.
 
-```{r ggpairs-demo, fig.asp=.75, out.width='80%', fig.align='center', message=FALSE}
+```{r ggpairs-demo, fig.asp=.75, out.width='90%', fig.align='center', message=FALSE}
 airquality_no_na <- na.omit(airquality)
 GGally::ggpairs(airquality_no_na[1:4], progress = FALSE)
 ```
 
 Look at [https://www.r-graph-gallery.com/199-correlation-matrix-with-ggally.html](https://www.r-graph-gallery.com/199-correlation-matrix-with-ggally.html) for more examples.
 
-### Marginal plots using `ggExtra::ggMarginal()` {-}
+### Marginal plots using `ggExtra::ggMarginal()`  
 
 You can use `ggMarginal()` to add marginal distributions to the X and Y axis of a ggplot2 scatterplot. 
 It can be done using histogram, boxplot or density plot using the `ggExtra` package
 
-```{r ggmarginal-demo, fig.asp=.75, out.width='80%', fig.align='center', warning=FALSE}
+```{r ggmarginal-demo, fig.asp=.75, out.width='90%', fig.align='center', warning=FALSE}
 library(ggExtra)
 airquality <- airquality %>% 
     mutate(Month_f = factor(month.abb[Month]))
@@ -107,6 +213,41 @@ See [https://www.r-graph-gallery.com/277-marginal-histogram-for-ggplot2.html](ht
 
 
 ## Advanced plotting aspects
+
+### Secondary y-axis
+
+Adding a second y-axis series is surprisingle non-intuitive in ggplot. Here is a minimal example I found on the [R Graph Gallery](https://r-graph-gallery.com/line-chart-dual-Y-axis-ggplot2.html):
+
+
+```{r secondary-y-axis, fig.asp=.75, out.width='70%', fig.align='center', warning=FALSE}
+# Build dummy data
+data <- data.frame(
+  day = as.Date("2023-01-01") + 0:99,
+  temperature = runif(100) + seq(1,100)^2.5 / 10000,
+  price = runif(100) + seq(100,1)^1.5 / 10
+)
+
+# Value used to transform the data of the second axis
+coeff <- 10
+
+temp_color <- "#69b3a2"
+price_color <- "deepskyblue3"
+ggplot(data = data, mapping = aes(x=day)) +
+  geom_line(mapping = aes(y = temperature), linewidth = 2, color = temp_color) + 
+  geom_line(mapping = aes(y=price / coeff), linewidth = 2, color = price_color) +
+  scale_y_continuous(
+    # Features of the first axis
+    name = "Temperature (Celsius °)",
+    # Add a second axis and specify its features
+    sec.axis = sec_axis(~ . * coeff, name = "Price ($)")
+  ) +
+  theme_classic() +
+  theme(
+    axis.title.y = element_text(color = temp_color, size=13),
+    axis.title.y.right = element_text(color = price_color, size=13)
+  )
+```
+
 
 ### Plot panels from `for` loops using `gridExtra::grid.arrange()`
 

@@ -1,13 +1,16 @@
 # Exercises
 
-This chapter contains exercises. The solutions are provided as hidden elements that you can see by clicking on them. Not all exercises have solutions, and sometimes it is better to first look at a hint.
+```{r, include=FALSE}
+options(digits = 3)
+knitr::opts_knit$set(cache = TRUE,
+                     tidy = TRUE,
+                     tidy.opts = list(blank = FALSE, width.cutoff = 60))
+```
 
-To work on the exercises it is best to create either an RMarkdown Notebook (File &rarr; New File &rarr; R Notebook) or an RMarkdown document (File &rarr; New File &rarr; R Markdown... &rarr; choose Document as type and give it a title). A Notebook has the advantage that you can toggle the visibility of the code, but it has fewer output options (no pdf or Word). I strongly suggest you play around with both.
+This chapter only contains exercises, where subsections correspond to the previous chapters. 
+The solutions of tehse exercises are in the next chapter, which also has a numbering parallel to this one.
 
-
-This is a link to an [R cheat sheet](figures/R_cheatsheet.pdf) that you could use for selecting the right function for a task.
-
-If you want you can download this chapter as separate file and work in that. You can download it [here](https://raw.githubusercontent.com/MichielNoback/davur1_gitbook/master/07-exercises.Rmd). Before commencing you should put in a new Markdown header at the top of the file, with at least this contents:
+To work on the exercises it is best to download this chapter as separate RMarkdown file and work on that. You can download it [here](https://raw.githubusercontent.com/MichielNoback/davur_ebook/main/17-exercises_base.Rmd). Before commencing you should put in a new Markdown YAML header at the top of the file, with at least these contents:
 
 ```
 ---
@@ -16,94 +19,92 @@ author: "<YOUR NAME>"
 ---
 ```
 
-#### Plotting rules {-}
+Alternatively, create either an RMarkdown Notebook (File &rarr; New File &rarr; R Notebook) or an RMarkdown document (File &rarr; New File &rarr; R Markdown... &rarr; choose Document as type and give it a title). A Notebook has the advantage that you can toggle the visibility of the code, but it has fewer output options (no pdf or Word).
 
-With all plots, take care to adhere to the rules regarding titles and other decorations. Tip: the site [Quick-R](http://www.statmethods.net/) has nice detailed information with examples on the different plot types and their configuration. Especially the section [on plotting](http://www.statmethods.net/graphs/index.html) is helpful for these assignments.
+This is a link to an [R cheat sheet](figures/R_cheatsheet.pdf) that you could use for selecting the right base R function for a task.
 
-## Getting started
 
-### Install the tools
+The exercises have been marked with a difficulty level, from 1 to five "stars" (&#10059; to &#10059;&#10059;&#10059;&#10059;&#10059;). Since I am a big fan of intellectual challenge I have included quite some exercises that transcend the mastery level required at the final assessment. For your peace of mind; if you are able to solve three-star exercises you are really good to go! Note that the one-star exercises at the beginning are not really the same difficulty as the ones at the end of the chapter.  
+
+Most of the **_datasets_** referred to from within the exercises can be found via a direct link provided, or in the Github repository with the URL `https://github.com/MichielNoback/datasets`. [This](https://github.com/MichielNoback/datasets) is a direct link. You can download individual datasets from this page, or download the entire repository at once. To download, use the "clone or download" pull down button (green button). If you want to be a pro, use git to clone it...
+
+
+## Getting started 
+
+### Install the tools 
+**Level: &#10059;**  
+
 Install these tools on your own PC or laptop, in this order:
 
 1. R itself [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/)  
 2. RStudio [https://rstudio.com/products/rstudio/download/](https://rstudio.com/products/rstudio/download/) (choose the free version of course)
-3. [Optionally] If you want to generate pdf documents you should also install a Latex version: MikTeX or TinyTex for Windows or MacTeX on MacOS. If you want to keep things simple I suggest you stick to HTML and MS Word output (Word can also export to PDF).
+3. [Optionally] If you want to generate pdf documents you should also install a Latex version: MikTeX or TinyTex for Windows or MacTeX on MacOS. If you want to keep things simple I suggest you stick to HTML and MS Word output for now (Word can also export to PDF).
 
-## Toolbox
+## The toolbox
 
-### Résumé
+### Customize RStudio
+**Level: &#10059;**  
 
-Create an R Markdown document called Résumé.Rmd and create your Curriculum Vitae using Markdown syntax. Use the R Markdown Reference Guide or Cheat Sheet or this [Markdown Cheatsheet](https://guides.github.com/pdfs/markdown-cheatsheet-online.pdf) (you don't need R for your résumé so markdown alone is enough).
+In RStudio, go to Tools &rarr; Global Options.
+
+- Under General, Uncheck the option "Restore .RData into workspace at startup". This is an evil option that should be removed from the app.
+- Under Appearance, select some options such as the Theme. 
+- Under Pane Layout, customize how the panes are organized to your liking.  
+- Under Spelling, install the Dutch spell checker.  
+
+### Resumé  
+**Level: &#10059;&#10059;**  
+
+Create an R Markdown document called Resumé.md and create your Curriculum Vitae using Markdown syntax. Use the R Markdown Reference Guide or Cheat Sheet provided in RStudio (via Help menu), or this [Markdown Cheatsheet](https://guides.github.com/pdfs/markdown-cheatsheet-online.pdf). You don't need R for your resumé so markdown alone is enough.  
 
 ## Basic R
 
-### Math in the console
+### Math in the console  
+**Level: &#10059;**  
 
 In the console, calculate the following:
 
+**A**  
 $31 + 11$  
 
+**B**  
 $66 - 24$  
 
+**C**  
 $\frac{126}{3}$  
 
+**D**  
 $12^2$   
 
-<details>
-<summary style = "color:OrangeRed;cursor:pointer;">&#10149; Click here to see solution!</summary>
-```{r, eval=FALSE}
-12^2
-# OR
-12**2
-```
-</details>
-<br>
-
+**E**  
 $\sqrt{256}$  
 
-<details>
-<summary style = "color:OrangeRed;cursor:pointer;">&#10149; Click here to see solution!</summary>
-```{r, eval=FALSE}
-256**0.5
-# OR
-sqrt(256)
-```
-</details>
-<br>
-
+**F**  
 $\frac{3*(4+\sqrt{8})}{5^3}$
 
-<details>
-<summary style = "color:OrangeRed;cursor:pointer;">&#10149; Click here to see solution!</summary>
-```{r, eval=FALSE}
-(3 * (4 + 8^0.5))/(5^3)
-```
-</details>
-<br>
+### Functions (I) 
 
-### First look at functions
-
-**A**  
+**A**  [&#10059;]   
 View the help page for `paste()`. There are two variants of this function. Which? And what is the difference between them? Use both variants to generate _exactly_ this message `"welcome to R"` from these arguments: `"welcome ", "to ", "R"`
 
-**B**  
+**B** [&#10059;]   
 What does the `abs` function do? What is returned by `abs(-20)` and what is `abs(20)`?
 
+**C** [&#10059;]   
+What does the `c` function do? What is the difference in returned value (result) of `c()` when you combine either `1`, `3` and `"a"` as arguments, or `1`, `2` and `3`? Use the function `class()` to answer this.  
+Experiment with other usages of `c()`: try out different types and try other vectors as argument to the function.
 
-**C**  
-What does the `c` function do? What is the difference in returned value (result) of `c()` when you combine either `1`, `3` and `"a"` as arguments, or `1`, `2` and `3`? Use the function `class()` to answer this.   
-
-**D**  
+**D** [&#10059;]   
 What does the function `install.packages()` do? Use it to install the package `RColorBrewer`. We'll have a look at this package later on. 
 
-**E**  
+**E** [&#10059;]   
 Type `?round` in the console. There are several functions related to rounding numbers. Give this vector:
 
 ```{r rounding-numberz-q, eval = FALSE}
 numberz <- c(-1.33, -1.55239, 0.4432, 0.5000001, 1.98765)
 ```
 
-generate these -exact- outputs using ons of the listed functions:
+generate these -exact- outputs using one of the listed functions:
 
 ```
 [1] -1 -1  1  1  2
@@ -112,7 +113,7 @@ generate these -exact- outputs using ons of the listed functions:
 [1] -2 -2  0  0  1
 ```
 
-**F**  
+**F** [&#10059;]   
 Using the on the website provided [cheat sheet](https://michielnoback.github.io/bincourses/course_contents/davur/R_cheatsheet.pdf), find the String manipulation function that will convert this vector of author names
 
 ```{r convert-names-q, eval = FALSE}
@@ -132,34 +133,34 @@ into this:
 [1] "J."      "K."      "Rowling"
 ```
 
-(The output is a list, a data type that we'll see later on)
+(The output type is a list, a data type that we'll see later on)
 
-**G**  
+**G** [&#10059;]  
 
-Using the on the website provided [cheat sheet](https://michielnoback.github.io/bincourses/course_contents/davur/R_cheatsheet.pdf), find the data selection function that will convert this vector of bird names
+Using the on the website provided [cheat sheet](https://michielnoback.github.io/bincourses/course_contents/davur/R_cheatsheet.pdf), find the data selection function that will accept this vector of bird names and returns a vector with all duplicates removed.
 
 ```{r find-correct-q, eval = FALSE}
 birds <- c("robin", "wagtail", "blackbird", "robin", "blackbird", "buzzard")
-unique(birds)
 ```
 
 
-### Variables
+### Variables  
+**Level: [&#10059;]**  
 
 Create three variables with the given values - x=20, y=10 and z=3. Next, calculate the following with these variables:  
 
-1. $x+y$
-2. $x^z$
-3. $q = x \times y \times z$
-4. $\sqrt{q}$
-5. $\frac{q}{\pi}$ (pi is simply pi in R)
-6. $\log_{10}{(x \times y)}$
+A. $x+y$  
+B. $x^z$  
+C. $q = x \times y \times z$  
+D. $\sqrt{q}$   
+E. $\frac{q}{\pi}$ (pi is simply pi in R)  
+F. $\log_{10}{(x \times y)}$  
 
 
 ### Vectors
 
 
-#### Circles {-}
+#### Circles  {-}
 
 The circumference of a circle is $2\pi\cdot r$, its surface $4\pi \cdot r^2$ and its volume $4/3 \pi\cdot r^3$.
 Given this vector of circle radiuses,
@@ -168,138 +169,52 @@ Given this vector of circle radiuses,
 radiuses <- c(0, 1, 2, pi, 4)
 ```
 
-**A**  
-Calculate their cirumference.
+**A** [&#10059;]   
+Calculate their circumference.
 
-**B**  
+**B** [&#10059;]   
 Calculate their surface.
 
-**C**  
+**C** [&#10059;]   
 Calculate their volume.
 
 
 #### Creating vectors {-}
 
-Create the following vectors, _as efficiently as possible_. The functions `rep()`, `seq()`, `paste0()` and the colon operator `:` can be used, in any combination.
+Create the following vectors, _as efficiently as possible_. The functions `rep()`, `seq()`, `paste0()` and the colon operator `:` can be used, in any (nested) combination.
 
-**A**   
+**A** [&#10059;]    
 `[1] 1 2 5 1 2 5`
 
-**B**  
+**B** [&#10059;]   
 `[1] 9 9 9 8 8 8 7 7 7 6 6 6 5 5 5`
 
-**C**  
+**C** [&#10059;]   
 ` [1] 1 1 1 4 4 4 9 9 9 1 1 1 4 4 4 9 9 9`
 
-**D**  
+**D** [&#10059;&#10059;]  
 ` [1] "1a" "2b" "3c" "4d" "5e" "1a" "2b" "3c" "4d" "5e"`
 
-**E**  
+**E** [&#10059;&#10059;]  
 `[1] "0z"   "0.2y" "0.4x" "0.6w" "0.8v" "1u"`
 
-**F**  
+**F** [&#10059;&#10059;]  
 `[1] "505" "404" "303" "202" "101" "000"`
 
-**G [Challenge]**  
+**G** [&#10059;&#10059;]    
 `[1] "0.5A5.0" "0.4B4.0" "0.3C3.0" "0.2D2.0" "0.1E1.0"`
 
 
 
-### Stair walking and heart rate 
-
-The vectors below hold data for a staircase walking experiment. A subject of normal weight and height was asked to ascend a (long) stairs wearing a heart-rate monitor. The subjects' heart was registered for different step heights. Create a **line plot** showing the dependence of heart rate (y axis) on stair height (x axis).
-
-```{r eval = F}
-#number of steps on the stairs
-stair_height <- c(0, 5, 10, 15, 20, 25, 30, 35)
-#heart rate after ascending the stairs
-heart_rate <- c(66, 65, 67, 69, 73, 79, 86, 97)
-```
-
-
-### More subjects
-
-The experiment from the previous question was extended with three more subjects. One of these subjects was like the first of normal weight, whereas the two others were obese. The data are given below. Create a single **scatter plot** with connector lines between the points showing the data for all four subjects. Give the normal-weighted subjects a green line and symbol and the obese subjects a red line and symbol.  
-You can add new data series to a plot by using the `points(x, y)` function. Use the `ylim()` function to adjust the Y-axis range.
-
-
-```{r eval = F}
-#number of steps on the stairs
-stair_height <- c(0, 5, 10, 15, 20, 25, 30, 35)
-#heart rates for subjects with normal weight
-heart_rate_1 <- c(66, 65, 67, 69, 73, 79, 86, 97)
-heart_rate_2 <- c(61, 61, 63, 68, 74, 81, 89, 104)
-#heart rates for obese subjects
-heart_rate_3 <- c(58, 60, 67, 71, 78, 89, 104, 121)
-heart_rate_4 <- c(69, 73, 77, 83, 88, 96, 102, 127)
-```
-
-### Chickens on a diet
-
-The body weights of chicks were measured at birth and every second day thereafter until day 20. They were also measured on day 21. In the experiment there were four groups of chicks on different protein diets. Here are the data for the first four chicks. Chick one and two were on diet 1 and chick three and four were on diet 2. Create a single line plot showing the data for all four chicks. Give each chick its own color.
-
-
-```{r eval = F}
-# chick weight data
-time <- c(0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 21)
-chick_1 <- c(42, 51, 59, 64, 76, 93, 106, 125, 149, 171, 199, 205)
-chick_2 <- c(40, 49, 58, 72, 84, 103, 122, 138, 162, 187, 209, 215)
-chick_3 <- c(42, 53, 62, 73, 85, 102, 123, 138, 170, 204, 235, 256)
-chick_4 <- c(41, 49, 61, 74, 98, 109, 128, 154, 192, 232, 280, 290)
-```
-
-
-### Chicken bar plot
-
-With the data from the previous question, create a bar plot of the maximum weights of the chicks.
-
-
-### Discoveries 
-
-The R language comes with a wealth of datasets for you to use as practice materials. We will see several of these. One of these datasets is The Time-Series dataset called `discoveries` holding the numbers of "great" inventions and scientific discoveries in each year from 1860 to 1959. Type its name in the console to see it. Create plot(s) answering these questions:  
- 
-**A**  
-What is the frequency distribution of the number of discoveries per year? Use the `barplot()` and `table()` functions for this.  
-
-**B**  
-What is the 5-number summary of discoveries per year?  
-
-**C**  
-What is the trend over time for the numbers of discoveries per year?
-
-PS: This is actually not a simple vector but a vector with some time-related attributes. It is called a Time-Series (a `ts` class), but this does not really matter for this assignment.
-
-
-### Lung cancer  
-
-The R datasets package has three related timeseries datasets relating to lung cancer deaths. These are `ldeaths`, `mdeaths` and `fdeaths` for total, male and female deaths respectively. Create a line plot showing the monthly mortality holding all three of these datasets. Use the `legend()` function to add a legend to the plot, as demonstrated in this example:
-
-
-```{r legend-demo, out.width='80%', fig.asp=.75, fig.align='center'}
-t <- 1:5
-y1 <- c(2, 3, 5, 4, 6)
-y2 <- c(1, 3, 4, 5, 7)
-plot(t, y1, type = "b", ylab = "response", ylim = c(0, 8))
-points(t, y2, col = "blue", type = "b")
-legend("topleft", legend = c("series 1", "series 2"), col = c("black", "blue"), pch = 1, lty = 1)
-```
-
-**A**  
-Create the mentioned line plot. Do you see trends and/or patterns and if so, can you explain these?
-
-**B**  
-Create a combined boxplot of the three time-series. Are there outliers? If so, can you figure out when this occurred, and why?
-
 ## Complex datatypes
 
-This section serves you some datatype challenges.
 
 ### Creating factors
 
-**A**  
+**A**  [&#10059;]
 Given this vector:
 
-```{r eval = FALSE}
+```{r animal-risk-q, eval = FALSE}
 animal_risk <- c(2, 4, 1, 1, 2, 4, 1, 4, 1, 1, 2, 1)
 ```
 
@@ -309,12 +224,12 @@ and these possible levels:
 3: dangerous
 4: deadly
 
-Create a factor from this data and then barplot the result.
+Create a factor from this data where the levels have order.
 
-**B**  
-Given this data, a simulation of wealth distribution of "poor", "middle class", "wealthy" "rich:
+**B** [&#10059;&#10059;]  
+Given this simulated data set of wealth distribution. The letters represent the following labels: "a" = "poor", "b" = "middle class", "c" = "wealthy" and "c" = "rich":
 
-```{r eval = FALSE}
+```{r wealth-sim-q, eval = FALSE}
 set.seed(1234)
 wealth_male <- sample(x = letters[1:4], 
                  size = 1000,
@@ -326,22 +241,111 @@ wealth_female <- sample(x = letters[1:4],
                  prob = c(0.8, 0.15, 0.497, 0.003))
 ```
 
-Create a factor from these two and report the cumulative percentage of its individual levels starting at the most abundant level, combined for male and female. Hint: use `table()` and `prop.table()`.
+First study the code that generates this data. You are allowed to modify it to your world view :-).  
 
-Next, create a side-by-side barplot of this data. Don't forget the legend!
+Convert the two vectors in ordered factors.  
+Next, combine these two factors into a single one. Finally, report the percentage of its individual levels. Hint: use `table()` and `prop.table()`.
+
+### List actions
+
+Given the list below,
+
+```{r house-admin-q}
+(house_admin <- list(John = list(cooking = c("Sunday", "Wednesday"),
+                                 tasks = c("vacuuming", "fridge"),
+                                 rent = 350),
+                     Rose = list(cooking = c("Monday", "Tuesday"),
+                                 tasks = "toilet",
+                                 rent = 425),
+                     Mike = list(cooking = c("Thursday", "Friday"),
+                                 tasks = c("bathroom", "mopping"),
+                                 rent = 450)))
+```
 
 
-### A dictionary with a named vector
+figure out single statements to get -_exactly_- the given outputs. Often there are more possibilities. Can you find them all?
+
+
+**A** [&#10059;]  
+
+```
+$John
+$John$cooking
+[1] "Sunday"    "Wednesday"
+
+$John$tasks
+[1] "vacuuming" "fridge"   
+
+$John$rent
+[1] 350
+```
+
+**B** [&#10059;]  
+
+```
+$cooking
+[1] "Monday"  "Tuesday"
+
+$tasks
+[1] "toilet"
+
+$rent
+[1] 425
+```
+
+**C** [&#10059;]  
+
+```
+$John
+$John$cooking
+[1] "Sunday"    "Wednesday"
+
+$John$tasks
+[1] "vacuuming" "fridge"   
+
+$John$rent
+[1] 350
+
+
+$Rose
+$Rose$cooking
+[1] "Monday"  "Tuesday"
+
+$Rose$tasks
+[1] "toilet"
+
+$Rose$rent
+[1] 425
+```
+
+
+**D** [&#10059;]  
+
+```
+[1] "Thursday" "Friday"  
+```
+
+
+**E** [&#10059;]  
+
+```
+[1] "fridge"
+```
+
+
+### Named vectors  
 
 Almost all programming languages know the (hash)map / dictionary data structure storing so-called "key-and-value" pairs. They make it possible to "look up" the value belonging to a "key". That is where the term dictionary comes from. A dictionary holds keys (the words) and their meaning (values). R does not have a dictionary type but you could make a dict-like structure using a **_vector with named elements_**. Here follows an example.
 
-If I wanted to create and use a DNA codon translation table, and use it to translate a piece of DNA, I could do something like what is shown below (there are only 4 of the 64 codons included). See if you can figure out what is going on there
+If I wanted to create and use a DNA codon translation table, and use it to translate a piece of DNA, I could do something like what is shown below (there are only 4 of the 64 codons included to keep it simple). See if you can figure out what is going on there
 
 
-```{r named-vector}
+```{r named-vector-q1}
 ## define codon table as named vector
 codons <- c("Gly", "Pro", "Lys", "Ser")
 names(codons) <- c("GGA", "CCU", "AAA", "AGU")
+
+print(codons)
 
 ## the DNA to translate
 my_DNA <- "GGACCUAAAAGU"
@@ -355,155 +359,142 @@ print(my_prot)
 ```
 
 
-**A**  
-Make a modified copy of this code chunk in such a way that no spaces are present between the amino acid residues (use help on `paste()` to figure this out) and that single-letter codes of amino acids are used instead of three-letter codes.
+**A** [&#10059;&#10059;]  
+Make a modified copy of this code chunk in such a way that no spaces are present between the amino acid residues and that single-letter codes of amino acids are used instead of three-letter codes.
 
 
-**B**  
-**[Challenge]** Here is a vector called `nuc_weights`. It holds the weights for the nucleotides A, C, G and U respectively. Make it a named vector, iterate `my_DNA` from the above code chunk and calculate its molecular weight. 
+**B** [&#10059;&#10059;&#10059;]  
+Below is a vector called `nuc_weights`. It holds the weights for the nucleotides A, C, G and U respectively. Convert it into a named vector. Then use a similar `for` code block as above to iterate `my_DNA` from the above code chunk to calculate its molecular weight. 
 
-```{r eval = F}
+```{r named-vector-q2, eval = F}
 nuc_weights <- c(491.2, 467.2, 507.2, 482.2)
 ```
 
 
-### Protein concentrations with Lowry
+### Lowry
 
 The Lowry method is a widely used spectroscopic method to quantify protein amounts in solutions. Here are some real Lowry results for the quantification of proteins:
 The calibration curve is made using BSA (bovine serum albumin) as a standard.
 The concentrations are in mg/ml:
 
-```{r}
+```{r lowry-bsa, eval = FALSE}
 bsa_conc <- c(0,	0,	0.025,	0.025,	0.075,	0.075,	0.125,	0.125)
 ```
 
-Note that the duplos are all put into one vector. We'll deal with that later.
+Note that the duplo measurements are all put into one vector, in subsequent pairs of values. We'll deal with that later.
 
-These are the obtained absorption values at 750 nm (again for the duplos):
+These are the measured absorption values at 750 nm (again for the duplo measurements):
 
-```{r}
+```{r lowry-od, eval = FALSE}
 OD750 <- c(0.063,	0.033,	0.16,	0.181,	0.346,	0.352,	0.491,	0.488)
 ```
 
-**A**  
+**A** [&#10059;]  
 
 Combine these two vectors in a dataframe and assign to a variable with name `dilution`. Do not add column names yet!
 
-**B**  
+**B** [&#10059;]  
 
 Now add the appropriate column names: `prot_conc` and `absorption`.
 
-**C**  
+**C** [&#10059;]  
 
-You forgot to include the last datapoints (again these are duplos):
+You forgot to include the last data points (again these are duplos):
 
-```{r}
+```{r lowry-new-data, eval = FALSE}
 bsa_conc2 <- c(0.175,	0.175,	0.25,	0.25)
 OD750_2 <- c(0.597,	0.595,	0.743,	0.742)
 ```
 
-Generate a dataframe assigned to the variable `df_temp` from these datapoints. This time, add the appropriate column names with creation of the dataframe. be sure you use exactly the same comlumn names.
+Generate a data frame assigned to the variable `df_temp` from these data points. This time, add the appropriate column names with creation of the data frame. Be sure you use exactly the same column names.
 
-**D**  
+**D** [&#10059;]  
 
-Now add the second dataframe `df_temp` to dataframe with name `dilution` and assign it to the name `dilution` (thus overwrite the original variable):
+Now add the second data frame `df_temp` to your first data frame, with name `dilution`, and assign it to the name `dilution` (thus overwriting the original variable):
 
-**E**  
+**E** [&#10059;&#10059;]  
 
-Generate a line plot with the following properties:  
+Generate a new dataframe from the variable `dilution`, now with the duplo measurements side-by-side. So, instead of 2 you will now have 4 columns. Follow these steps to get there:
 
-- Title: "Absorbance as a function of protein concentration".  
-- Axis labels with clear indicated quantities and units.  
-- Datapoints and connector lines should be visible and have a blue color.  
-- Y-axis lower limit should be 0 and the upper limit should be 1.  
-- The plot character (symbol) should be a filled circle.  
-
-Use `col = rgb(0, 0, 1, 0.5)` to get transparent blue plot symbols. 
-
-**F**  
-
-Generate a new dataframe from the dataframe `dilution`, now with the duplo measurements side-by-side. So, instead of 2 you will now have 4 columns.
-
-- Fist generate a dataframe `even` using the even numbered rows.  
-- Then generate a dataframe `odd`using the odd numbered rows.  
-- Finally combine these two new dataframes into one and assign it to the variable `dilution_duplo`.  
+- First create a dataframe `even` by selecting all even-numbered rows.  
+- Then create a dataframe `odd` by selecting the odd-numbered rows.  
+- Finally, combine `even` and `odd` into one and assign it to the variable `dilution_duplo`.  
 
 Hint: use subsetting with TRUE and FALSE and vector cycling.
 
-**G**  
+**F** [&#10059;&#10059;]  
 
 The result will be a dataframe with two columns named `prot_conc` and two columns named `absorption`. Delete the second column named `prot_conc` (this is an  exact copy after all!) and rename the column names to `prot_conc`, `abs1` and `abs2`.
 
-**H**  
+**G** [&#10059;&#10059;]  
 
 Calculate the mean of the two abs measurements and add it as a column named `mean_abs`:
 
-**I**  
 
-Generate a **bar** plot with the following properties:  
+### Island surfaces
 
-- Title: "Absorbance versus protein concentration".  
-- Axis labels with clear indicated quantities and units.  
-- Y-axis lower-limit should be 0, upper-limit should be 1.  
-- Plot the mean absorbance on the Y-axis.  
-- Bars should have a green color.  
+The build in dataset named `islands` is a named numeric vector holding the areas in thousands of square miles of the landmasses which exceed 10,000 square miles.
 
-### HPLC data
+**A** [&#10059;&#10059;]  
 
-The data below are from an educational experiment "Thymol quantification in Thyme".
-This data are obtained by a reverse-phase HPLC method using thymol in a standard curve. Peak areas were calculated using an integrator device. Note that peak areas are dimensionless. The concentration thymol is in μg/ml.
-
-- co = concentration
-- pa = peak area
-
-```{r}
-co <- c(100,	100,	75,	75,	50,	50,	25,	25,	10,	10,	5, 5)
-pa <- c(1969017,	1858012,	1399762,	1449423,	963014,	832137,	467856,	562012,	200123,	145545,	94567,	64752)
+Convert it into a dataframe named `islands_df` with two columns: `Island` and `Surface`. If the resulting dataframe has rownames you should remove these. So this is not correct:
+```
+> islands_df
+                           Island  Area
+Africa                     Africa 11506
+Antarctica             Antarctica  5500
+Asia                         Asia 16988
 ```
 
-**A** 
+but this is:
 
-Add the vectors to a dataframe named `hplc_data`. Use appropriate and clear column names.
-
-**B** 
-
-The concentrations are in descending order. Use `order()` to sort the dataframe so that the concentrations are in ascending order.
-
-**C** 
-
-Generate a scatter plot with the following settings:
-- Title: "Peak area as a function of thymol concentration"
-- Axis labels with clear indicated quantities and units.
-- Datapoints should be visible (no connector lines).
-- Datapoints should be blue
-- Add a red colored linear regression line with a lineweigth of 2.
+```
+> islands_df
+             Island  Area
+1            Africa 11506
+2        Antarctica  5500
+3              Asia 16988
+```
 
 
-### Airquality 
+**B** [&#10059;&#10059;]  
 
-The `airquality` dataset is also one of the datasets included in the `datasets` package. We'll explore this for a few questions.
+Use the function `order()` to select the top 3 landmasses.
 
-**A**  
-Create a scatterplot of Temperature as a function of Solar radiation. Is there, as you might naively expect, a strong correlation? You could use `cor.test()` to find out. Add a linear model using `lm()` to extend your plot.
 
-**B**  
-Create a boxplot-series of `Temp` as a function of `Month` (use `?boxplot` to find out how this works). What appears to be the warmest month?
+### USArrests 
 
-**C**  
-What date (day/month) has the lowest recorded temperature? Which the highest? Please give temperature values in Celsius, not Fahrenheit! (Yes, this is an extra challenge!)
+The `USArrests` dataset is also one of the datasets included in the `datasets` package. It has info on the fifty states for these variables:
 
-**D**  
-Create a histogram of the wind speeds, and add a thick blue vertical line for the value of the mean and a fat red line for the median (use `abline()` for this).
+```
+Murder arrests (per 100,000)
+Assault arrests (per 100,000)
+UrbanPop Percent urban population
+Rape arrests (per 100,000)
+```
 
-**E**  
-Use the `pairs()` function with argument `panel = panel.smooth` to plot all pairwise correlations between Ozone, Solar radiation, Wind and Temperature. Which pair shows the strongest correlation in your opinion? Verify this using the `cor()` function after removing incomplete cases. Create a separate well annotated scatterplot of this pair.  
+We'll explore this dataset for a few questions.
 
-[**Challenge**] Through the `summary()` function you can obtain the R-squared value -the strength of the correlation- like this: `summary(your_linear_model)$r.squared`. Can you place it within the plot using the `text()` function?
+**A** [&#10059;]  
+Select the row for Montana without using the row number directly.
+
+**B** [&#10059;&#10059;]  
+Select the row with the highest Rape rate.
+
+**C** [&#10059;&#10059;]  
+Select the row(s) where the Assault rate is less than ten times the Murder rate.
+
+**D** [&#10059;&#10059;]  
+Convert the `UrbanPop` column into a factor, `UrbanPop_f` and attach it to the dataframe. 
+Use these cutoffs: "low": < 60; "mid": 60 <= 80; "high": >= 80.
+
+Next, tabulate this split.
 
 
 ### File reading practice
+**Level: &#10059;&#10059;**  
 
-The files in this online folder on  [github](https://github.com/MichielNoback/davur1_gitbook/tree/master/data/file_reading) directory contain some (simulated) gene-array data. The dataset contains a selection of induced transcripts after some stimulus. The columns represent:  
+The files in this online folder on  [github](https://github.com/MichielNoback/davur_ebook/tree/main/data/file_reading) directory contain some (simulated) gene-array data. The dataset contains a selection of induced transcripts after some stimulus. The columns represent:  
 
 - the mRNA entry  
 - fold induction after some stimulus  
@@ -525,165 +516,587 @@ Whatever the contents of a file, you always need to address (some of) these ques
 Also: read the help for the `read.table` function carefully.
 
 
-Read the content of the each file in the `file_reading` directory into a dataframe object and assign it to the variable name `df`. There are 15 different files to practice your file loading skills.
+Read the contents of each file in the `file_reading` directory into a dataframe object and assign it to the variable name `df`. There are 15 different files to practice your file loading skills.
 
 You don't need to download them manually; simply use this:
 
-```{reval = FALSE}
-download.file(url = "https://raw.githubusercontent.com/MichielNoback/davur1_gitbook/master/data/file_reading/file01.txt",
-              destfile = "file01.txt")
+```{r download-file-from-url, eval = FALSE}
+read.table(file = "https://raw.githubusercontent.com/MichielNoback/davur_ebook/main/data/file_reading/file01.txt",
+           #more arguments
+           )
 ```
-
-Then you'll have the file in the current working directory.
 Replace the file number as needed.
 
-### Bird observations
 
-You will explore a bird observation dataset, downloaded from [GOLDEN GATE AUDUBON SOCIETY](http://goldengateaudubon.org/birding-resources/observations/). This file lists bird observations collected by this bird monitoring group in the San Francisco Bay Area. I already cleaned it a bit and placed it here: [data/Observations-Data-2014.csv](data/Observations-Data-2014.csv).  
+## Basics of the `ggplot2` package
 
-You can download it as follows:
+:::attention
+**Plotting rules**
+
+With all plots, take care to adhere to the rules regarding titles and other decorations. Tip: the site [Quick-R](http://www.statmethods.net/) has nice detailed information with examples on the different plot types and their configuration. Especially the section [on plotting](http://www.statmethods.net/graphs/index.html) is helpful for these assignments.
+:::
+
+### Trees
+**Level: &#10059;&#10059;**  
+With the `trees` dataset from the datasets package, create a scatter plot according to these constraints.
+
+- x-axis: Height
+- y-axis: Girth
+- size of plot symbol: Volume
+- color of plot symbol: darkgreen
+- a smoother without error margins
+
+NB: Where you specify aesthetics matters here!
+
+As extra practice you could convert the values to the metric system first.
+
+### Insect Sprays 
+
+The `datasets` package that is shipped with R has a dataset called `?`. Type `?InsectSprays` to get information on it. 
+
+**A [&#10059;]**  
+
+Create a boxplot, splitting on the spray type.
+
+**B [&#10059;&#10059;]**  
+
+Create a jitter plot, splitting on the spray type. Have zero jittering on the y-axis and as little as possible on the x-axis. use the `alpha` parameter and try to find a nice plot symbol.
+[Extra: Give each spray a different plot color]
+
+
+### Pharmacokinetics
+
+The `Theoph` dataset contains pharmacokinetics of theophylline, the anti-asthmatic drug theophylline. Twelve subjects were given oral doses of theophylline, then serum concentrations were measured at 11 time points over the next 25 hours.
+
+
+**A** [&#10059;&#10059;]  
+
+Create a line plot of the concentration over time. The different subjects should get different linetype and the Dose should be represented by color.
+
+**B** [&#10059;&#10059;]  
+
+As you will see, this figure is not very informative any more. Can you improve using other aesthetics? Hint: use `group = Subject` within the aes of `geom_line()`.
+
+
+### USArrests (II)
+
+**A** [&#10059;&#10059;]  
+
+With the `USArrests` dataset, create a scatterplot of `Murder` depending on `Assault`. The points should be darkgreen. Add correct x- and y-axis labels.  
+Add a linear regression line without error margins, as a thick red line.
+
+
+**B** [&#10059;&#10059;]  
+Create a histogram of the Assault variable and overlay it with a density plot in darkblue.  
+Use `aes(y=..density..)` in the histogram layer to get a density histogram instead of a count histogram.
+
+
+### Orchard Sprays
+
+**A** [&#10059;&#10059;]  
+
+The `OrchardSprays` dataset represents an experiment that was conducted to assess the potency of various constituents of orchard sprays in repelling honeybees, using a Latin square design.
+Type `?OrchardSprays` to see the details of this experiment.
+
+Create a box plot of the `decrease` variable depending on the `treatment` variable. Add an overlay of the actual points using a jitter plot (in darkred, with jittering only in horizontal direction).
+
+**B** [&#10059;&#10059;]  
+
+Create a violin plot of the same data, colorized by treatment.
+
+### Diauxic growth 
+
+In 1941, Jacques Monod discovered the phenomenon of **_diauxic growth_** in bacteria (e.g. _E. coli_), resulting from the preference for some carbon substrate over others, causing catabolite repression of pathways of less preferred substrates. See [The Wikipedia page](https://en.wikipedia.org/wiki/Diauxie) for details.
+
+![Diauxic growth (figure from wikipedia)](figures/Monods_Diauxic_growth.gif)
+
+Some of the data used to generate the figure in that original publication are in this course's data repository (https://github.com/MichielNoback/datasets/diauxic_growth). A direct link to the data file is [https://raw.githubusercontent.com/MichielNoback/datasets/master/diauxic_growth/monod_diauxic_growth.csv](https://raw.githubusercontent.com/MichielNoback/datasets/master/diauxic_growth/monod_diauxic_growth.csv). 
+
+**A [&#10059;&#10059;]**  
+
+Download the file, load it and attach to variable `diauxic`. Next, tidy this data into long format so you have three columns left: `Time`, `Substrate` and `OD`.
+
+**B [&#10059;]**  
+
+Convert the newly created `Substrate` variable into a factor with nicer labels, i.e. better suited for human reading
+
+**C [&#10059;&#10059;]**  
+
+Create a line plot with all four growth curves within a single panel. use `stat_smooth()` and its `span =` parameter to have a line-and-point visualization.
+
+**D [&#10059;&#10059;&#10059;]**  
+
+Create a multi-panel plot like the one from the original publication.
+
+
+### Virginia Death Rates
+
+The `datasets` package that is shipped with R has a dataset (a `matrix`) called `VADeaths`. Type `?VADeaths` to get information on it. First you should convert this matrix into a tibble (a kind of data frame) and the rownames into a real variable using the chunk below (study it so you understand what happens here):
+
+```{r VADeaths-prep, message = FALSE}
+library(dplyr)
+## %>% is used to pipe results from one operation to the other, just like '|' in Linux.
+virginia_death_rates <- as_tibble(VADeaths)
+virginia_death_rates <- virginia_death_rates %>% 
+    mutate("Age Group" = factor(rownames(virginia_death_rates), ordered = TRUE)) %>% 
+    select(`Age Group`, everything()) #reorder the columns
+```
+
+**A [&#10059;&#10059;&#10059;]**  
+
+Pivot this table to long (tidy) format. This should generate a dataframe with four columns: `Age Group`, `Habitat`, `Gender` and `DeathRate`.
+
+**B [&#10059;&#10059;]**  
+
+Create a bar chart with the age groups on the x-axis and Rural/Urban and Male/Female using side-by-side bars. 
+
+### Global temperature  
+
+Maybe you have seen this picture of the world temperature over the past 120 years in the media:
+
+![global_heatmap_s.png](figures/global_heatmap_s.png)
+
+We are going to work with this data as well.  
+The global temperature data are located in folder `global_temperature` (see the [Data Repo](https://github.com/MichielNoback/datasets/tree/master/global_temperature)).
+There are two data series in file [https://raw.githubusercontent.com/MichielNoback/datasets/master/global_temperature/annual.csv](https://raw.githubusercontent.com/MichielNoback/datasets/master/global_temperature/annual.csv). 
+Study the readme file in the same folder to find out more about these datasets.  
+
+#### Create a scatter-and-line-plot  
+**Level: [&#10059;&#10059;]**  
+
+Create a scatter-and-line graph of both series in a single plot. Annotate well with labels and title.
+Optionally, add a smoother without error boundaries.
+
+#### Re-create the heatmap  
+**Level: [&#10059;&#10059;&#10059;&#10059;]**  
+
+You should try to reproduce the above picture by using the `geom_tile()` function. Hint: use `scale_fill_gradient2(low = "blue", mid = "white", high = "red")` and pass `1` as value for `y` in the mapping function. The `theme()` function with `element_blank()` can be used for extra tweaking.
+
+
+#### Extra practice  
+**Level: [&#10059;&#10059;]**  
+
+As extra practice, you could try to answer these questions as well:  
+
+- what is the warmest year?
+- what is the warmest year that both timelines agree upon?
+- which was the coldest decade?
+- what is the 30-year moving average of the temperature?
+
+The is also a monthly temperature file. Many explorations can be carried out on that one as well.
+
+
+
+
+### Investigate new visualization  
+**Level: [&#10059;&#10059;&#10059;]**  
+
+Go to the [R graph Gallery](https://www.r-graph-gallery.com/) and browse the different sections. Then select one visualization to study in-depth (excluding the ones already demonstrated in this eBook).   Work out an example with one of the datasets from either the built-in datasets of R or the [Datasets Repo](https://github.com/MichielNoback/datasets) of this course. You can also choose another dataset. For instance, Kaggle (https://www.kaggle.com/) and the UCI Machine Learning Repository  (https://archive.ics.uci.edu/ml/) have very interesting datasets.
+
+Present this visualization in class, addressing these topics:  
+
+1. What is this visualization named?
+2. What is its purpose; when is it appropriate to use?
+3. Why does it appeal to you?
+4. Show an example with the R code, explain difficulties and point out caveats.
+
+## Functions (II)
+
+### `cut()` 
+**Level: &#10059;&#10059;**  
+
+We'll revisit the `USArrests` dataset. 
+ 
+Convert the `UrbanPop` column into a factor, `UrbanPop_f` and attach it to the dataframe. 
+Use these cutoffs: "low": < 60; "mid": 60 <= 80; "high": >= 80.
+
+Next, tabulate this split.
+
+### `quantile()` 
+
+**A** [&#10059;&#10059;]  
+
+Using the `quantile` function, select the bottom 10% of the states in the built-in `precip` dataset.
+
+**B** [&#10059;&#10059;&#10059;]  
+
+Using the `quantile` function, select from the `infert` dataset those rows that have the `age` variable at most 10% from the median (i.e. 50% quantile). 
+
+
+
+## Flow control and scripting
+
+This section serves you some exercises that will help you improve your function-writing skills.
+
+### Illegal reproductions  
+
+As an exercise, you will re-invent the wheel here for some statistical functions.
+
+#### The mean {-}   
+**Level: &#10059;&#10059;**  
+Create a function, `my_mean()`, that duplicates the R function `mean()`, i.e. calculates and returns the mean of a vector of numbers, without actually using `mean()`. 
+
+#### Standard deviation {-}
+**Level: &#10059;&#10059;&#10059;**  
+
+Create a function, `my_sd()`, that duplicates the R function `sd()`, i.e. calculates and returns the standard deviation of a vector of numbers, without actually using `sd()`. 
+
+#### Maximum {-}
+**Level: &#10059;&#10059;&#10059;**  
+
+Suppose we have some random numbers:
 
 ```{r eval = FALSE}
-file_name <- "Observations-Data-2014.csv"
-remote_url <- paste0("https://raw.githubusercontent.com/MichielNoback/davur1_gitbook/master/data/", file_name)
-
-download.file(url = remote_url, destfile = file_name)
+set.seed(123) 
+my_nums <- sample(10000, 1000)
 ```
 
+The use of `set.seed()` assures that the generated random numbers will always be the same, for everyone who runs it, every time.
 
-Load the observation data into R and assign it to a variable called `bird_obs`.
+Use a `for` loop and `if/else` flow control to find the largest number in `my_nums`. 
+Do not use the build in `max()` or `sort()` functions. 
+Put this in a function with the name `my_max` and demonstrate its use.
+You may use the build-in `max()` function to verify your result.
 
-From here on, it is assumed that you have the dataframe `bird_obs` loaded. This series of exercises deals with cleaning and transforming data, and exploring a cleaned dataset using basic plotting techniques and descriptive statistics.
 
-**A**  
-First, explore the raw data as they are. 
+#### Median {-}  
+**Level: &#10059;&#10059;&#10059;&#10059;**  
 
-- What data on bird observations were recorded (i.e. what kind of variables do you have)?
-- What did R do to the original column names?
-- Are all column names clear to you?
+Create a function, `my_median()`, that duplicates the R function `median()`, i.e. calculates and returns the median of a vector of numbers. This is actually a bit harder than you might expect. Hint: use the `sort()` function.
+
+
+### Various other functions  
+
+
+#### Find match locations
+**Level: &#10059;&#10059;&#10059;**  
+
+Create a function that will report the match locations some value in a given vector. Name it `where_is_it()`.
+Use only `for()` and `if/else` to get to your solution, no functions except `c()`.
+
+So, this snippet should return the given expected reult
+
+```{r, eval = FALSE}
+x <- c("Pro", "Glu", "Lys", "Pro", "Ser")
+where_is_it(x, "Pro")
+##expected:
+#[1] 1 4
+```
+
+#### Odd and even {-}
+**Level: &#10059;&#10059;&#10059;**  
+
+Create a function, `count_odd_even()`, that counts the number of even and odd numbers in an input vector.
+It should return the result as a _named vector_.
+Do not make use of R base functions.
+
+
+#### Add column compared to mean {-}  
+**Level: &#10059;&#10059;&#10059;**  
+
+Create a function that accepts as input:  
+
+- a dataframe 
+- a column name. This column name should refer to a numeric column
+
+The function should return a copy of this dataframe with an extra column attached. The column with name 'compared_to_mean' should have values "greater" (greater than mean) or "less" (less than or equal to the mean) when compared to the indicated column. Apply a check to the users' input and stop with an appropriate error message if something is not right (not a dataframe, column does not exist, not a numeric column).
+
+
+#### Interquantile ranges {-}  
+**Level: &#10059;&#10059;&#10059;**  
+
+Create a function that will calculate a custom "interquantile range". The function should accept three arguments: a numeric vector, a lower quantile and an upper quantile. It should return the difference (range) between these two quantile values. The lower quantile should default to 0 and the higher to 1, thus returning `max(x)` minus `min(x)`. The function therefore has this "signature":
+
+```{r eval = FALSE}
+interquantile_range <- function(x, lower = 0, higher = 100) {}
+```
+
+Perform some tests on the arguments to make a robust method: are all arguments numeric?
  
-**B**  
-How many bird observations were recorded?
-
-**C**  
-The column holding observation "Number" is actually not a number. Into what type has R converted it?
-
-**D**  
-Convert the "Number" column into an integer column using `as.integer()`, but assign it to a new column called "Count" (i.e. do not overwrite the original values). Compare the first 50 values or so of these two columns. What happened to the data? Is this OK?
-
-**E**  
-The previous question has shown that converting factors to numbers is a bit dangerous. It is often easiest to convert characters to numbers. The best way to do this is by using the `as.is = c(<column indices>)` argument for the `read.table()` function. 
-
-So, which columns should be loaded as real factor data and which as plain character data? Use `read.table()` and the `as.is` argument to reload the data, and then transform the `Number` column to integer again as `Count`. 
-
-**F**  
-Compare the first 50 values of the Number and Count columns again. Has the conversion succeeded? How many `Number` values could not be transformed into an integer value? Hint: use `is.na()`
-
-**G**  
-Explore the sighting counts:
-
-- Report the sighting with the maximum number of birds in a single sighting?
-- What is the mean sighting count?
-- What is the median of the sighting count?
-
-**H**  
-Is the `Count` variable a normal distributed value? You can use `hist(...)`, `table()` or `plot(density(...))` to explore this further.
+To test you method, you can compare `interquantile_range(some_vector, 0.25, 0.75)` with `IQR(some_vector)` - they should be the same.
 
 
-**I**  
-Explore the species constitution: 
+#### Vector distance {-}  
+**Level: &#10059;&#10059;&#10059;**  
 
-- How many different species were recorded?
-- How many genera do they constitute?
-- What species from the genus "Puffinus" have been observed?
+Create a function, `distance(p, q)`, that will calculate and return the Euclidean distance between two vectors of equal length. A numeric vector can be seen as a point in multidimensional space. Euclidean distance is defined as
 
-Hint: use the function `unique()` here.
-
-[**Challenge**] The number of unique "common names" should equal the number of unique "scientific names" since each species has a common name and a scientific name. The scientific name can be generated from Genus and Species. Investigate this. Is it correct? If not, what went wrong?
+$$d(p, q) = \sqrt{\sum_{i = 1}^{n}(q_i-p_i)^2}$$
+Where _p_ and _q_ are the two vectors and _n_ the length of the two vectors.  
+You should first perform a check whether the two vectors are of equal length and both of type `numeric` or `integer`. If not, the function  should abort with an appropriate error message.
 
 
-**J [Challenge]**  
-This is a challenge exercise for those who like to grind their brains! Think of a strategy to "rescue" the NAs that appear after transforming "Number" to "Count". Hint: use `gsub()` or`grep()`
+#### Other distance measures {-}
+**Level:  [&#10059;&#10059;&#10059;]- &#10059;&#10059;&#10059;&#10059;**  
 
-## Functions
+Extend the function of the previous assignment in such a way that a third argument is accepted, `method = `, which defaults to "euclidean". Other possible distance measures are "Manhattan" (same as "city block" and "taxicab") and [**Challenge**] Pearson correlation. 
 
-### The `cut()` function I
+Look up the equations for these in Wikipedia or some other place.
 
-Suppose we have a gene expression data set of gene array data. The vector below contains the fold-change of genome-wide mRNA expression after exposure of cells to dihydrotestosterone. 
-A value above 1 means an induction of gene expression, a value below 1 means a repression of gene expression. However, we know that the accuracy of the fold induction measurements is approximately plus or minus 0.1. This means that we can set the breakpoints as follows:  
 
-- range 0 < x < 0.9 is a repression  
-- range 0.9 <= x < 1.1 is no net change  
-- range x >= 1.1 is an induction  
+#### G/C percentage {-}  
+**Level: &#10059;&#10059;&#10059;&#10059;**  
 
-```{r eval = F}
-fold_change <- c(0.10, 8.50, 0.95, 56.08, 0.90, 99.15, 1.00, 0.01, 0.65, 1.10, 2.34, 62.2)
+Create a function, `GC_perc()`, that calculates and returns the GC percentage of a DNA or RNA sequence. Accept as input a sequence and a flag -`strict`- indicating whether other characters are accepted than core DNA/RNA (GATUC). If `strict = FALSE`, the percentage of other characters should be reported using a `warning()` call. If `strict = TRUE`, the function should terminate with an error message. Use `stop()` for this. `strict` should default to `TRUE`. NOTE, usage of `strict` can complicate things, so start with the core functionality!
+You can use `strsplit()` or `substr()` to get hold of individual sequence characters.
+
+
+
+## Tidying dataframes using package tidyr
+
+
+### Small examples
+
+The [`data`](data/) folder of this eBook contains three small csv files that need tidying. Read them from file and convert them into tidy format, with data columns as clean as possible (e.g. not "creatine_T0" but "T0").
+
+**A** [&#10059;]  
+
+Tidy file [`untidy1.csv`](data/untidy1.csv).
+
+**B**&#10059;  
+
+Tidy file [`untidy2.csv`](data/untidy2.csv).
+
+**C** [&#10059;&#10059;]  
+
+Tidy file [`untidy3.csv`](data/untidy3.csv).
+
+
+### Lung cancer
+
+The R `datasets` package has three related timeseries datasets relating to lung cancer deaths. These are `ldeaths`, `mdeaths` and `fdeaths` for total, male and female deaths respectively.
+
+For convenience, the original timeseries can be converted to a dataframe using the chunk below.
+
+```{r lung-deaths-to-df-q, eval = FALSE}
+lung_cancer_deaths <- data.frame(year = rep(1974:1979, each = 12),
+                     month = rep(month.abb, times = 6),
+                     male = as.integer(mdeaths),
+                     female = as.integer(fdeaths),
+                     total = as.integer(ldeaths))
+
+#check
+#sum(lung_cancer_deaths$male_deaths + lung_cancer_deaths$female_deaths == lung_cancer_deaths$total_deaths) == nrow(lung_cancer_deaths)
 ```
 
 
-**A**  
+**A** [&#10059;&#10059;]   
+This is not a datset in "tidy" format. Can you make it tidy?
 
-Use the `cut()` function to convert the data into a factor that tells you if there is an `induction`, no net change (`no_change`) or a `repression`. Make sure that you get an ordered factor. Assign the factor to the variable `induct_type`. 
+**B** [&#10059;&#10059;&#10059;]  
+Create a line plot showing the monthly mortality of male, female and totals. Do you see trends and/or outliers and if so, can you explain these?
+Note: you can create a date column by combining year and month into one column. Check out the `as.Date()` function; use as day the number 1.
 
-**B**  
-
-Create a data frame of both vectors and assign it to `induction`. Use `fold_change` and `induction_type` as column names. 
-
-**C**  
-
-Create a well annotated plot of the induction type that shows the number of genes that are repressed, have no change or are induced upon dihydrotestosterone treatment. Bars should have a blue color. The bars should be named `repressed`, `no change`, `induced`.
+**C** &#10059;&#10059;&#10059;
+Create a boxplot panel of the three types: female, male and total. Are there outliers? If so, can you figure out when this occurred, and why?
 
 
-### The `cut()` function II
 
-We will use the `cut()` function on a slightly larger data set with fictitious gene array data. The text file is located [here](https://raw.githubusercontent.com/MichielNoback/davur1_gitbook/master/data/gene_expression_data.txt).You can simply use that as argument to `read.table()`:
 
-```{r eval = F}
-remote_location <- "https://raw.githubusercontent.com/MichielNoback/davur1_gitbook/master/data/gene_expression_data.txt"
-read.table(remote_location,  )
+
+## Old school data mangling
+
+In this section you will encounter some exercises revolving around the different flavors of apply.
+
+### Whale selenium 
+
+On the course website under [Resources](https://michielnoback.github.io/bincourses/course_contents/davur/resources.html) you will find a link to file `whale_selenium.txt`. You could download it into your working directory manually or use `download.file()` to obtain it. However, there is a third way to get its contents without actually downloading it as a local copy. You can read it directly using `read.table()` as shown here.
+
+```{r read-remote-file, eval = FALSE}
+whale_sel_url <- "https://raw.githubusercontent.com/MichielNoback/davur1/gh-pages/exercises/data/whale_selenium.txt"
+whale_selenium <- read.table(whale_sel_url,
+    header = T,
+    row.names = 1)
 ```
 
-The columns are:
-- transcript_ID: NM_ entry number of the reference mRNA.  
-- fold_change: the same rules as in the previous exercise for repression, no change and induction apply here.  
-- family: the protein family that the gene encodes for.  
-- location: the cellular localization of the gene product.  
+Note: when you are going to load a file many times it is probably better to store a local copy.
 
-**A**  
+**A** [&#10059;]  
+Report the means of both columns using `apply()`.
 
-Load the file and assign it to the variable `gene_array`.
+**B** [&#10059;]  
+Report the standard deviation of both columns, using `apply()`
 
-**B**  
+**C** [&#10059;&#10059;]  
+Report the standard error of the mean of both columns, using `apply()` The SEM is calculated as $$\frac{sd}{\sqrt{n}}$$ where $sd$ is the sample standard deviation and $n$ the number of measurements. You should create the function calculating this statistic yourself.
 
-Add a column `induction_repression` to the data frame based on the fold_induction column.
-Use the `cut` function to accomplish this. The same rules apply for the breakpoints.
+**D** [&#10059;&#10059;]  
+Using `apply()`, calculate the ratio of $Se_{tooth} / Se_{liver}$ and attach it to the `whale_selenium` dataframe as column `ratio`. Create a histogram of this ratio.
 
-**C**  
-
-Create a well annotated plot of the induction type that shows the number of genes that are repressed, have no change or are induced upon dihydrotestosterone treatment. Bars should be blue. The bars should be named `repressed`, `no change`, `induced`. Make sure that the bars are within the axis borders.
+**E** [&#10059;&#10059;]  
+Using `print()` and `paste()`, report the mean and the standard deviation of the ratio column, but do this with an inline expression, e.g. an expression embedded in the R markdown paragraph text.
 
 
-## Regular Expressions
+
+### Urine properties
+
+The [urine specimens dataset](https://github.com/MichielNoback/datasets/tree/master/urine) contains a `readme.txt` file and a data file (`urine.csv`; direct link: "https://raw.githubusercontent.com/MichielNoback/datasets/master/urine/urine.csv"). Study the readme to get an idea of the data. Download the file like this:
+
+```{r download-urine-data-1, eval = FALSE}
+urine_file_name <- "urine.csv"
+url <- paste0("https://raw.githubusercontent.com/MichielNoback/datasets/master/urine/", urine_file_name)
+local_name <- paste0("../", urine_file_name) #specifiy your own folder!
+download.file(url = url, destfile = local_name)
+```
+
+**A** [&#10059;&#10059;]  
+Load the data into a dataframe with name `urine`.
+
+**B**  [&#10059;&#10059;]  
+Convert the column `r` into a factor with two levels: `yes` and `no`, and give it a better name: `ox_crystals`.
+
+**C** [&#10059;&#10059;&#10059;]  
+Using `apply()`, report the mean and standard deviation of the numeric columns only. Give these with only two decimal digits. Use a _named vector_ so you get this output:
+
+```
+     gravity   ph   osmo  cond   urea calc
+mean    1.02 6.03 615.04 20.90 266.41 4.14
+sd      0.01 0.72 238.25  7.95 131.25 3.26
+```
+
+**D** [&#10059;&#10059;]  
+Using `aggregate`, report the mean of the numeric columns, but split over the `ox_crystals` variable levels. Which variables seem most likely candidates for a relation with oxalate crystal formation.
+
+
+
+## Data mangling with dplyr
+
+### Global temperature revisited
+
+We're going to look at another version of the data. The file can be found [here](https://raw.githubusercontent.com/MichielNoback/datasets/master/global_temperature/GLB.Ts%2BdSST.csv). This is some info on the data:
+
+Global-mean monthly, seasonal, and annual means, 1880-present.
+This dataset was downlaoded on june 15, 2023 from https://data.giss.nasa.gov/gistemp/
+
+The file contains monthly Global and Hemispheric Monthly Means and Zonal Annual Means.
+
+**Columns:**  
+```
+Year, - year
+Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec - individual months
+J-D - whole year (jan-Dec)
+D-N - Dec-Nov (?)
+DJF - winter
+MAM - spring
+JJA - summer
+SON - fall
+```
+(see [Readme](https://github.com/MichielNoback/datasets/tree/master/global_temperature) in the repo)
+
+
+**A** [&#10059;]    
+Load the data.
+
+
+**B** [&#10059;&#10059;]  
+Which years have a negative anomaly below -0.40 for the summer season? Report only the years, as a vector, and use only dplyr function(s).
+
+
+**C**  [&#10059;&#10059;]  
+Which have been the coldest five years after 1880?   
+Which were the warmest five years after 1880?  
+For both, give year and temperature anomaly (annual), and combine these ten rows into a single dataframe.
+
+
+**D** [&#10059;&#10059;]  
+From the rows where the spring season is more than 0.2 higher than the summer season, select Year, spring and summer.
+
+
+**E** [&#10059;&#10059;&#10059;]  
+Select the years from 1970. Group the dataset in decades and report the per-decade average temperature anomaly for the four seasons and globally.
+
+Create a bar plot from this result: split on color with season (side-by-side) and decade on the x-axis.
+
+
+**F** [&#10059;&#10059;&#10059;&#10059;]  
+Which is the single warmest month? Give the year, that specific month and the whole year average.
+This one is surprisingly difficult. Use `filter(if_any())`.
+
+
+### Pigs
+
+Have a look at the [readme](https://raw.githubusercontent.com/MichielNoback/datasets/master/pigs/readme.md) of this dataset.  
+The datafile is located [here](https://raw.githubusercontent.com/MichielNoback/datasets/master/pigs/dietox.csv).  
+You should try some visualizations as well!  
+
+**A** [&#10059;]    
+Load the data.
+
+**B** [&#10059;&#10059;]  
+Select only the week 12 data for pigs on vitamin E dose 200 mg and copper dose 175 mg/kg feed. Select columns Pig, Litter, Feed and Weight and order the pigs by weight (high to low).  
+
+**C** [&#10059;&#10059;]  
+Print the experimental setup (all combinations of variables Vitamin E and Copper)
+
+**D** [&#10059;&#10059;&#10059;]  
+Summarize the average end weights for the different vitamin E doses, and add the number of pigs in each group.
+
+**E** [&#10059;&#10059;&#10059;]  
+Calculate the relative percentual weight gain between all timepoints for each pig, i.e., the percent difference in subsequent timepoints. For instance, a gain from 40 to 50 is an increase of 25%.
+
+Extra: Create a violin plot for this difference, split over vitamin E dose and copper.
+
+**F** [&#10059;&#10059;&#10059;]  
+Create a wide data representation, with the time points as columns, one row per pig.
+
+
+
+### Population numbers
+
+The `population` folder of the `datasets` repo contains two files. One of them, `EDU_DEM.....csv` contains population data for all countries of the world (where data is available). We're going to mangle and explore this data a bit.  
+Besides the following exercises there are many, _many_ other questions you could ask yourself about this dataset, and visualizations to be created. For insyance, how about countries and age groups, years with maximum growth, etc. Explore and practice!
+Again, You should try some more visualizations as well.  
+
+**A** [&#10059;]  
+Load the data.  
+
+Start by loading the data into a dataframe called `population`.
+Since it is a bit large, I suggest you first download it to a local location.
+
+**B** [&#10059;&#10059;]  
+Clean up. There are quite some uninformative variables - variables with only one value or with only NA.
+Find out which variables are uninformative and remove these from the dataframe.
+
+**C** [&#10059;&#10059;&#10059;]  
+With the dataframe you now have, create a report in wide format for the total population numbers over the available years. So, the years now get their own column and each country has a single row.  
+
+**D** [&#10059;&#10059;&#10059;&#10059;]  
+Next, present the same format (wide), but now with the "population change" instead of the total population.
+
+**E** [&#10059;&#10059;&#10059;]  
+Create a bar plot of the population numbers of the countries of Western Europe across the available years, split by gender.
+
+**F** [&#10059;&#10059;&#10059;&#10059;]  
+Which three countries have shown the fastest relative growth rate, measured as percentage change over the the whole of the available time period (2005-2017) relative to its start, over the entire population, for both sexes combined?
+
+Extra practice: Do the same for the different age groups.
+
+
+
+
+
+## Text processing with regex
+
 
 ### Restriction enzymes
 
-**A**  
-The restriction enzyme PacI has the recognition sequence "TTAATTAA". Define (at least) three alternative regex patterns that will catch these sites. 
+**A** [&#10059;&#10059;]  
+The restriction enzyme PacI has the recognition sequence "TTAATTAA". Define (at least) three alternative regex patterns that will catch these sites.
 
-**B**  
-The restriction enzyme SfiI has the recognition sequence "GGCCNNNNNGGCC".  Define (at least) three alternative regex patterns that will catch these sites. 
+**B** [&#10059;&#10059;]  
+The restriction enzyme SfiI has the recognition sequence "GGCCNNNNNGGCC".  Define (at least) three alternative regex patterns that will catch these sites.
 
-### Prosite Patterns  
+### Prosite Patterns
 
-**A**  
-The Prosite pattern PS00211 (ABC-transporter-1; https://prosite.expasy.org/PS00211) has the pattern:  
-"[LIVMFYC]-[SA]-[SAPGLVFYKQH]-G-[DENQMW]-[KRQASPCLIMFW]-[KRNQSTAVM]-[KRACLVM]-[LIVMFYPAN]-{PHY}-[LIVMFW]-[SAGCLIVP]-{FYWHP}-{KRHP}-[LIVMFYWSTA]." 
-Translate it into a regex pattern. Info on the syntax is here: https://prosite.expasy.org/prosuser.html#conv_pa 
+**A** [&#10059;&#10059;]  
+The Prosite pattern PS00211 (ABC-transporter-1; https://prosite.expasy.org/PS00211) has the pattern:
+"[LIVMFYC]-[SA]-[SAPGLVFYKQH]-G-[DENQMW]-[KRQASPCLIMFW]-[KRNQSTAVM]-[KRACLVM]-[LIVMFYPAN]-{PHY}-[LIVMFW]-[SAGCLIVP]-{FYWHP}-{KRHP}-[LIVMFYWSTA]."
+Translate it into a regex pattern. Info on the syntax is here: https://prosite.expasy.org/prosuser.html#conv_pa
 
-**B**  
-The Prosite pattern PS00018 (EF-hand calcium-binding domain; https://prosite.expasy.org/PS00018) has the pattern: 
-"D-{W}-[DNS]-{ILVFYW}-[DENSTG]-[DNQGHRK]-{GP}-[LIVMC]-[DENQSTAGC]-x(2)- [DE]-[LIVMFYW]." 
-Translate it into a regex pattern.  
+**B** [&#10059;&#10059;]  
+The Prosite pattern PS00018 (EF-hand calcium-binding domain; https://prosite.expasy.org/PS00018) has the pattern:
+"D-{W}-[DNS]-{ILVFYW}-[DENSTG]-[DNQGHRK]-{GP}-[LIVMC]-[DENQSTAGC]-x(2)- [DE]-[LIVMFYW]."
+Translate it into a regex pattern.
 
 
 You could exercise more by simply browsing Prosite. Test your pattern by fetching the proteins referred to within the Prosite pattern details page.
@@ -719,7 +1132,7 @@ Function `str_extract()` simply extracts the exact match of your regex (shown ab
 ```{r}
 phones <- c("+31-6-23415239", "+49-51-55523146", "+31-50-5956566")
 phones_re <- "\\+(\\d{2})-(\\d{1,2})" #matching country codes and area codes
-matches <- str_match(phones, phones_re) 
+matches <- str_match(phones, phones_re)
 matches
 ```
 
@@ -732,281 +1145,87 @@ matches[, 2] ##the country codes
 Now, given the fasta headers in [./data/fasta_headers.txt](./data/fasta_headers.txt)
 which you can simply load into a character vector using `readLines()`, extract the following.
 
-**A**  
-- Extract all complete organism names.  
-- Extract all species-level organism names (omitting subspecies and strains etc).  
+**A** [&#10059;&#10059;&#10059;]  
+- Extract all complete organism names.
+- Extract all species-level organism names (omitting subspecies and strains etc).
 
-**B**  
+**B** [&#10059;&#10059;&#10059;]  
 Extract all **_first_** database identifiers. So in this header element `>gi|224017144|gb|EEF75156.1|` you should extract only `gi|224017144`
 
-**C**  
+**C** [&#10059;&#10059;&#10059;]  
 Extract all protein names/descriptions.
 
 
-## Scripting
 
-This section serves you some exercises that will help you improve your function-writing skills.
+## Package ggplot2 revisited
 
-### Illegal reproductions  
+### Eye colors
 
-As an exercise, you will re-invent the wheel here for some statistical functions.
+This exercise also presents some data mangling challenges,  
 
-#### The mean {-}   
+Some of my first year students collected eye color data in a small research project investigating both eye color frequencies at different locations, and also to assess reliability of eye color inspection.
 
-Create a function, `my_mean()`, that duplicates the R function `mean()`, i.e. calculates and returns the mean of a vector of numbers, without actually using `mean()`. 
-
-#### Standard deviation {-}
-
-Create a function, `my_sd()`, that duplicates the R function `sd()`, i.e. calculates and returns the standard deviation of a vector of numbers, without actually using `sd()`. 
-
-
-#### Maximum {-}
-
-Suppose we have some random numbers:
-
-```{r eval = FALSE}
-set.seed(123) 
-my_nums <- sample(10000, 1000)
-```
-
-The use of `set.seed()` assures that the generated random numbers will always be the same, for everyone who runs it, every time.
-
-Use a `for` loop and `if/else` flow control to find the largest number in `my_nums`. 
-Do not use the build in `max()` or `sort()` functions. 
-Put this in a function with the name `my_max` and demonstrate its use.
-You may use the build-in `max()` function to verify your result.
-
-
-#### Find match locations
-
-Create a function that will report the match locations some value in a given vector. Name it `where_is_it()`.
-Use only `for()` and `if/else` to get to your solution, no functions except `c()`.
-
-So, this snippet should return the given expected reult
-
-```{r eval = FALSE}
-x <- c("Pro", "Glu", "Lys", "Pro", "Ser")
-where_is_it(x, "Pro")
-##expected:
-#[1] 1 4
-```
-
-#### Median {-}  
-
-**[Challenge]** Create a function, `my_median()`, that duplicates the R function `median()`, i.e. calculates and returns the median of a vector of numbers. This is actually a bit harder than you might expect. Hint: use the `sort()` function.
-
-### Count odd and even numbers
-
-Create a function, `count_odd_even()`, that counts the number of even and odd numbers in an input vector.
-It should return the result as a _named vector_.
-Do not make use of R base functions.
-
-### Add column compared to mean
-
-Create a function that accepts as input:  
-
-- a dataframe 
-- a column name. This column name should refer to a numeric column
-
-The function should return a copy of this dataframe with an extra column attached. The column with name 'compared_to_mean' should have values "greater" (greater than mean) or "less" (less than or equal to the mean) when compared to the indicated column. Apply a check to the users' input and stop with an appropriate error message if something is not right (not a dataframe, column does not exist, not a numeric column).
-
-
-### Interquantile ranges
-
-Create a function that will calculate a custom "interquantile range". The function should accept three arguments: a numeric vector, a lower quantile and an upper quantile. It should return the difference (range) between these two quantile values. The lower quantile should default to 0 and the higher to 1, thus returning `max(x)` minus `min(x)`. The function therefore has this "signature":
-
-```{r eval = FALSE}
-interquantile_range <- function(x, lower = 0, higher = 100) {}
-```
-
-Perform some tests on the arguments to make a robust method: are all arguments numeric?
- 
-To test you method, you can compare `interquantile_range(some_vector, 0.25, 0.75)` with `IQR(some_vector)` - they should be the same.
-
-
-### Vector distance
-
-Create a function, `distance(p, q)`, that will calculate and return the Euclidean distance between two vectors of equal length. A numeric vector can be seen as a point in multidimensional space. Euclidean distance is defined as
-
-$$d(p, q) = \sqrt{\sum_{i = 1}^{n}(q_i-p_i)^2}$$
-Where _p_ and _q_ are the two vectors and _n_ the length of the two vectors.  
-You should first perform a check whether the two vectors are of equal length and both of type `numeric` or `integer`. If not, the function  should abort with an appropriate error message.
-
-
-#### Other distance measures {-}
-
-Extend the function of the previous assignment in such a way that a third argument is accepted, `method = `, which defaults to "euclidean". Other possible distance measures are "Manhattan" (same as "city block" and "taxicab") and [**Challenge**] Pearson correlation. 
-
-Look up the equations for these in Wikipedia or some other place.
-
-
-### Quadratic equation solver
-
-Write a function that will use the quadratic equation (ABC formula) to solve an equation in the form $ax^2 + bx + c = 0$. Call the function `abc_solver`.
-Use flow control to perform the following:  
-
-- First calculate the discriminant (you should know the equation from your math lessons). The website of Khan Academy (https://www.khanacademy.org/) gives ample review.  
-- Test if the discriminant is negative. If so, return a _warning_ message that tells the user that the equation can not be solved.  
-- Then test if the discriminant is positive. If so, there are two solutions for the equation. Return them in a _named_ vector.  
-- Then test if the discriminant is 0. If so, there is one solution for the equation. Return the solution as a _named_ vector.  
-
-Test your function for the following quadratic models:  
-- $ax^1 + 2x + 3$ (no solution)  
-- $ax^3 + 7x + 4$ (two intersections)  
-- $ax^2 + 4x + 2$ (1 intersection)  
-
-
-### G/C percentage of DNA
-
-**[Challenge XL]** Create a function, `GC_perc()`, that calculates and returns the GC percentage of a DNA or RNA sequence. Accept as input a sequence and a flag -`strict`- indicating whether other characters are accepted than core DNA/RNA (GATUC). If `strict = FALSE`, the percentage of other characters should be reported using a `warning()` call. If `strict = TRUE`, the function should terminate with an error message. Use `stop()` for this. `strict` should default to `TRUE`. NOTE, usage of `strict` can complicate things, so start with the core functionality!
-You can use `strsplit()` or `substr()` to get hold of individual sequence characters.
-
-## Function `apply` and its relatives
-
-In this section you will encounter some exercises revolving around the different flavors of apply.
-
-### Whale selenium 
-
-On the course website under [Resources](https://michielnoback.github.io/bincourses/course_contents/davur/resources.html) you will find a link to file `whale_selenium.txt`. You could download it into your working directory manually or use `download.file()` to obtain it. However, there is a third way to get its contents without actually downloading it as a local copy. You can read it directly using `read.table()` as shown here.
-
-```{r read-remote-file, eval = FALSE}
-whale_sel_url <- "https://raw.githubusercontent.com/MichielNoback/davur1/gh-pages/exercises/data/whale_selenium.txt"
-whale_selenium <- read.table(whale_sel_url,
-    header = T,
-    row.names = 1)
-```
-
-Note: when you are going to load a file many times it is probably better to store a local copy.
-
-**A**  
-Report the means of both columns using `apply()`.
-
-**B** 
-Report the standard deviation of both columns, using `apply()`
-
-**C**  
-Report the standard error of the mean of both columns, using `apply()` The SEM is calculated as $$\frac{sd}{\sqrt{n}}$$ where $sd$ is the sample standard deviation and $n$ the number of measurements. You should create the function calculating this statistic yourself.
-
-**D**  
-Using `apply()`, calculate the ratio of $Se_{tooth} / Se_{liver}$ and attach it to the `whale_selenium` dataframe as column `ratio`. Create a histogram of this ratio.
-
-**E**  
-Using `print()` and `paste()`, report the mean and the standard deviation of the ratio column, but do this with an inline expression, e.g. an expression embedded in the R markdown paragraph text.
-
-
-### ChickWeight 
-
-This exercise revolves around the `ChickWeight` dataset of the built-in `datasets` package. 
-
-**A**  
-Report the number of chickens used in the experiment. 
-
-**B**  
-Use `aggregate()` to get the mean weight of the chickens for the different Diets. 
-
-**C**  
-Use `coplot()` to plot a panel with weight as function of Time, split over Diet. 
-
-**D**  
-[**Challenge**] Add a column called `weight_gain` to the dataframe holding values for the weight gain since the last measurement. Take special care with rows marking the boundaries between individual chickens! You could consider using a traditional for loop here.
-In the next course, we'll see a more efficient way of doing this.
-
-**E**  
-Split the `weight_gain` column on Diet and report the mean, median and standard deviation for each diet. 
-If you were not successful in the previous question, load and attach the data from file `ChickWeight_weight_gain.Rdata` downloadable from [https://github.com/MichielNoback/davur1_gitbook/raw/master/data/ChickWeight_weight_gain.Rdata](https://github.com/MichielNoback/davur1_gitbook/raw/master/data/ChickWeight_weight_gain.Rdata). You can use this code chunk for downloading and loading the data into variable `stored_weight_gain`. Don't forget to attach the column to the data frame!
-
-```{r eval = F}
-local_file <- "ChickWeight_weight_gain.Rdata"
-download.file(paste0("https://github.com/MichielNoback/davur1_gitbook/raw/master/data/", local_file), local_file)
-load(local_file)
-```
-
-**F**  
-Create a (single-panel) boxplot for weight gain, split over Diet. Hint: read the `boxplot()` help page!
-
-
-### Food constituents 
-
-The [food constituents dataset](https://raw.githubusercontent.com/MichielNoback/davur1_gitbook/master/data/food_constituents.txt) holds information on ingredients for different foods. Individual foods are simply marked with an id. 
-
-**A**  
-Load the data and report the different food categories (`Type`). Also report the numbers of entries for each Type.
-
-**B**  
-What is the mean energy content of chocolate foods?
-
-**C**  
-What is the food category with the highest mean fat content?
-
-**D**  
-What food category has the highest mean energy content, and which has the lowest?
-
-**E**  
-**[Challenge]** Create a boxplot showing the difference in sugar content between drink and solid food.
-
-**F**  
-Assuming both saturated fats and sugar are bad for you, what food category do you consider the worst? Think of a means to answer this, explain it and carry it out.
-
-
-### Urine properties
-
-The [urine specimens dataset](https://github.com/MichielNoback/datasets/tree/master/urine) contains a `readme.txt` file and a data file (`urine.csv`; direct link: "https://raw.githubusercontent.com/MichielNoback/datasets/master/urine/urine.csv"). Study the readme to get an idea of the data. Download the file like this:
-
-```{r download-urine-data-1, eval = FALSE}
-urine_file_name <- "urine.csv"
-url <- paste0("https://raw.githubusercontent.com/MichielNoback/datasets/master/urine/", urine_file_name)
-local_name <- paste0("../", urine_file_name) #specifiy your own folder!
-download.file(url = url, destfile = local_name)
-```
-
-**A**  
-Load the data into a dataframe with name `urine`.
-
-**B**  
-Convert the column `r` into a factor with two levels: `yes` and `no`, and give it a better name: `ox_crystals`.
-
-**C**  
-Using `apply()`, report the mean and standard deviation of the numeric columns only. Give these with only two decimal digits. Use a _named vector_ so you get this output:
+The data looks like this:
 
 ```
-     gravity   ph   osmo  cond   urea calc
-mean    1.02 6.03 615.04 20.90 266.41 4.14
-sd      0.01 0.72 238.25  7.95 131.25 3.26
+Identifier,sex,age,L_OK9308,R_OK9308,L_OK2193,R_OK2193,L_OK5609,R_OK5609,L_OK8705,R_OK8705
+A001,M,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
+A002,F,19,hazel,hazel,hazel,hazel,hazel,hazel,groen,groen
+A003,F,22,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
 ```
 
-**D**  
-Using `aggregate`, report the mean of the numeric columns, but split over the `ox_crystals` variable levels. Which variables seem most likely candidates for a relation with oxalate crystal formation.
+Columns Identifier, sex and age are obvious. The next 8 columns represent the Left and Right eye colors obesrved for that subject by the different investigators (OK9308, OK2193, OK5609, OK8705).
 
-**E**  
-Use the `pairs()` plotting function to explore the pairwise relationships between the different numeric variables  
+**A** [&#10059;&#10059;]  
 
-**F**  
-Use the `heatmap.2()` and `cor()` functions together to create a heatmap of pairwise variable correlations. You will need to install package `gplots` for the heatmap.2 function. Alternatively, use `heatmap()` from base R.
+Load the data from file [data/eyecolor_data.csv](data/eyecolor_data.csv) using the `readr` package. take care all columns are in the correct data type using the `col_types` argument.
 
-Which visualization do you prefer - the `pairs()` or the `heatmap.2()`? 
+**B** [&#10059;&#10059;&#10059;]  
+Recode the data so that English names are used:
 
-**G**  
-[**Challenge**] There does not seem to be an interesting correlation between pH and any of the other variables. Sometimes this is becuase you are not looking in enough detail. Let's dig a little further. Use `cut()` to split the pH variable into a factor with three levels:  "acidic", "neutral" and "basic" with breakpoints between them at pH 5.5 and 7. Next, use the `split()` and `lapply()` functions to calculate the mean, meadian and sd of the other numeric variables for each level of this pH factor. This exercise can of course be done in many ways. one of them is by using an `apply()` _within_ the applied function of `lapply()`.
+bruin == brown
+hazel == hazel
+blauw == blue
+groen == green
+
+Hint: use `across()`.
+
+**C** [&#10059;&#10059;&#10059;&#10059;]  
+Add a column `majority` that gives the eye color based on a majority vote of the determined colors, or NA if no majority can be established. For instance, subject A002 will get `hazel`.
+
+If you do not succeed here, you can skip ahead to the next part and proceed from there.
+
+**D** [&#10059;&#10059;&#10059;]  
+
+Pivot this tibble so that it becomes a tidy dataset.
+
+**E** [&#10059;&#10059;&#10059;]  
+Create a balloon plot of the eye colors, split over sex and (challenge!) left/right. 
+This requires for you to first create a contingency table.
+
+
+### Bacterial growth
+
+The file `data/growth-exp-data.csv` contains some growth data of a bacterial growth experiment that spans two consecutive days. 
+
+**A** [&#10059;&#10059;]  
+
+Read in the data using `read.table`.
+
+**B** [&#10059;&#10059;]  
+
+Combine date and time into a date-time column with type `S3: POSIXct`.
+
+**C** [&#10059;&#10059;&#10059;]  
+
+Create a column `elapsed_time` which is the time from the start of the experiment, in hours.
+Study the lubridate vignette for this.
+
+
+**D** [&#10059;&#10059;&#10059;]  
+Create a line plot with two y-axes; one for OD600 and one for glucose. On the x-axis the elapsed time should be plotted.
 
 
 
-### Bird observations revisited
-
-This exercise revisits the bird observations dataset. You can download it [here](data/Observations-Data-2014.csv). (Re)load the dataset.
-
-**A**  
-Report the number of observations per `County`. Use both a textual as a barplot representation. With the barplot, you should order the bars according to observation numbers. 
-
-**B**  
-Report the number of observations per `Observer.1` but only for observers with more than 10 observations, ordered from high to low observation count. Use `order()` to achieve this.
-
-**C**  
-Which observer has the highest number of observations listed (and how many is that)? 
-
-**D**  
-Report the different observed species (using `Common.name`) for each genus. **[Challenge]** Report only the 5 Genera with the highest number of observed species.  
-
-**E**  
-**[Challenge]** Create a Dataframe holding the number of birds per day (use Date.start) and plot it with date on the x-axis and number of birds on the y-axis. Hint: use `as.Date()` to convert the character date to a real date field. See this page how you can do that [Date Values](http://www.statmethods.net/input/dates.html).
 
 

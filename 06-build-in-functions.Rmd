@@ -201,7 +201,7 @@ save(x, y, file = "xy.RData")
 Use one of the functions `png()`, `jpeg()`, `tiff()`, or `bmp()` for these specific file types. They have widely differing properties, especially with respect to file size.  
 Use `width` and `height` to specify size. Default unit is pixels. Use other unit: `units = "mm"`
 
-```{r writing-plot-to-file, eval = F}
+```{r writing-plot-to-file, eval = FALSE}
 png("/path/to/your/file.png",
     width = 700, height = 350, units = "mm")
 plot(cars)
@@ -210,7 +210,7 @@ dev.off() # don't forget this one!
 
 A ggplot figure can be written to file like this:
 
-```{r writing-ggplot-to-file}
+```{r writing-ggplot-to-file, eval = FALSE}
 png("myplot.png")
 myplot <- ggplot(mtcars, aes(wt, mpg)) + 
   geom_point()
