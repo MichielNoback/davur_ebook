@@ -154,22 +154,22 @@ knitr::kable(blocks[1:3,],
 
 First, there is the **_data_** layer - the input data that you want to visualize:
 
-![The data layer](graphics/data_layer_50p.png#center)
+![The data layer](figures/data_layer_50p.png)
 
 Next, using the `aes()` function, the data is **_mapped_** to a coordinate system. This encompasses not only the xy-coordinates but also possible extra plot dimensions such as color and shape.
 
 
-![The data and aesthetic layers](graphics/data_aes_layers_50p.png#center)
+![The data and aesthetic layers](figures/data_aes_layers_50p.png)
 
 As a third step, the data is **_visually represented_** in some way, using a **_geometry_** (dealt with by one of the many `geom_....()` functions). Examples of geometries are **_point_** for scatterplots, **_boxplot_**, **_line_** etc.
 
-![The data, aesthetic and geometry layers](graphics/data_aes_geom_layers_50p.png#center)
+![The data, aesthetic and geometry layers](figures/data_aes_geom_layers_50p.png)
 
 At a minimum, these three layers are used in every plot you create. 
 
 Besides these fundamental aspects there are other elements you may wish to add or modify: axis labels, legend, titles, etc. These constitute additional, optional layers:
 
-![All layers](graphics/all_layers_50p.png#center)
+![All layers](figures/all_layers_50p.png)
 
 Except for Statistics and Coordinates, each of these layers will be discussed in detail in subsequent paragraphs.
 

@@ -1,121 +1,121 @@
-Identifier,sex,age,L_OK9308,R_OK9308,L_OK2193,R_OK2193,L_OK5609,R_OK5609,L_OK8705,R_OK8705
-A001,M,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A002,F,19,hazel,hazel,hazel,hazel,hazel,hazel,groen,groen
-A003,F,22,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A004,M,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A005,M,17,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A006,M,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A007,M,25,hazel,hazel,hazel,hazel,hazel,hazel,bruin,bruin
-A008,M,18,blauw,blauw,hazel,hazel,blauw,blauw,blauw,blauw
-A009,M,18,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A010,F,23,blauw,blauw,blauw,blauw,-,-,blauw,blauw
-A011,F,20,bruin,bruin,-,-,bruin,bruin,bruin,bruin
-A012,F,20,-,-,bruin,bruin,bruin,bruin,bruin,bruin
-A013,M,21,blauw,blauw,blauw,blauw,blauw,blauw,-,-
-A014,M,19,bruin,bruin,bruin,bruin,hazel,hazel,bruin,bruin
-A015,F,19,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A016,F,18,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A017,M,17,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A018,M,19,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A019,M,18,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A020,F,19,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A021,M,20,blauw,blauw,bruin,bruin,blauw,blauw,groen,groen
-A022,F,21,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A023,F,18,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A024,F,21,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A025,F,19,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A026,F,20,blauw,blauw,blauw,blauw,blauw,blauw,groen,groen
-A027,F,20,groen,groen,groen,groen,groen,groen,blauw,blauw
-A028,F,19,blauw,blauw,blauw,blauw,groen,groen,blauw,blauw
-A029,F,23,hazel,hazel,hazel,hazel,hazel,hazel,bruin,bruin
-A030,F,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A031,F,19,groen,groen,bruin,bruin,blauw,blauw,blauw,blauw
-A032,M,21,bruin,bruin,groen,groen,groen,groen,bruin,bruin
-A033,M,20,blauw,blauw,blauw,blauw,groen,groen,blauw,blauw
-A034,F,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A035,M,18,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A036,M,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A037,M,21,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A038,F,19,hazel,hazel,hazel,hazel,hazel,hazel,hazel,hazel
-A039,M,23,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A040,M,28,groen,groen,groen,groen,groen,groen,groen,groen
-A041,F,25,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A042,F,15,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A043,F,16,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A044,F,15,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A045,F,20,blauw,blauw,groen,groen,blauw,blauw,blauw,blauw
-A046,F,23,bruin,bruin,hazel,hazel,bruin,bruin,bruin,bruin
-A047,F,19,hazel,hazel,hazel,hazel,groen,groen,blauw,blauw
-A048,F,18,blauw,blauw,hazel,hazel,hazel,hazel,hazel,hazel
-A049,M,23,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A050,M,25,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A051,M,20,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A052,M,19,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A053,F,21,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A054,F,22,blauw,blauw,blauw,blauw,groen,groen,blauw,blauw
-A055,F,26,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A056,M,28,blauw,blauw,groen,groen,groen,groen,groen,groen
-A057,M,24,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A058,M,22,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A059,F,21,blauw,blauw,blauw,blauw,blauw,blauw,bruin,bruin
-A060,F,22,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A061,M,26,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A062,F,20,blauw,blauw,blauw,blauw,groen,groen,blauw,blauw
-A063,F,24,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A064,M,25,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A065,F,22,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A066,M,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A067,M,27,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A068,F,24,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A069,F,28,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A070,F,19,hazel,hazel,groen,groen,hazel,hazel,groen,groen
-A071,M,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A072,F,23,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A073,M,18,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A074,M,23,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A075,M,23,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A076,M,19,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A077,M,22,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A078,M,24,blauw,blauw,bruin,bruin,blauw,blauw,blauw,blauw
-A079,M,23,blauw,blauw,blauw,blauw,blauw,blauw,bruin,bruin
-A080,M,18,bruin,bruin,blauw,blauw,hazel,hazel,-,-
-A081,F,18,groen,groen,blauw,blauw,blauw,blauw,groen,groen
-A082,F,17,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A083,F,18,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A084,F,17,groen,groen,blauw,blauw,groen,groen,hazel,hazel
-A085,F,18,blauw,blauw,groen,groen,groen,groen,hazel,hazel
-A086,M,25,blauw,blauw,groen,groen,blauw,blauw,blauw,blauw
-A087,M,26,blauw,blauw,groen,groen,blauw,blauw,blauw,blauw
-A088,F,14,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A089,F,14,groen,groen,groen,groen,groen,groen,groen,groen
-A090,F,25,blauw,blauw,blauw,blauw,blauw,blauw,groen,groen
-A091,F,27,blauw,blauw,blauw,blauw,blauw,blauw,groen,groen
-A092,F,21,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A093,F,26,groen,groen,blauw,blauw,groen,groen,bruin,bruin
-A094,M,25,hazel,hazel,blauw,blauw,bruin,bruin,bruin,bruin
-A095,M,27,hazel,hazel,hazel,hazel,hazel,hazel,bruin,bruin
-A096,F,23,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A097,M,28,blauw,blauw,blauw,blauw,blauw,blauw,groen,groen
-A098,M,21,groen,groen,blauw,blauw,groen,groen,groen,groen
-A099,M,25,bruin,bruin,bruin,bruin,bruin,bruin,hazel,hazel
-A100,M,30,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A101,F,19,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A102,M,23,blauw,blauw,blauw,blauw,groen,groen,groen,groen
-A103,M,18,groen,groen,blauw,hazel,groen,groen,groen,groen
-A104,M,26,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A105,F,23,hazel,hazel,bruin,bruin,hazel,hazel,bruin,bruin
-A106,F,20,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A107,F,21,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A108,F,25,blauw,blauw,blauw,blauw,groen,groen,groen,groen
-A109,F,25,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A110,F,30,blauw,blauw,blauw,blauw,groen,groen,groen,groen
-A111,F,21,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A112,M,26,groen,groen,groen,groen,groen,groen,groen,groen
-A113,M,19,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A114,M,22,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A115,M,26,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A116,M,24,blauw,blauw,blauw,blauw,blauw,blauw,blauw,blauw
-A117,M,25,blauw,blauw,blauw,blauw,hazel,hazel,groen,groen
-A118,M,22,bruin,bruin,bruin,bruin,bruin,bruin,hazel,hazel
-A119,M,18,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
-A120,M,16,bruin,bruin,bruin,bruin,bruin,bruin,bruin,bruin
+Identifier;sex;age;L_OK9308;R_OK9308;L_OK2193;R_OK2193;L_OK5609;R_OK5609;L_OK8705;R_OK8705;location
+A001;M;20;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A002;F;19;hazel;hazel;hazel;hazel;hazel;hazel;groen;groen;Hanze UAS
+A003;F;22;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Hanze UAS
+A004;M;20;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A005;M;17;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Hanze UAS
+A006;M;20;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A007;M;25;hazel;hazel;hazel;hazel;hazel;hazel;bruin;bruin;Hanze UAS
+A008;M;18;blauw;blauw;hazel;hazel;blauw;blauw;blauw;blauw;Hanze UAS
+A009;M;18;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A010;F;23;blauw;blauw;blauw;blauw;-;-;blauw;blauw;Hanze UAS
+A011;F;20;bruin;bruin;-;-;bruin;bruin;bruin;bruin;Hanze UAS
+A012;F;20;-;-;bruin;bruin;bruin;bruin;bruin;bruin;Hanze UAS
+A013;M;21;blauw;blauw;blauw;blauw;blauw;blauw;-;-;Hanze UAS
+A014;M;19;bruin;bruin;bruin;bruin;hazel;hazel;bruin;bruin;Hanze UAS
+A015;F;19;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A016;F;18;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A017;M;17;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A018;M;19;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A019;M;18;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Hanze UAS
+A020;F;19;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A021;M;20;blauw;blauw;bruin;bruin;blauw;blauw;groen;groen;Hanze UAS
+A022;F;21;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Hanze UAS
+A023;F;18;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Hanze UAS
+A024;F;21;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A025;F;19;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A026;F;20;blauw;blauw;blauw;blauw;blauw;blauw;groen;groen;Hanze UAS
+A027;F;20;groen;groen;groen;groen;groen;groen;blauw;blauw;Hanze UAS
+A028;F;19;blauw;blauw;blauw;blauw;groen;groen;blauw;blauw;Hanze UAS
+A029;F;23;hazel;hazel;hazel;hazel;hazel;hazel;bruin;bruin;Hanze UAS
+A030;F;20;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A031;F;19;groen;groen;bruin;bruin;blauw;blauw;blauw;blauw;Hanze UAS
+A032;M;21;bruin;bruin;groen;groen;groen;groen;bruin;bruin;Hanze UAS
+A033;M;20;blauw;blauw;blauw;blauw;groen;groen;blauw;blauw;Hanze UAS
+A034;F;20;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A035;M;18;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Hanze UAS
+A036;M;20;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Hanze UAS
+A037;M;21;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Hanze UAS
+A038;F;19;hazel;hazel;hazel;hazel;hazel;hazel;hazel;hazel;Hanze UAS
+A039;M;23;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Hanze UAS
+A040;M;28;groen;groen;groen;groen;groen;groen;groen;groen;Hanze UAS
+A041;F;25;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A042;F;15;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A043;F;16;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A044;F;15;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A045;F;20;blauw;blauw;groen;groen;blauw;blauw;blauw;blauw;Groningen city
+A046;F;23;bruin;bruin;hazel;hazel;bruin;bruin;bruin;bruin;Groningen city
+A047;F;19;hazel;hazel;hazel;hazel;groen;groen;blauw;blauw;Groningen city
+A048;F;18;blauw;blauw;hazel;hazel;hazel;hazel;hazel;hazel;Groningen city
+A049;M;23;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A050;M;25;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A051;M;20;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A052;M;19;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A053;F;21;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A054;F;22;blauw;blauw;blauw;blauw;groen;groen;blauw;blauw;Groningen city
+A055;F;26;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A056;M;28;blauw;blauw;groen;groen;groen;groen;groen;groen;Groningen city
+A057;M;24;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A058;M;22;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A059;F;21;blauw;blauw;blauw;blauw;blauw;blauw;bruin;bruin;Groningen city
+A060;F;22;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A061;M;26;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A062;F;20;blauw;blauw;blauw;blauw;groen;groen;blauw;blauw;Groningen city
+A063;F;24;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A064;M;25;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A065;F;22;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A066;M;20;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A067;M;27;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A068;F;24;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A069;F;28;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A070;F;19;hazel;hazel;groen;groen;hazel;hazel;groen;groen;Groningen city
+A071;M;20;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A072;F;23;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A073;M;18;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A074;M;23;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A075;M;23;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A076;M;19;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Groningen city
+A077;M;22;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Groningen city
+A078;M;24;blauw;blauw;bruin;bruin;blauw;blauw;blauw;blauw;Groningen city
+A079;M;23;blauw;blauw;blauw;blauw;blauw;blauw;bruin;bruin;Groningen city
+A080;M;18;bruin;bruin;blauw;blauw;hazel;hazel;-;-;Groningen city
+A081;F;18;groen;groen;blauw;blauw;blauw;blauw;groen;groen;Zwolle city
+A082;F;17;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A083;F;18;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A084;F;17;groen;groen;blauw;blauw;groen;groen;hazel;hazel;Zwolle city
+A085;F;18;blauw;blauw;groen;groen;groen;groen;hazel;hazel;Zwolle city
+A086;M;25;blauw;blauw;groen;groen;blauw;blauw;blauw;blauw;Zwolle city
+A087;M;26;blauw;blauw;groen;groen;blauw;blauw;blauw;blauw;Zwolle city
+A088;F;14;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A089;F;14;groen;groen;groen;groen;groen;groen;groen;groen;Zwolle city
+A090;F;25;blauw;blauw;blauw;blauw;blauw;blauw;groen;groen;Zwolle city
+A091;F;27;blauw;blauw;blauw;blauw;blauw;blauw;groen;groen;Zwolle city
+A092;F;21;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A093;F;26;groen;groen;blauw;blauw;groen;groen;bruin;bruin;Zwolle city
+A094;M;25;hazel;hazel;blauw;blauw;bruin;bruin;bruin;bruin;Zwolle city
+A095;M;27;hazel;hazel;hazel;hazel;hazel;hazel;bruin;bruin;Zwolle city
+A096;F;23;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Zwolle city
+A097;M;28;blauw;blauw;blauw;blauw;blauw;blauw;groen;groen;Zwolle city
+A098;M;21;groen;groen;blauw;blauw;groen;groen;groen;groen;Zwolle city
+A099;M;25;bruin;bruin;bruin;bruin;bruin;bruin;hazel;hazel;Zwolle city
+A100;M;30;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A101;F;19;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A102;M;23;blauw;blauw;blauw;blauw;groen;groen;groen;groen;Zwolle city
+A103;M;18;groen;groen;blauw;hazel;groen;groen;groen;groen;Zwolle city
+A104;M;26;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A105;F;23;hazel;hazel;bruin;bruin;hazel;hazel;bruin;bruin;Zwolle city
+A106;F;20;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A107;F;21;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A108;F;25;blauw;blauw;blauw;blauw;groen;groen;groen;groen;Zwolle city
+A109;F;25;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A110;F;30;blauw;blauw;blauw;blauw;groen;groen;groen;groen;Zwolle city
+A111;F;21;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A112;M;26;groen;groen;groen;groen;groen;groen;groen;groen;Zwolle city
+A113;M;19;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A114;M;22;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A115;M;26;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Zwolle city
+A116;M;24;blauw;blauw;blauw;blauw;blauw;blauw;blauw;blauw;Zwolle city
+A117;M;25;blauw;blauw;blauw;blauw;hazel;hazel;groen;groen;Zwolle city
+A118;M;22;bruin;bruin;bruin;bruin;bruin;bruin;hazel;hazel;Zwolle city
+A119;M;18;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Zwolle city
+A120;M;16;bruin;bruin;bruin;bruin;bruin;bruin;bruin;bruin;Zwolle city

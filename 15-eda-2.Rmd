@@ -22,10 +22,9 @@ knitr::opts_knit$set(cache = TRUE,
 
 ## Introduction
 
-In this last chapter we'll step back from the data mangling and have a look at an activity called Exploratory Data Analysis, EDA in short. All theory that is presented in previous chapters will be applied to two datasets 
+This chapter presents a second example of an Exploratory Data Analysis, (EDA). All theory that is presented in previous chapters will be applied to two datasets 
 
-In statistics, *exploratory data analysis (EDA)* is an approach to analyzing data sets to summarize their main characteristics, often with visual methods. A statistical model can be used or not, but primarily EDA is for seeing what the data can tell us beyond the formal modeling or hypothesis testing task. 
-s. (Wikipedia) 
+In statistics, *exploratory data analysis (EDA)* is an approach to analyzing data sets to summarize their main characteristics, often with visual methods. A statistical model can be used or not, but primarily EDA is for seeing what the data can tell us beyond the formal modeling or hypothesis testing task. (Wikipedia) 
 
 #### The Cervical Cancer dataset {-}
 
