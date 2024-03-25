@@ -63,6 +63,127 @@ summary(ChickWeight$weight)
 boxplot(ChickWeight$weight)
 ```
 
+## Sampling and distributions
+
+You may have noticed the use of `rnorm` in a few examples of this book. This function samples values from a normal distribution. Sampling data from a distribution or specific collection of values is done very often. Here is a short overview of the main ones.
+
+### `rnorm` and friends.
+
+Many distributions have been described in statistics. The most well-known is of course the *normal distribution*, characterized by the bell-shaped curve when a density plot is created.  
+Getting values from a normal distribution is done using the `rnorm` function. Actually, there is a family of related functions:  
+
+>Density, distribution function, quantile function and random generation for the normal distribution with mean equal to `mean` and standard deviation equal to `sd`.
+
+```{r, eval = FALSE}
+dnorm(x, mean = 0, sd = 1, log = FALSE)
+pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)
+qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)
+rnorm(n, mean = 0, sd = 1)
+```
+
+where `dnorm` gives the density, `pnorm` gives the distribution function, `qnorm` gives the quantile function, and `rnorm` generates random deviates.  
+(see `?rnorm`)
+
+So, `rnorm` can be used to generate random values from a normal dstribution:
+
+```{r rnorm-demo}
+set.seed(4040)
+random_normal <- rnorm(1000, 100, 8)
+```
+
+These values should give a nice bell-shaped curvee when plotted:
+
+```{r rnorm-plot1}
+df <- data.frame(x = random_normal)
+ggplot(data = df, mapping = aes(x = x)) +
+    geom_histogram(aes(y = after_stat(density)), 
+                   bins = 40, 
+                   fill = "lightblue", 
+                   color = "darkblue") +
+    geom_density(color = "darkred", linewidth = 1.5)
+```
+
+This is pretty close to a bell shape. You can check by adding a theoretical density function as well, using the `dnorm` function.
+
+```{r rnorm-plot2}
+x <- seq(60, 130, length.out = 1000)
+y_dens <- dnorm(x = x, mean = 100, sd = 8) # generate y values of theoretical density
+df <- data.frame(x = x,
+                obs = random_normal,
+                y_dens = y_dens)
+ggplot(data = df, mapping = aes(x = x)) +
+    geom_histogram(aes(x = obs, y = after_stat(density)), 
+                   bins = 40, 
+                   fill = "lightblue",
+                   color = "blue", 
+                   alpha = 0.6) +
+    geom_density(aes(x = obs), color = "darkred", linewidth = 1.3) + 
+    geom_line(aes(y = y_dens), color = "darkgreen", linewidth = 1.3) +
+    theme_minimal()
+```
+
+Finally, the `pnorm` function can be used to find the probability of observing a certain value, or below (or above):
+
+```{r pnorm-demo1}
+pnorm(q = 100, mean = 100, sd = 8, lower.tail = TRUE)
+```
+
+The value 100 is the mean, so the probability of finding it, or a value below it, is 0.5. One standard deviation should represent 68% of the values:
+
+```{r pnorm-demo2}
+pnorm(q = 92, mean = 100, sd = 8, lower.tail = TRUE)
+```
+(`100 - (15.9 * 2) = 68.2`)
+
+```{r pnorm-demo3}
+pnorm(q=120, mean=100, sd=8, lower.tail = FALSE)
+```
+
+Similarly, there are `d`, `p`, `q`, and `r` functions for all important distributions:
+
+- `*binom` -- binomial 
+- `*unif` -- uniform distribution
+- `*pois` -- Poisson
+- `*t` -- Student's t distribution
+
+Type `?distributions` to see a listing of all available ones.
+
+### Sampling from vectors or ranges
+
+For random sampling we have the `sample` and `sample.int` functions.
+
+The example below samples three values from the numbers between 1 (inclusi) and (inclusive) 5:
+
+```{r sample-int-demo1}
+sample.int(n=5, size=3)
+```
+
+Note that if the number of values you request is larger than the range, you get an error: `cannot take a sample larger than the population when 'replace = FALSE'`.  
+You need to use `replace = TRUE`:
+
+```{r sample-int-demo2}
+sample.int(n=5, size=10, replace=TRUE)
+```
+
+If you provide only a single number, `size` becomes equal to `n`, and you get a permutation of the range:
+
+```{r sample-int-demo3}
+sample.int(5)
+```
+
+The `sample()` function needs a vector to sample from. For large numbers of values this is of course much less efficient than `sample.int()`.
+Here is an example:
+
+```{r sample-demo1}
+sample(x = 1:1000, size = 3)
+```
+
+Thus, to sample five rows from a dataframe you would use this technique:
+
+```{r sample-int-demo4}
+iris[sample.int(n = nrow(iris), size = 5), ]
+```
+
 
 ## General purpose functions
 
